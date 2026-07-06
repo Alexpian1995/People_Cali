@@ -1391,6 +1391,7 @@ async function guardarNovedadOperativaFirebase() {
 }
 
 // 📊 EXPORTA A EXCEL TODOS LOS COLABORADORES CON EVALUACIONES VENCIDAS O REPROBADAS
+// 📊 EXPORTA A EXCEL EL UNIVERSO COMPLETO DE COLABORADORES CON SUS RESPONSABILIDADES Y ESTADOS
 function exportarVencidosYReprobadosExcel() {
     if (!cacheSnapshotEmpleadosLocal) {
         alert('⚠️ Los datos aún no han cargado. Espera un momento e intenta de nuevo.');
@@ -1407,7 +1408,7 @@ function exportarVencidosYReprobadosExcel() {
         return d.toISOString().split('T')[0];
     };
 
-    // 🔎 Determina el estado de un hito puntual: Vencido, Reprobado, o null si está OK/pendiente-a-tiempo
+    // 🔎 Determina de manera exacta el estado de cualquier hito en la planta
     const evaluarEstadoHito = (label, nota, fechaBaseContratacion, diasDesfase, umbral) => {
         const limiteStr = (diasDesfase === 0 || diasDesfase === 1 || diasDesfase === 7)
             ? calcularFechaLimiteHabilesColombia(fechaBaseContratacion, diasDesfase)
@@ -1417,24 +1418,49 @@ function exportarVencidosYReprobadosExcel() {
         if (label.includes("Safety")) minAprobacion = 100;
         else if (label.includes("People")) minAprobacion = 80;
 
+        // Caso 1: Aún no presenta el examen
         if (nota === undefined || nota === null || nota === 0) {
             const esVencido = limiteStr ? (hoy > new Date(limiteStr + 'T00:00:00')) : false;
             if (esVencido) {
-                return { estado: "VENCIDO (sin realizar)", limite: limiteStr, nota: "—" };
+                return { estado: "❌ VENCIDO (Sin Presentar)", limite: limiteStr, nota: "—" };
             }
-            return null; // aún dentro de plazo, no se exporta
+            
+            // Evalúa si está próximo por vencer (reloj de 3 días)
+            const diffMs = new Date(limiteStr + 'T00:00:00') - hoy;
+            const diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            if (diasRestantes >= 0 && diasRestantes <= 3) {
+                return { estado: `⏳ Próximo a Vencer (${diasRestantes}d)`, limite: limiteStr, nota: "—" };
+            }
+            
+            return { estado: "⏳ En Plazo (Pendiente)", limite: limiteStr, nota: "—" };
         }
 
+        // Caso 2: Presentó y reprobó
         if (nota < minAprobacion) {
-            return { estado: `REPROBADO (${nota}%)`, limite: limiteStr, nota: nota + "%" };
+            return { estado: `🚨 REPROBADO (Mínimo ${minAprobacion}%)`, limite: limiteStr, nota: nota + "%" };
         }
 
-        return null; // aprobado, no se exporta
+        // Caso 3: Aprobado con éxito
+        return { estado: "✅ APROBADO", limite: limiteStr, nota: nota + "%" };
     };
+
+    // 🚨 MEJORA DE SINCRONIZACIÓN: Captura los filtros activos de la interfaz de usuario
+    const regFiltro = document.getElementById('filter-region')?.value || '';
+    const mesDesde = document.getElementById('filter-mes-desde')?.value || '';
+    const mesHasta = document.getElementById('filter-mes-hasta')?.value || '';
 
     cacheSnapshotEmpleadosLocal.forEach((doc) => {
         const emp = doc.data();
-        if (emp.es_apadrinado !== true) return; // solo activos, igual que el monitor
+        if (emp.es_apadrinado !== true) return; // Mismo universo activo del monitor
+
+        // Aplicamos los filtros en cascada idénticos a la pantalla principal
+        if (regFiltro && emp.region !== regFiltro) return;
+        if (mesDesde || mesHasta) {
+            const mesEmpleado = emp.fecha_ingreso ? emp.fecha_ingreso.substring(0, 7) : null;
+            if (!mesEmpleado) return;
+            if (mesDesde && mesEmpleado < mesDesde) return;
+            if (mesHasta && mesEmpleado > mesHasta) return;
+        }
 
         const h = emp.hitos || {};
         const fechaBase = emp.fecha_ingreso || h.fecha_contratacion || "";
@@ -1464,51 +1490,53 @@ function exportarVencidosYReprobadosExcel() {
                     "Regional": emp.region || "General",
                     "Grupo": emp.grupo || "General",
                     "Fecha Contratación": fechaBase || "—",
-                    "Evaluación": hito.label,
-                    "Estado": resultado.estado,
-                    "Nota": resultado.nota,
-                    "Fecha Límite": resultado.limite || "—",
-                    "Días con Novedad": emp.dias_incapacidad_acumulados || 0,
-                    "Estado Plan Padrino": emp.estado_plan_padrino || "Activo",
-                    "Correo": emp.correo || "",
-                    "Jefe Directo": emp.jefe_directo || ""
+                    "Fase / Evaluación": hito.label,
+                    "Estado de Avance": resultado.estado,
+                    "Calificación Obtenida": resultado.nota,
+                    "Fecha Límite Establecida": resultado.limite || "—",
+                    "Prórogas por Novedad (Días)": emp.dias_incapacidad_acumulados || 0,
+                    "Estado Interno Plan": emp.estado_plan_padrino || "Activo",
+                    "Líder / Jefe Directo": emp.jefe_directo || "",
+                    "Correo Electrónico": emp.correo || ""
                 });
             }
         });
     });
 
     if (filasExportar.length === 0) {
-        alert('✅ No hay evaluaciones vencidas ni reprobadas en este momento. ¡Todo al día!');
+        alert('✅ No se encontraron colaboradores registrados bajo los filtros seleccionados.');
         return;
     }
 
-    // 📄 Construir el libro de Excel
+    // 📄 Construcción estructurada del libro de Excel mediante SheetJS
     const ws = XLSX.utils.json_to_sheet(filasExportar);
 
-    // Ajuste de ancho de columnas para mejor lectura
+    // Ajuste proporcional de anchos de columna para evitar textos cortados
     ws['!cols'] = [
-        { wch: 25 }, // Nombre
+        { wch: 28 }, // Nombre
         { wch: 12 }, // Cédula
-        { wch: 16 }, // Cargo
-        { wch: 12 }, // Regional
+        { wch: 18 }, // Cargo
+        { wch: 14 }, // Regional
         { wch: 10 }, // Grupo
-        { wch: 14 }, // Fecha Contratación
-        { wch: 14 }, // Evaluación
-        { wch: 20 }, // Estado
-        { wch: 8 },  // Nota
-        { wch: 12 }, // Fecha Límite
-        { wch: 12 }, // Días con Novedad
-        { wch: 18 }, // Estado Plan Padrino
-        { wch: 25 }, // Correo
-        { wch: 20 }  // Jefe Directo
+        { wch: 16 }, // Fecha Contratación
+        { wch: 16 }, // Fase / Evaluación
+        { wch: 25 }, // Estado de Avance
+        { wch: 18 }, // Calificación Obtenida
+        { wch: 22 }, // Fecha Límite Establecida
+        { wch: 22 }, // Prórogas por Novedad (Días)
+        { wch: 18 }, // Estado Interno Plan
+        { wch: 22 }, // Líder / Jefe Directo
+        { wch: 26 }  // Correo Electrónico
     ];
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Vencidos y Reprobados");
+    XLSX.utils.book_append_sheet(wb, ws, "Consolidado General");
 
     const fechaHoyStr = hoy.toISOString().split('T')[0];
-    XLSX.writeFile(wb, `Plan_Padrino_Vencidos_Reprobados_${fechaHoyStr}.xlsx`);
+    const regionTitulo = regFiltro ? `_${regFiltro.replace(/\s+/g, '_')}` : '_General';
+    XLSX.writeFile(wb, `Consolidado_Plan_Padrino${regionTitulo}_${fechaHoyStr}.xlsx`);
 }
+
 
 window.calcularDiasEntreFechas = calcularDiasEntreFechas;
 window.calcularDiasNovedadPreview = calcularDiasNovedadPreview;
