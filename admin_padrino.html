@@ -207,25 +207,42 @@
           <div class="dash-num"><span id="dashPlanesActivos">0</span> / <span id="dashPlanesFinalizados">0</span></div>
         </div>
       </div>
-     <div class="dash-card" style="border: 1.5px solid #f09595; background: #fffdfd; display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; gap: 8px;">
-  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-    <div class="dash-label" style="color: #a32d2d; font-weight: 800;"><i class="ti ti-alert-triangle"></i> Planes Vencidos</div>
-    <div class="dash-num" id="dashPlanesVencidos" style="color: #a32d2d; background: #FCEBEB; font-size: 15px; padding: 2px 10px; border-radius: 20px; font-weight: 800;">0</div>
-  </div>
-  <div style="font-size: 9px; color: var(--text2); margin-top: -4px;">Planes activos monitoreados</div>
-  <button type="button" style="width: 100%; border: 1px solid #dde3e7; background: #fff; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #206987; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="document.getElementById('lista-desplegable-vencidos').classList.toggle('open')">
-    <span>🔍 Ver Alertas</span>
-    <i class="ti ti-chevron-down"></i>
-  </button>
-</div>
+
+      <div class="dash-card" style="border: 1.5px solid #3cbcae; background: #fafdfc;">
+        <div class="dash-icon" style="background: #0f6e56;"><i class="ti ti-shield-check"></i></div>
+        <div>
+          <div class="dash-label" style="color: #0f6e56; font-weight: 800;">Promedio Safety (D1)</div>
+          <div class="dash-num" id="dashPromedioSafety">0%</div>
+        </div>
+      </div>
+
+      <div class="dash-card" style="border: 1.5px solid #3cbcae; background: #fafdfc;">
+        <div class="dash-icon" style="background: #206987;"><i class="ti ti-users"></i></div>
+        <div>
+          <div class="dash-label" style="color: #206987; font-weight: 800;">Promedio People (D2)</div>
+          <div class="dash-num" id="dashPromedioPeople">0%</div>
+        </div>
+      </div>
+
+      <div class="dash-card" style="border: 1.5px solid #f09595; background: #fffdfd; display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; gap: 8px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+          <div class="dash-label" style="color: #a32d2d; font-weight: 800;"><i class="ti ti-alert-triangle"></i> Planes Vencidos</div>
+          <div class="dash-num" id="dashPlanesVencidos" style="color: #a32d2d; background: #FCEBEB; font-size: 15px; padding: 2px 10px; border-radius: 20px; font-weight: 800;">0</div>
+        </div>
+        <div style="font-size: 9px; color: var(--text2); margin-top: -4px;">Planes activos monitoreados</div>
+        <button type="button" style="width: 100%; border: 1px solid #dde3e7; background: #fff; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #206987; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="document.getElementById('lista-desplegable-vencidos').classList.toggle('open')">
+          <span>🔍 Ver Alertas</span>
+          <i class="ti ti-chevron-down"></i>
+        </button>
+      </div>
 
       <div class="dash-card">
-  <div class="dash-icon" style="background: #7a8f99;"><i class="ti ti-users"></i></div>
-  <div>
-    <div class="dash-label">Total Colaboradores</div>
-    <div class="dash-num" id="dashTotalEmpleados">0</div>
-  </div>
-</div>
+        <div class="dash-icon" style="background: #7a8f99;"><i class="ti ti-users"></i></div>
+        <div>
+          <div class="dash-label">Total Colaboradores</div>
+          <div class="dash-num" id="dashTotalEmpleados">0</div>
+        </div>
+      </div>
 
       <div class="dash-card" style="border: 1.5px solid #f09595; background: #fffdfd; display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; gap: 8px;">
         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">

@@ -450,6 +450,124 @@ function renderizarMonitorColaboradores() {
         }
     });
 
+    // =========================================================
+    // 📊 RECALCULO ESTRATÉGICO: PROMEDIOS, VENCIDOS Y REPROBADOS CON FILTROS VIVOS
+    // =========================================================
+    let acumSumaSafety = 0;
+    let acumSumaPeople = 0;
+    let countSafetyValidos = 0;
+    let countPeopleValidos = 0;
+
+    let planesVencidosFiltrados = 0;
+    let totalEvaluadosOnboardingFiltrados = 0;
+    
+    let arrayReprobadosFiltradosHTML = [];
+    let arrayVencidosFiltradosHTML = [];
+
+    // Evaluamos estrictamente el universo de colaboradores activos que ya pasaron los filtros superiores
+    todosLosEmpleados.forEach(({ emp }) => {
+        const h = emp.hitos || {};
+        const hoy = new Date();
+
+        // 1️⃣ Promedios de Onboarding
+        const notaS = Number(h.onboarding_safety_nota) || 0;
+        const notaP = Number(h.onboarding_people_nota) || 0;
+
+        if (notaS > 0) { acumSumaSafety += notaS; countSafetyValidos++; }
+        if (notaP > 0) { acumSumaPeople += notaP; countPeopleValidos++; }
+
+        // 2️⃣ Trazabilidad Dinámica de Reprobados Onboarding
+        let cargoFallas = [];
+        if (notaS > 0 && notaS < 100) cargoFallas.push(`Safety (${notaS}%)`);
+        if (notaP > 0 && notaP < 80) cargoFallas.push(`People (${notaP}%)`);
+        if (notaS > 0 || notaP > 0) totalEvaluadosOnboardingFiltrados++;
+
+        if (cargoFallas.length > 0) {
+            arrayReprobadosFiltradosHTML.push(`
+                <div class="reprobado-row-item">
+                    <div style="flex: 1;">
+                        <strong style="font-size:12px; color:#1c2430;">${emp.nombre}</strong>
+                        <div style="font-size:10.5px; color:#7a8f99;">CC ${emp.cedula} · CD: ${emp.region || 'General'}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size:10.5px; font-weight:700; color:#a32d2d; background:#fff0f0; padding:3px 8px; border-radius:4px; border:1px solid #f5c2c2;">❌ ${cargoFallas.join(' y ')}</span>
+                    </div>
+                </div>`);
+        }
+
+        // 3️⃣ Trazabilidad Dinámica de Planes Vencidos (Considerando días de incapacidad acumulados)
+        if (emp.estado_plan_padrino !== "Plan Padrino Finalizado" && emp.fechas_limite_evaluaciones) {
+            const f7 = new Date(emp.fechas_limite_evaluaciones.eval_7_dias + 'T00:00:00');
+            const f30 = new Date(emp.fechas_limite_evaluaciones.eval_30_dias + 'T00:00:00');
+            const f90 = new Date(emp.fechas_limite_evaluaciones.eval_90_dias + 'T00:00:00');
+
+            let etapaVencidaLabel = null; 
+            let fechaLimiteVencida = null;
+
+            if (emp.etapa_actual === "Etapa Técnico" && hoy > f7) { 
+                planesVencidosFiltrados++; 
+                etapaVencidaLabel = "7 Días (Técnico)"; 
+                fechaLimiteVencida = emp.fechas_limite_evaluaciones.eval_7_dias; 
+            }
+            else if (emp.etapa_actual === "Etapa Funcional" && hoy > f30) { 
+                planesVencidosFiltrados++; 
+                etapaVencidaLabel = "30 Días (Funcional)"; 
+                fechaLimiteVencida = emp.fechas_limite_evaluaciones.eval_30_dias; 
+            }
+            else if (emp.etapa_actual === "Etapa Autónomo" && hoy > f90) { 
+                planesVencidosFiltrados++; 
+                etapaVencidaLabel = "90 Días (Autónomo)"; 
+                fechaLimiteVencida = emp.fechas_limite_evaluaciones.eval_90_dias; 
+            }
+
+            if (etapaVencidaLabel) {
+                const diasVencido = Math.floor((hoy - new Date(fechaLimiteVencida + 'T00:00:00')) / (1000 * 60 * 60 * 24));
+                arrayVencidosFiltradosHTML.push(`
+                    <div class="reprobado-row-item">
+                        <div style="flex: 1;">
+                            <strong style="font-size:12px; color:#1c2430;">${emp.nombre}</strong>
+                            <div style="font-size:10.5px; color:#7a8f99;">CC ${emp.cedula} · CD: ${emp.region || 'General'}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size:10.5px; font-weight:700; color:#a32d2d; background:#fff0f0; padding:3px 8px; border-radius:4px; border:1px solid #f5c2c2;">
+                                ⚠️ ${etapaVencidaLabel} · Venció: ${fechaLimiteVencida} (${diasVencido}d)
+                            </span>
+                        </div>
+                    </div>`);
+            }
+        }
+    });
+
+    const promedioSafetyCalculado = countSafetyValidos > 0 ? Math.round(acumSumaSafety / countSafetyValidos) : 0;
+    const promedioPeopleCalculado = countPeopleValidos > 0 ? Math.round(acumSumaPeople / countPeopleValidos) : 0;
+
+    // 🖨️ Sincronización Realtime con los elementos del Dashboard
+    if (document.getElementById('dashPromedioSafety')) document.getElementById('dashPromedioSafety').textContent = promedioSafetyCalculado + "%";
+    if (document.getElementById('dashPromedioPeople')) document.getElementById('dashPromedioPeople').textContent = promedioPeopleCalculado + "%";
+    if (document.getElementById('dashPlanesVencidos')) document.getElementById('dashPlanesVencidos').textContent = planesVencidosFiltrados;
+    
+    if (document.getElementById('dashTotalReprobados')) {
+        document.getElementById('dashTotalReprobados').textContent = arrayReprobadosFiltradosHTML.length;
+        document.getElementById('dashTotalReprobados').style.background = arrayReprobadosFiltradosHTML.length > 0 ? '#FCEBEB' : '#e1f5ee';
+        document.getElementById('dashTotalReprobados').style.color = arrayReprobadosFiltradosHTML.length > 0 ? '#a32d2d' : '#0f6e56';
+    }
+    if (document.getElementById('dashEvaluadosOnboarding')) {
+        document.getElementById('dashEvaluadosOnboarding').textContent = totalEvaluadosOnboardingFiltrados;
+    }
+
+    // 🖨️ Inyección Sincronizada de Paneles Desplegables "Ver Alertas"
+    if (document.getElementById('lista-desplegable-reprobados')) {
+        document.getElementById('lista-desplegable-reprobados').innerHTML = arrayReprobadosFiltradosHTML.length === 0
+            ? `<div style="text-align:center; padding:15px; color:#0f6e56; font-size:11.5px; font-weight:600; background:#e1f5ee; border-radius:6px;">✅ Todos los colaboradores se encuentran aprobados al día.</div>`
+            : arrayReprobadosFiltradosHTML.join('');
+    }
+    if (document.getElementById('lista-desplegable-vencidos')) {
+        document.getElementById('lista-desplegable-vencidos').innerHTML = arrayVencidosFiltradosHTML.length === 0
+            ? `<div style="text-align:center; padding:15px; color:#0f6e56; font-size:11.5px; font-weight:600; background:#e1f5ee; border-radius:6px;">✅ No hay planes vencidos en este filtro.</div>`
+            : arrayVencidosFiltradosHTML.join('');
+    }
+    // =========================================================
+
     if (document.getElementById('dashTotalEmpleados')) {
         document.getElementById('dashTotalEmpleados').textContent = totalEmpleadosFiltro;
     }
@@ -476,7 +594,6 @@ function renderizarMonitorColaboradores() {
         return d.toISOString().split('T')[0];
     };
 
-    // 🌟 CORRECCIÓN CRÍTICA DE AUDITORÍA: Forzar cumplimiento estricto del DÍA EXACTO LÍMITE
     const buildChipInteligente = (label, nota, fechaEjecucion, fechaBaseContratacion, diasDesfase, umbral) => {
         const limiteStr = (diasDesfase === 0 || diasDesfase === 1 || diasDesfase === 7)
             ? calcularFechaLimiteHabilesColombia(fechaBaseContratacion, diasDesfase)
@@ -509,7 +626,6 @@ function renderizarMonitorColaboradores() {
                 </div>`;
         }
 
-        // 🌟 VALIDACIÓN DE DÍA EXACTO: La fecha de ejecución debe ser igual a la calculada
         const ejecutoEnElDiaExacto = (fechaEjecucion === limiteStr);
 
         if (ejecutoEnElDiaExacto) {
@@ -521,7 +637,6 @@ function renderizarMonitorColaboradores() {
                     <span style="font-size:8.5px; opacity:0.8;">Día exacto: ${fechaEjecucion || '—'}</span>
                 </div>`;
         } else {
-            // Se evalúa si lo hizo antes del tiempo reglamentario de maduración corporativa o si se pasó
             const esAdelantado = limiteStr ? (new Date(fechaEjecucion + 'T00:00:00') < new Date(limiteStr + 'T00:00:00')) : false;
             return `
                 <div class="eval-chip chip-pass-late">
@@ -566,14 +681,13 @@ function renderizarMonitorColaboradores() {
 
     paginaSegmentada.forEach(({ emp, docId }) => {
         const h = emp.hitos || {};
-        const fechaBase = emp.fecha_ingreso || h.fecha_contratacion || "";  // 👈 esta la borraste, hay que recuperarla
-        const fechaBaseParaPlazos = calcularFechaBaseConNovedades(fechaBase, emp.dias_incapacidad_acumulados);  // 👈 esta es la nueva
+        const fechaBase = emp.fecha_ingreso || h.fecha_contratacion || "";
+        const fechaBaseParaPlazos = calcularFechaBaseConNovedades(fechaBase, emp.dias_incapacidad_acumulados);
 
         let notes90 = [];
         if (h.eval_autonomo_pre_nota) notes90.push(h.eval_autonomo_pre_nota);
         if (h.eval_autonomo_nota) notes90.push(h.eval_autonomo_nota);
         if (h.eval_autonomo_post_nota) notes90.push(h.eval_autonomo_post_nota);
-
 
         let notaUnificada90 = notes90.length > 0 ? Math.round(notes90.reduce((a, b) => a + b, 0) / notes90.length) : 0;
         let fecha90Final = h.eval_autonomo_nota_fecha || h.eval_autonomo_fecha || h.eval_autonomo_pre_fecha || h.eval_autonomo_post_fecha || "";
@@ -601,7 +715,6 @@ function renderizarMonitorColaboradores() {
             botonCertificadoHtml = `<button class="status-btn" style="font-size:12px; padding:8px 14px; background:#f1f3f5; color:#7a8f99; cursor:not-allowed;" disabled>⏳ En Progreso (${porcentajeEjecucionReal}%)</button>`;
         }
 
-        // 🚨 CONFIGURACIÓN EXCLUSIVA: El Admin genera su botón de novedad en paralelo
         let botonNovedadAdminHtml = '';
         if (miRol === 'admin') {
             botonNovedadAdminHtml = `
@@ -640,10 +753,10 @@ function renderizarMonitorColaboradores() {
         </div>
         <div class="evals-row">
           ${buildChipInteligente("Safety (D1)", h.onboarding_safety_nota, h.onboarding_safety_fecha, fechaBaseParaPlazos, 0, 100)}
-${buildChipInteligente("People (D2)", h.onboarding_people_nota, h.onboarding_people_fecha, fechaBaseParaPlazos, 1, 80)}
-${buildChipInteligente("7 Días (Téc)", h.eval_tecnico_nota, h.eval_tecnico_fecha, fechaBaseParaPlazos, 7, 60)}
-${buildChipInteligente("30 Días (Fun)", h.eval_funcional_nota, h.eval_funcional_fecha, fechaBaseParaPlazos, 32, 60)}
-${buildChipInteligente("90 Días (Aut)", notaUnificada90, fecha90Final, fechaBaseParaPlazos, 92, 60)}
+          ${buildChipInteligente("People (D2)", h.onboarding_people_nota, h.onboarding_people_fecha, fechaBaseParaPlazos, 1, 80)}
+          ${buildChipInteligente("7 Días (Téc)", h.eval_tecnico_nota, h.eval_tecnico_fecha, fechaBaseParaPlazos, 7, 60)}
+          ${buildChipInteligente("30 Días (Fun)", h.eval_funcional_nota, h.eval_funcional_fecha, fechaBaseParaPlazos, 32, 60)}
+          ${buildChipInteligente("90 Días (Aut)", notaUnificada90, fecha90Final, fechaBaseParaPlazos, 92, 60)}
         </div>
       </div>`;
     });
