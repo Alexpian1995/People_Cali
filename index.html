@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal People - Inicio</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #eef2f5; min-height: 100vh; color: #1c2430; }
+
+    .app-shell {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      background: #f0f4f6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    @media (min-width: 768px) {
+      .app-shell {
+        max-width: 1024px;
+        margin: 20px auto;
+        border-radius: 14px;
+        border: 1.5px solid #cdd5db;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        min-height: calc(100vh - 40px);
+        overflow: hidden;
+      }
+    }
+
+    .header { background: #206987; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 62px; border-bottom: 3px solid #3cbcae; }
+    .logo-img { height: 38px; width: auto; object-fit: contain; display: block; }
+    .header-badge { background: #ffc404; color: #1c2430; font-size: 9.5px; font-weight: 700; padding: 4px 9px; border-radius: 20px; white-space: nowrap; }
+    .notif-btn { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    .tab-bar { display: flex; background: #fff; border-bottom: 0.5px solid #dde3e7; }
+    .tab { flex: 1; padding: 11px 6px 9px; text-align: center; font-size: 9.5px; font-weight: 500; color: #7a8f99; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all .2s; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .tab.active { color: #206987; border-bottom-color: #206987; }
+
+    .screen { display: none; padding: 14px 14px 20px; flex: 1; pointer-events: none; }
+    .screen.active { display: flex; flex-direction: column; pointer-events: auto; }
+
+    .section-title { font-size: 10px; font-weight: 700; color: #206987; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; margin-top: 14px; }
+    .card { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 0.5px solid #dde3e7; }
+    .card-header { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+    
+    .card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .card-icon.teal { background: #e1f5ee; }
+    .card-icon.yellow { background: #fff8e1; }
+    .card-icon i { font-size: 20px; }
+    .card-icon.teal i { color: #206987; }
+    .card-icon.yellow i { color: #c89b00; }
+    .card-title { font-size: 13px; font-weight: 600; color: #1a3540; }
+    .card-sub { font-size: 10px; color: #7a8f99; }
+
+    .benefit-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid #eef1f3; }
+    .benefit-row:last-child { border-bottom: none; }
+    .benefit-label { font-size: 11px; color: #3a5a68; }
+    .benefit-amount { font-size: 12px; font-weight: 700; color: #206987; }
+
+    .tag { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+    .tag.green { background: #e1f5ee; color: #0f6e56; }
+    .tag.yellow { background: #fef9e7; color: #8a6e00; }
+
+    .alert-card { background: #fff8e6; border: 0.5px solid #ffc404; border-radius: 12px; padding: 10px 12px; display: flex; gap: 9px; align-items: flex-start; margin-bottom: 8px; }
+    .alert-card i { color: #c89b00; font-size: 18px; margin-top: 1px; }
+    .alert-text { font-size: 10.5px; color: #5a4200; line-height: 1.45; }
+    .alert-time { font-size: 9px; color: #a08030; margin-top: 2px; }
+
+    .cap-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid #eef1f3; }
+    .cap-item:last-child { border-bottom: none; }
+    .cap-num { width: 26px; height: 26px; border-radius: 50%; background: #e1f5ee; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #206987; flex-shrink: 0; }
+    .cap-num.done { background: #206987; color: #fff; }
+    .cap-info { flex: 1; }
+    .cap-title { font-size: 11px; font-weight: 600; color: #1a3540; }
+    .cap-date { font-size: 9.5px; color: #7a8f99; margin-top: 1px; }
+    .cap-actions { display: flex; gap: 5px; align-items: center; }
+
+    .btn-ppt { font-size: 9px; padding: 6px 10px; border-radius: 7px; background: #e1f5ee; color: #0f6e56; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 3px; }
+    .btn-ppt:hover { opacity: 0.9; }
+    .btn-qr { font-size: 9px; padding: 6px 10px; border-radius: 7px; background: #fff8e1; color: #8a6e00; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 3px; }
+    .btn-qr:disabled { background: #f1efe8; color: #9da3a6; cursor: not-allowed; opacity: 0.6; }
+
+    .avance-global { background: #206987; border-radius: 14px; padding: 14px; margin-bottom: 10px; border-bottom: 4px solid #3cbcae; }
+    .avance-label { font-size: 10px; color: #a8d8e0; font-weight: 600; margin-bottom: 2px; }
+    .avance-pct { font-size: 28px; font-weight: 700; color: #fff; }
+    .avance-sub { font-size: 10px; color: #a8d8e0; margin-top: 2px; }
+    .avance-bar { height: 8px; background: rgba(255,255,255,0.18); border-radius: 6px; overflow: hidden; margin-top: 10px; }
+    .avance-fill { height: 100%; background: #ffc404; border-radius: 6px; width: 0%; transition: width 0.5s ease; }
+
+    .profile-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; margin-bottom: 10px; border-radius: 14px; border: 0.5px solid #dde3e7; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; background: #206987; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
+    .profile-info .name { font-size: 13px; font-weight: 600; color: #1a3540; }
+    .profile-info .cargo { font-size: 10.5px; color: #7a8f99; }
+    .btn-logout { background: none; border: none; color: #a32d2d; font-size: 11px; cursor: pointer; font-weight: 600; margin-top: 5px; }
+
+    /* Estilos de las etiquetas de habilidades del Padrino */
+    .tag-skill { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 600; }
+    .tag-tecnica { background: #e1f5ee; color: #0f6e56; border: 1px solid #3cbcae; }
+    .tag-blanda { background: #fff8e1; color: #8a6e00; border: 1px solid #ffc404; }
+
+    /* 🌟 Estilos propios del nuevo bloque de progreso de hitos del empleado */
+    .hito-progreso-wrap {
+      padding: 22px 18px;
+      border-radius: 18px;
+      background: linear-gradient(165deg, #ffffff 0%, #f7fafc 100%);
+      border: 0.5px solid #dde3e7;
+      box-shadow: 0 6px 22px rgba(32, 105, 135, 0.05);
+    }
+    .hito-fecha-contrato-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px dashed #dde3e7;
+    }
+    .hito-fecha-icon {
+      width: 38px; height: 38px; border-radius: 11px;
+      background: #e1f0f5; color: #206987;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .hito-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .hito-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.025);
+      transition: transform 0.15s ease;
+    }
+    .hito-card:hover { transform: translateY(-2px); }
+    .hito-card-head { display: flex; align-items: center; gap: 8px; }
+    .hito-card-icon {
+      width: 30px; height: 30px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .hito-card-label { font-size: 10.5px; font-weight: 700; color: #1c2430; line-height: 1.2; }
+    .hito-card-score { font-size: 19px; font-weight: 800; }
+    .hito-card-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 9.5px; font-weight: 700; padding: 3px 9px;
+      border-radius: 20px; width: fit-content;
+    }
+    .hito-card-meta { font-size: 8.5px; color: #7a8f99; line-height: 1.4; margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  
+  <div class="header">
+    <img src="logo.png" alt="Logística Conectamos Más" class="logo-img">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div id="headerRegion" class="header-badge">---</div>
+      <div class="notif-btn" onclick="showTab('notif')">
+        <i class="ti ti-bell" style="font-size:17px;color:#ffc404"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" id="tab-home" onclick="showTab('home')"><i class="ti ti-home"></i><span>Inicio</span></div>
+    <div class="tab" id="tab-beneficios" onclick="showTab('beneficios')"><i class="ti ti-gift"></i><span>Beneficios</span></div>
+    <div class="tab" id="tab-capacitaciones" onclick="showTab('capacitaciones')"><i class="ti ti-school"></i><span>Capacitaciones</span></div>
+    <div class="tab" id="tab-notif" onclick="showTab('notif')"><i class="ti ti-bell"></i><span>Alertas</span></div>
+    <div class="tab" id="tab-padrino" onclick="showTab('padrino')" style="display: none;"><i class="ti ti-users"></i><span>Mi Padrino</span></div>
+  </div>
+
+  <div class="screen active" id="screen-home">
+    <div class="profile-row" style="margin-top:10px;">
+      <div id="userAvatar" class="avatar">--</div>
+      <div class="profile-info">
+        <div id="userName" class="name">Cargando...</div>
+        <div id="userCargo" class="cargo">Por favor espera</div>
+        <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+      </div>
+      <span class="tag green" style="margin-left:auto">✓ Al día</span>
+    </div>
+
+    <div class="section-title">Resumen de capacitación</div>
+    <div class="avance-global">
+      <div class="avance-label">Avance del Cronograma Actual</div>
+      <div id="homeAvancePct" class="avance-pct">0%</div>
+      <div id="homeAvanceSub" class="avance-sub">Calculando tareas...</div>
+      <div class="avance-bar"><div id="homeAvanceBar" class="avance-fill"></div></div>
+    </div>
+
+    <div class="section-title">Accesos rápidos</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div class="card" style="cursor:pointer;padding:12px;" onclick="showTab('beneficios')">
+        <i class="ti ti-gift" style="font-size:22px;color:#ffc404;display:block;margin-bottom:5px;"></i>
+        <div style="font-size:11px;font-weight:600;color:#1a3540;">Mis Beneficios</div>
+      </div>
+      <div class="card" style="cursor:pointer;padding:12px;" onclick="showTab('capacitaciones')">
+        <i class="ti ti-school" style="font-size:22px;color:#206987;display:block;margin-bottom:5px;"></i>
+        <div style="font-size:11px;font-weight:600;color:#1a3540;">Capacitaciones</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-beneficios">
+    <div class="section-title" style="margin-top:10px;">Beneficios &amp; compensación por cargo</div>
+    <div id="contenedor-beneficios-lista">
+      <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Cargando tus beneficios asignados...</div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-capacitaciones">
+    <div class="section-title" style="margin-top:10px;">Mi plan de entrenamiento</div>
+    <div class="card" id="cap-list">
+      <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Cargando tus capacitaciones programadas...</div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-notif">
+    <div class="section-title" style="margin-top:10px;">Alertas de Entrenamiento Informativas</div>
+    <div id="alert-list">
+      <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Sin mensajes ni asignaciones nuevas.</div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-padrino">
+    
+    <div id="padrinoHeaderFicha" style="background: #206987; color: white; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 15px; border-bottom: 4px solid #3cbcae;">
+      <div style="font-size: 16px; font-weight: 700;" id="padrinoFichaNombre">---</div>
+      <div style="font-size: 11px; color: #e1f5ee; margin-top: 2px;" id="padrinoFichaCargo">---</div>
+      <div style="display: flex; gap: 6px; justify-content: center; margin-top: 10px;">
+        <span class="tag" style="background: rgba(255,255,255,0.2); color: white; font-weight:700;" id="padrinoFichaEtapa">---</span>
+        <span class="tag" style="background: #ffc404; color: #1c2430; font-weight:700;">Apadrinado(a)</span>
+      </div>
+    </div>
+
+    <div class="section-title" style="display: flex; align-items: center; gap: 6px; margin-top: 14px;">
+      <i class="ti ti-info-circle" style="font-size: 14px; color: #206987;"></i> Información Básica de Ingreso
+    </div>
+    <div class="card" style="padding: 12px 16px; margin-bottom: 15px; background: #fff; border-radius: 14px; border: 0.5px solid #dde3e7; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div style="font-size: 9px; color: #7a8f99; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Tiempo Activo en la Compañía</div>
+        <div style="font-size: 13px; font-weight: 700; color: #206987; margin-top: 2px;" id="padrinoFichaTiempoTranscurrido">Calculando...</div>
+      </div>
+      <div style="width: 34px; height: 34px; border-radius: 10px; background: #e1f0f5; display: flex; align-items: center; justify-content: center; color: #206987;">
+        <i class="ti ti-clock" style="font-size: 20px;"></i>
+      </div>
+    </div>
+
+    <div class="section-title" style="display: flex; align-items: center; gap: 6px; margin-top: 20px;">
+      <i class="ti ti-timeline" style="font-size: 14px; color: #206987;"></i> Mi Progreso de Onboarding
+    </div>
+
+    <!-- 🌟 NUEVO BLOQUE: Tarjetas de progreso de hitos en tiempo real -->
+    <div class="hito-progreso-wrap">
+      <div class="hito-fecha-contrato-row">
+        <div class="hito-fecha-icon">
+          <i class="ti ti-calendar-event" style="font-size:19px;"></i>
+        </div>
+        <div>
+          <div style="font-size: 9px; color: #7a8f99; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Fecha de Contratación</div>
+          <div style="font-size: 14px; font-weight: 700; color: #1c2430;" id="hitoFechaContrato">---</div>
+        </div>
+      </div>
+      <div id="gridHitosEmpleado" class="hito-grid">
+        <div style="text-align:center; padding:15px; color:#7a8f99; font-size:11px; grid-column: 1 / -1;">Cargando tu progreso...</div>
+      </div>
+    </div>
+
+    <div class="section-title">🤝 Mi Padrino Certificado Asignado</div>
+    <div class="card" style="background: #fff; border: 1.5px solid #dde3e7; padding: 0; overflow:hidden; border-radius:14px; box-shadow: 0 4px 12px rgba(0,0,0,0.01);">
+      
+      <div style="background: #206987; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; border-bottom: 3px solid #3cbcae;">
+        <div id="avatarPadrinoAsignado" style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.2); border: 2px solid white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight:700;">--</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 700; color: #fff;" id="nombrePadrinoAsignado">Buscando tutor...</div>
+          <div style="font-size: 11px; color: #e1f5ee; margin-top: 2px;" id="cargoPadrinoAsignado">Cargando competencias...</div>
+        </div>
+      </div>
+
+      <div style="padding: 15px; display: flex; flex-direction: column; gap: 12px; background: #f8fafb;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; font-size: 11px;">
+          <div><span style="color:#7a8f99; display:block; font-size:8.5px; font-weight:700;">EMPRESA</span><strong id="padFichaEmpresa">---</strong></div>
+          <div><span style="color:#7a8f99; display:block; font-size:8.5px; font-weight:700;">ANTIGÜEDAD</span><strong id="padFichaTiempo">---</strong></div>
+          <div><span style="color:#0f6e56; display:block; font-size:8.5px; font-weight:700;">CORREO DE CONTACTO</span><strong id="padFichaCorreo" style="word-break:break-all; font-size:10.5px;">---</strong></div>
+        </div>
+        
+        <div>
+          <span style="color:#7a8f99; display:block; font-size:8.5px; font-weight:700; margin-bottom: 4px;">FORTALEZAS TÉCNICAS</span>
+          <div id="padFichaTecnicas" style="display:flex; flex-wrap:wrap; gap:4px;">---</div>
+        </div>
+
+        <div>
+          <span style="color:#7a8f99; display:block; font-size:8.5px; font-weight:700; margin-bottom: 4px;">HABILIDADES BLANDAS</span>
+          <div id="padFichaBlandas" style="display:flex; flex-wrap:wrap; gap:4px;">---</div>
+        </div>
+        <div id="historialPadrinosAnteriores"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; padding: 25px 15px 40px 15px; margin-top: 20px;">
+    <div style="font-size: 11px; font-weight: 600; color: #7a8f99; letter-spacing: 0.03em;">© 2026 Todos los derechos reservados</div>
+    <div style="font-size: 10px; font-weight: 700; color: #206987; letter-spacing: 0.05em; margin-top: 2px; text-transform: uppercase;">Anderson Alexander Devs</div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+
+<script>
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const cedulaLogueada = localStorage.getItem('usuario_cedula');
+  if (!cedulaLogueada) {
+    window.location.href = 'login.html';
+  }
+
+  // 🇨🇴 Matriz Oficial Unificada de Días Festivos en Colombia (2026 - 2027)
+  const FESTIVOS_COLOMBIA = [
+      "2026-01-01", "2026-01-12", "2026-03-23", "2026-04-02", "2026-04-03",
+      "2026-05-01", "2026-05-18", "2026-06-08", "2026-06-15", "2026-06-29",
+      "2026-07-20", "2026-08-07", "2026-08-17", "2026-10-12", "2026-11-02",
+      "2026-11-16", "2026-12-08", "2026-12-25",
+      "2027-01-01", "2027-01-11", "2027-03-22", "2027-03-25", "2027-03-26",
+      "2027-05-01", "2027-05-10", "2027-05-31", "2027-06-07", "2027-07-05",
+      "2027-07-20", "2027-08-07", "2027-08-16", "2027-10-18", "2027-11-01",
+      "2027-11-15", "2027-12-08", "2027-12-25"
+  ];
+
+  function esDiaInhabilColombia(fechaObjeto) {
+      if (fechaObjeto.getDay() === 0) return true; // Domingo
+      const formatoISO = fechaObjeto.toISOString().split('T')[0];
+      return FESTIVOS_COLOMBIA.includes(formatoISO);
+  }
+
+  function calcularFechaLimiteHabilesColombia(fechaIngresoStr, diasHabilesAsumidos) {
+      if (!fechaIngresoStr || fechaIngresoStr === "—") return null;
+      let fechaActual = new Date(fechaIngresoStr + 'T00:00:00');
+      let diasContados = 0;
+      while (diasContados < diasHabilesAsumidos) {
+          fechaActual.setDate(fechaActual.getDate() + 1);
+          if (!esDiaInhabilColombia(fechaActual)) {
+              diasContados++;
+          }
+      }
+      return fechaActual.toISOString().split('T')[0];
+  }
+
+  function calcularFechaLimiteCalendarioISO(fechaIngresoStr, dias) {
+      if (!fechaIngresoStr || fechaIngresoStr === "—") return null;
+      const d = new Date(fechaIngresoStr + 'T00:00:00');
+      d.setDate(d.getDate() + dias);
+      return d.toISOString().split('T')[0];
+  }
+
+  // 🎨 Construye una tarjeta de hito con diseño propio y elegante para el empleado
+  function buildHitoEmpleadoCard(label, icono, nota, fechaEjecucion, fechaBase, diasDesfase, umbralAprobacion) {
+      const limiteStr = (diasDesfase === 0 || diasDesfase === 1 || diasDesfase === 7)
+          ? calcularFechaLimiteHabilesColombia(fechaBase, diasDesfase)
+          : calcularFechaLimiteCalendarioISO(fechaBase, diasDesfase);
+
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      const limiteFecha = limiteStr ? new Date(limiteStr + 'T00:00:00') : null;
+      const notaNum = Number(nota) || 0;
+
+      let estadoTexto = '', estadoColor = '', estadoBg = '', estadoBorder = '', estadoIcono = '';
+
+      if (notaNum === 0) {
+          const vencido = limiteFecha ? hoy > limiteFecha : false;
+          if (vencido) {
+              estadoTexto = 'Vencido'; estadoColor = '#a32d2d'; estadoBg = '#fff5f5'; estadoBorder = '#f09595'; estadoIcono = '⚠️';
+          } else {
+              estadoTexto = 'Pendiente'; estadoColor = '#8a6e00'; estadoBg = '#fff8e1'; estadoBorder = '#ffc404'; estadoIcono = '⏳';
+          }
+      } else {
+          const aprobo = notaNum >= umbralAprobacion;
+          if (!aprobo) {
+              estadoTexto = 'Reprobado'; estadoColor = '#a32d2d'; estadoBg = '#fff5f5'; estadoBorder = '#f09595'; estadoIcono = '❌';
+          } else {
+              const ejecutoATiempo = limiteFecha ? (new Date((fechaEjecucion || fechaBase) + 'T00:00:00') <= limiteFecha) : true;
+              if (ejecutoATiempo) {
+                  estadoTexto = 'A tiempo'; estadoColor = '#0f6e56'; estadoBg = '#e1f5ee'; estadoBorder = '#3cbcae'; estadoIcono = '✓';
+              } else {
+                  estadoTexto = 'Fuera de plazo'; estadoColor = '#206987'; estadoBg = '#e8f3f6'; estadoBorder = '#8fc4d6'; estadoIcono = '🎓';
+              }
+          }
+      }
+
+      return `
+          <div class="hito-card" style="border:1.5px solid ${estadoBorder};">
+              <div class="hito-card-head">
+                  <div class="hito-card-icon" style="background:${estadoBg};">${icono}</div>
+                  <div class="hito-card-label">${label}</div>
+              </div>
+              <div class="hito-card-score" style="color:${estadoColor};">${notaNum > 0 ? notaNum + '%' : '—'}</div>
+              <div class="hito-card-badge" style="background:${estadoBg}; color:${estadoColor};">
+                  ${estadoIcono} ${estadoTexto}
+              </div>
+              <div class="hito-card-meta">
+                  ${notaNum > 0 ? `Hecho: ${fechaEjecucion || '—'}` : `Límite: ${limiteStr || '—'}`}
+              </div>
+          </div>`;
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    inicializarEscuchadorEmpleadoRealtime();
+    cargarCronogramaYProgreso();
+    cargarMensajesAlertaAutomaticas();
+  });
+
+ // 🌟 ESCUCHADOR MAESTRO EN TIEMPO REAL CON DETECCIÓN DE FECHA EXACTA Y SEGMENTACIÓN POR CD
+  function inicializarEscuchadorEmpleadoRealtime() {
+    db.collection('empleados')
+      .where('cedula', '==', String(cedulaLogueada))
+      .onSnapshot(async (snapshot) => {
+        if (snapshot.empty) return;
+
+        const docSnap = snapshot.docs[0];
+        const usuario = docSnap.data();
+        const cargoEmpleado = usuario.cargo || "Operativo";
+        const regionEmpleado = usuario.region || "General";
+
+        // 🌟 CORRECCIÓN DE ORIGEN: Detecta la fecha real de contratación guardada en el perfil
+        const fechaBaseReal = usuario.fecha_ingreso || (usuario.hitos && usuario.hitos.fecha_contratacion) || "";
+
+        // Llenamos el perfil básico de la cabecera
+        document.getElementById('userName').textContent = usuario.nombre;
+        document.getElementById('userCargo').textContent = cargoEmpleado + " · Región " + regionEmpleado;
+        document.getElementById('headerRegion').textContent = "Región " + regionEmpleado;
+        document.getElementById('userAvatar').textContent = usuario.nombre.substring(0,2).toUpperCase();
+
+        // =========================================================
+        // 🤝 SECCIÓN DE MONITOREO Y RENDIMIENTO DEL PLAN PADRINO
+        // =========================================================
+        if (usuario.es_apadrinado === true || usuario.padrino_id) {
+          if(document.getElementById('tab-padrino')) document.getElementById('tab-padrino').style.display = 'flex';
+
+          // Cálculo informativo de días transcurridos usando el reloj del equipo en tiempo real
+          let diasTranscurridos = 0;
+          if (fechaBaseReal) {
+            const fechaIngresoObj = new Date(fechaBaseReal + 'T00:00:00');
+            const hoy = new Date();
+            fechaIngresoObj.setHours(0,0,0,0);
+            hoy.setHours(0,0,0,0);
+            const diferenciaMilisegundos = hoy - fechaIngresoObj;
+            diasTranscurridos = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
+          }
+          
+          // Pintamos los datos consolidados en la pantalla
+          document.getElementById('padrinoFichaNombre').textContent = usuario.nombre;
+          document.getElementById('padrinoFichaCargo').textContent = cargoEmpleado;
+          document.getElementById('padrinoFichaEtapa').textContent = usuario.etapa_actual || "Etapa Técnico";
+          
+          // ✅ Sincronización del contador de días superior
+          document.getElementById('padrinoFichaTiempoTranscurrido').textContent = (diasTranscurridos >= 0 ? diasTranscurridos : 0) + " días activos";
+
+          // 🧮 INYECCIÓN DINÁMICA DE TARJETAS DE PROGRESO POR HITO (Safety, People, 7d, 30d, 90d)
+          document.getElementById('hitoFechaContrato').textContent = fechaBaseReal || "---";
+
+          const h = usuario.hitos || {};
+          const gridHitos = document.getElementById('gridHitosEmpleado');
+
+          if (gridHitos) {
+            if (fechaBaseReal) {
+              gridHitos.innerHTML =
+                  buildHitoEmpleadoCard("Safety (D1)", "🛡️", h.onboarding_safety_nota, h.onboarding_safety_fecha, fechaBaseReal, 0, 100) +
+                  buildHitoEmpleadoCard("People (D2)", "🤝", h.onboarding_people_nota, h.onboarding_people_fecha, fechaBaseReal, 1, 80) +
+                  buildHitoEmpleadoCard("Técnico (D7)", "⚙️", h.eval_tecnico_nota, h.eval_tecnico_fecha, fechaBaseReal, 7, 60) +
+                  buildHitoEmpleadoCard("Funcional (D30)", "📈", h.eval_funcional_nota, h.eval_funcional_fecha, fechaBaseReal, 32, 60) +
+                  buildHitoEmpleadoCard("Autónomo (D90)", "🏆", h.eval_autonomo_nota, h.eval_autonomo_fecha, fechaBaseReal, 92, 60);
+            } else {
+              gridHitos.innerHTML = '<div style="text-align:center; padding:15px; color:#7a8f99; font-size:11px; grid-column: 1 / -1;">Fecha de contratación no registrada aún.</div>';
+            }
+          }
+
+          // 🔍 BÚSQUEDA CRUZADA: Hoja de vida extendida del Padrino (CON FOTO BASE64 Y CORREO)
+          if (usuario.padrino_id) {
+            const tutorSnapshot = await db.collection('empleados').where('cedula', '==', String(usuario.padrino_id)).limit(1).get();
+            
+            if (!tutorSnapshot.empty) {
+              const tData = tutorSnapshot.docs[0].data();
+              const boxAvatar = document.getElementById('avatarPadrinoAsignado');
+              
+              document.getElementById('nombrePadrinoAsignado').textContent = tData.nombre;
+              document.getElementById('cargoPadrinoAsignado').textContent = tData.cargo || "Supervisor Logístico";
+              document.getElementById('padFichaEmpresa').textContent = tData.empresa_padrino || "Bavaria AB InBev";
+              document.getElementById('padFichaTiempo').textContent = tData.tiempo_compania || "9 meses";
+
+              if(document.getElementById('padFichaCorreo')) {
+                document.getElementById('padFichaCorreo').textContent = tData.correo || "Sin correo registrado";
+              }
+
+              if (boxAvatar) {
+                if (tData.foto_url && tData.foto_url.trim() !== "") {
+                  boxAvatar.innerHTML = `<img src="${tData.foto_url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+                } else if (tData.nombre.toLowerCase().includes("michel")) {
+                  boxAvatar.innerHTML = `<img src="michel.png" style="width:100%; height:100%; object-fit:cover;">`;
+                } else {
+                  boxAvatar.innerHTML = `<div style="font-weight:bold; font-size:16px; color:#fff;">${tData.nombre.substring(0,2).toUpperCase()}</div>`;
+                }
+              }
+
+              const boxTecnicas = document.getElementById('padFichaTecnicas');
+              if (boxTecnicas) {
+                boxTecnicas.innerHTML = '';
+                if (tData.habilidades_tecnicas && tData.habilidades_tecnicas.length > 0) {
+                  tData.habilidades_tecnicas.forEach(h => { boxTecnicas.innerHTML += `<span class="tag-skill tag-tecnica">${h}</span>`; });
+                } else { boxTecnicas.innerHTML = '<span style="color:#7a8f99;">Ninguna</span>'; }
+              }
+
+              const boxBlandas = document.getElementById('padFichaBlandas');
+              if (boxBlandas) {
+                boxBlandas.innerHTML = '';
+                if (tData.habilidades_blandas && tData.habilidades_blandas.length > 0) {
+                  tData.habilidades_blandas.forEach(h => { boxBlandas.innerHTML += `<span class="tag-skill tag-blanda">${h}</span>`; });
+                } else { boxBlandas.innerHTML = '<span style="color:#7a8f99;">Ninguna</span>'; }
+              }
+            } else {
+              document.getElementById('nombrePadrinoAsignado').textContent = "Padrino asignado no disponible";
+            }
+          }
+        }
+
+        // =========================================================
+            // 📜 🌟 NUEVA INYECCIÓN: LÍNEA DE TIEMPO DE PADRINOS ANTERIORES
+            // =========================================================
+            const contenedorHistorial = document.getElementById('historialPadrinosAnteriores');
+            if (contenedorHistorial) {
+                contenedorHistorial.innerHTML = ''; // Limpiamos residuos
+                
+                if (usuario.historial_padrinos && usuario.historial_padrinos.length > 0) {
+                    let htmlHistorial = `<div style="margin-top: 15px; border-top: 1px dashed #ced4da; padding-top: 12px;">
+                        <h5 style="margin: 0 0 8px 0; color: #495057; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+                            <i class="ti ti-history"></i> Historial de Acompañamiento:
+                        </h5>`;
+                        
+                    usuario.historial_padrinos.forEach(reg => {
+                        htmlHistorial += `
+                            <div style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 6px 10px; border-radius: 0 4px 4px 0; margin-bottom: 6px; font-size: 11px; color: #6c757d;">
+                                👥 <strong>${reg.padrino_nombre_anterior}</strong><br>
+                                📅 Relevo: ${reg.fecha_relevo} · <span style="font-style: italic;">${reg.motivo || 'Cambio operativo'}</span>
+                            </div>`;
+                    });
+                    
+                   htmlHistorial += `</div>`;
+                    contenedorHistorial.innerHTML = htmlHistorial;
+                }
+            }
+
+            // =========================================================
+            // 🎁 RECEPTOR DINÁMICO DE BENEFICIOS ASIGNADOS POR CARGO Y REGION
+            // =========================================================
+            const beneficioSnapshot = await db.collection('beneficios')
+              .where('cargo', '==', cargoEmpleado)
+              .where('region', '==', regionEmpleado)
+              .get();
+
+            const listaContainer = document.getElementById('contenedor-beneficios-lista');
+            if (listaContainer) {
+              listaContainer.innerHTML = '';
+              if (!beneficioSnapshot.empty) {
+                beneficioSnapshot.forEach((doc) => {
+                  const bReal = doc.data();
+                  const valorFormateado = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(bReal.valor || 0);
+                  listaContainer.innerHTML += `
+                    <div class="card" style="margin-bottom: 15px;">
+                      <div class="card-header">
+                        <div class="card-icon yellow"><i class="ti ti-coin"></i></div>
+                        <div>
+                          <div class="card-title" style="color: #206987; font-weight: 700;">${bReal.concepto || "Compensación"}</div>
+                          <div class="card-sub">Cargo: ${cargoEmpleado} · Sede: ${regionEmpleado}</div>
+                        </div>
+                      </div>
+                      <div class="benefit-row">
+                        <span class="benefit-label">Monto asignado para tu perfil:</span>
+                        <span class="benefit-amount" style="color: #206987; font-weight: 700;">${valorFormateado}</span>
+                      </div>
+                    </div>`;
+                });
+              } else {
+                listaContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">No registras beneficios configurados para el cargo de ${cargoEmpleado} en la sede de ${regionEmpleado}.</div>`;
+              }
+            }
+            
+        }, (error) => { // ✅ AHROA SÍ: Todos los procesos asíncronos cierran juntos de forma segura
+            console.error("Error en el canal en tiempo real del colaborador:", error);
+        });
+    }
+  
+
+  
+  function cargarCronogramaYProgreso() {
+    db.collection('items_cronograma').where('empleado_id', '==', cedulaLogueada).onSnapshot((snapshot) => {
+      const listContainer = document.getElementById('cap-list');
+      if(!listContainer) return;
+      listContainer.innerHTML = '';
+
+      let total = 0; let completadas = 0;
+      if (snapshot.empty) {
+        listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">No tienes capacitaciones programadas.</div>';
+        actualizarBarraProgreso(0, 0);
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        total++;
+        const item = doc.data();
+        const itemId = doc.id;
+        if (item.completado) completadas++;
+
+        const habilitarEval = item.visto_ppt ? '' : 'disabled';
+        const iconoCandado = item.visto_ppt ? '<i class="ti ti-qrcode"></i> Eval' : '<i class="ti ti-lock"></i> Bloqueado';
+
+        listContainer.innerHTML += `
+          <div class="cap-item">
+            <div class="cap-num ${item.completado ? 'done' : ''}">${total}</div>
+            <div class="cap-info">
+              <div class="cap-title">${item.titulo}</div>
+              <div class="cap-date">Límite: ${item.fecha_limite}</div>
+            </div>
+            <div class="cap-actions">
+              ${!item.completado ? `
+                <button class="btn-ppt" onclick="abrirPPT('${itemId}', '${item.ppt_drive_id}')"><i class="ti ti-presentation"></i> PPT</button>
+                <button class="btn-qr" id="btn-eval-${itemId}" ${habilitarEval} onclick="completarEvaluacion('${itemId}', '${item.qr_url}')">${iconoCandado}</button>
+              ` : '<span class="tag green">Aprobado</span>'}
+            </div>
+          </div>`;
+      });
+      actualizarBarraProgreso(completadas, total);
+    });
+  }
+
+  function actualizarBarraProgreso(hechas, totales) {
+    const pct = totales > 0 ? Math.round((hechas / totales) * 100) : 0;
+    if(document.getElementById('homeAvancePct')) document.getElementById('homeAvancePct').textContent = pct + "%";
+    if(document.getElementById('homeAvanceSub')) document.getElementById('homeAvanceSub').textContent = `${hechas} de ${totales} evaluaciones completadas`;
+    if(document.getElementById('homeAvanceBar')) document.getElementById('homeAvanceBar').style.width = pct + "%";
+  }
+
+  async function abrirPPT(itemId, urlCompleta) {
+    window.open(urlCompleta, '_blank');
+    try { await db.collection('items_cronograma').doc(itemId).update({ visto_ppt: true }); } catch(e) { console.error(e); }
+  }
+
+  async function completarEvaluacion(itemId, urlQr) {
+    window.open(urlQr, '_blank');
+    try { await db.collection('items_cronograma').doc(itemId).update({ completado: true, fecha_completado: new Date().toISOString().split('T')[0] }); } catch(e) { console.error(e); }
+  }
+
+  function cargarMensajesAlertaAutomaticas() {
+    db.collection('items_cronograma').where('empleado_id', '==', cedulaLogueada).onSnapshot((snapshot) => {
+      const container = document.getElementById('alert-list');
+      if(!container) return;
+      let alertasHtml = '';
+      
+      snapshot.forEach(doc => {
+        const item = doc.data();
+        if(!item.completado) {
+          alertasHtml += `
+            <div class="alert-card">
+              <i class="ti ti-alert-circle"></i>
+              <div>
+                <div class="alert-text">Nueva capacitación asignada: Tienes pendiente estudiar el tema <strong>"${item.titulo}"</strong> antes del ${item.fecha_limite}.</div>
+              </div>
+            </div>`;
+        }
+      });
+      container.innerHTML = alertasHtml || '<div style="text-align:center; padding:20px; color:#7a8f99;">✓ Al día. Sin alertas pendientes.</div>';
+    });
+  }
+
+  function showTab(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if(document.getElementById('screen-' + name)) document.getElementById('screen-' + name).classList.add('active');
+    if(document.getElementById('tab-' + name)) document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+</script>
+</body>
+</html>
