@@ -370,7 +370,7 @@
       </div>
 
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <button onclick="window.location.href='admin_padrino.html'"
+        <button id="btn-header-padrino" onclick="window.location.href='admin_padrino.html'"
           style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; transition: all 0.2s;">
           🤝 Módulo Plan Padrino
         </button>
@@ -703,7 +703,8 @@
 
     const rolLogueado = localStorage.getItem('usuario_rol');
 
-    if (rolLogueado !== 'admin' && rolLogueado !== 'people') {
+    // ✅ CORREGIDO: Permite el ingreso de admin, people y lider al panel administrativo
+    if (rolLogueado !== 'admin' && rolLogueado !== 'people' && rolLogueado !== 'lider') {
       window.location.href = 'login.html';
     } else {
       const cedulaAdminLogueado = localStorage.getItem('usuario_cedula');
@@ -736,7 +737,32 @@
           inicializarModuloGestionPadrinos();
         }
       }, 500);
-    });
+
+      // 🛡️ CANDADO EXCLUSIVO PARA LÍDER DIRECTO
+      // 🛡️ CANDADO EXCLUSIVO PARA LÍDER DIRECTO (Normalizado por selectores de clase)
+      if (localStorage.getItem('usuario_rol') === 'lider') {
+        // 1. Capturamos todos los botones que están dentro de la barra de navegación superior
+        const botonesMenu = document.querySelectorAll('.navbar-menu .nav-tab-btn');
+        
+        // 2. Escondemos forzadamente las primeras 4 pestañas (Inicio, Beneficios, Empleados, Importar)
+        if (botonesMenu.length >= 5) {
+          botonesMenu[0].style.display = 'none'; // Inicio
+          botonesMenu[1].style.display = 'none'; // Beneficios
+          botonesMenu[2].style.display = 'none'; // Empleados
+          botonesMenu[3].style.display = 'none'; // Importar Onboarding
+        }
+
+        // 3. Capturamos y escondemos el botón de "Módulo Plan Padrino" que está en el Header
+        const btnPlanPadrino = document.querySelector('.header button');
+        if (btnPlanPadrino) {
+          btnPlanPadrino.style.display = 'none';
+        }
+
+        // 4. Forzamos al sistema a situar al líder en la pestaña número 5 (Capacitaciones & Auditoría)
+        if (botonesMenu[4]) {
+          cambiarSeccionAdmin('capacitaciones', botonesMenu[4]);
+        }
+      }});
 
     async function cargarPerfilAdmin(cedulaAdminLogueado) {
       try {

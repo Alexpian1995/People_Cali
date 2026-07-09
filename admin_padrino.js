@@ -127,6 +127,12 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function ejecutarRestriccionDeRoles() {
+
+    if (miRol === 'lider') {
+        window.location.href = 'admin.html'; // Lo rebota al panel general correcto
+        return;
+    }
+    
     const b1CertificarPadrino = document.querySelector('.grid-padrino > .card:nth-child(1)');
     const b2RegistrarIngreso = document.querySelector('.grid-padrino > .card:nth-child(2)');
     if (b1CertificarPadrino) b1CertificarPadrino.style.display = 'block';
