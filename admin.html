@@ -1,400 +1,119 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal People - Panel de Administración</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #edf1f4; color: #1c2430; padding-bottom: 40px; }
+    .admin-container { max-width: 1400px; margin: 0 auto; width: 100%; padding: 0 20px; }
+    .header { background: #206987; color: #fff; padding: 15px 22px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; border-bottom: 4px solid #3cbcae; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .header-left-block { display: flex; align-items: center; gap: 15px; }
+    .logo-admin-img { height: 42px; width: auto; object-fit: contain; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 8px; }
+    .header h1 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; letter-spacing: 0.02em; }
+    .navbar-menu { display: flex; gap: 10px; background: white; padding: 10px 15px; border-radius: 12px; border: 1.5px solid #dde3e7; margin-bottom: 20px; flex-wrap: wrap; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+    .nav-tab-btn { background: #f8fafb; border: 1.5px solid #dde3e7; padding: 10px 16px; border-radius: 8px; font-size: 12.5px; font-weight: 700; color: #206987; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
+    .nav-tab-btn:hover { background: #eef5f8; border-color: #206987; }
+    .nav-tab-btn.active-tab { background: #206987; color: white; border-color: #206987; box-shadow: 0 4px 10px rgba(32,105,135,0.2); }
+    .btn-logout { background: #ffc404; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; color: #1c2430; cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.03em; }
+    .btn-logout:hover { background: #e0ab00; transform: translateY(-1px); }
+    .admin-section-pane { display: none; width: 100%; }
+    .admin-section-pane.pane-active { display: block; }
+    .welcome-background-box { background: white; border-radius: 16px; border: 1.5px solid #cdd5db; padding: 50px 30px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; }
+    .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media(min-width: 992px) { .grid-layout { grid-template-columns: 1fr 1fr; } .full-width { grid-column: 1 / -1; } }
+    .card { background: #fff; border-radius: 12px; padding: 20px; border: 1.5px solid #cdd5db; box-shadow: 0 6px 16px rgba(0,0,0,0.03); margin-bottom: 20px; }
+    .card-title { font-size: 15px; font-weight: 700; color: #206987; margin-bottom: 15px; border-bottom: 2px solid #3cbcae; padding-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-size: 11px; font-weight: 700; color: #206987; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em; }
+    input, select, textarea { width: 100%; padding: 11px; border: 1.5px solid #dde3e7; border-radius: 8px; font-size: 14px; background: #f8fafb; outline: none; color: #1c2430; transition: all 0.2s ease; }
+    input:focus, select:focus, textarea:focus { border-color: #3cbcae; background: #fff; box-shadow: 0 0 0 3px rgba(60,188,174,0.12); }
+    .btn { padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; transition: all 0.2s ease; }
+    .btn-primary { background: #206987; color: #fff; }
+    .btn-primary:hover { background: #164f67; }
+    .btn-danger { background: #a32d2d; color: #fff; }
+    .btn-danger:hover { background: #822323; }
+    .btn-success { background: #0f6e56; color: #fff; }
+    .btn-warning { background: #ffc404; color: #1c2430; }
+    .table-container { width: 100%; overflow-x: auto; margin-top: 15px; border-radius: 8px; border: 1px solid #eef1f3; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid #eef1f3; }
+    th { background: #f8fafb; color: #206987; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; }
+    td { color: #2e3a4e; }
+    .tag { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 12px; display: inline-block; }
+    .tag-green { background: #e1f5ee; color: #0f6e56; }
+    .tag-red { background: #fdecea; color: #a32d2d; }
+    .reprobado-row-item { display: flex; justify-content: space-between; align-items: center; background: #fdf2f2; border: 1px solid #f5c2c2; padding: 10px; border-radius: 8px; }
 
-    body {
-      font-family: sans-serif;
-      background: #edf1f4;
-      color: #1c2430;
-      padding-bottom: 40px;
-    }
-
-    .admin-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 0 20px;
-    }
-
-    /* 🎯 Encabezado Estilo Corporativo */
-    .header {
-      background: #206987;
-      color: #fff;
-      padding: 15px 22px;
-      border-radius: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-      gap: 15px;
-      border-bottom: 4px solid #3cbcae;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    }
-
-    .header-left-block {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .logo-admin-img {
-      height: 42px;
-      width: auto;
-      object-fit: contain;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 4px 8px;
-      border-radius: 8px;
-    }
-
-    .header h1 {
-      font-size: 18px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      letter-spacing: 0.02em;
-    }
-
-    /* 🚀 BOTONES DEL NAVBAR SUPERIOR UNIFICADO */
-    .navbar-menu {
-      display: flex;
-      gap: 10px;
-      background: white;
-      padding: 10px 15px;
-      border-radius: 12px;
-      border: 1.5px solid #dde3e7;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
-    }
-
-    .nav-tab-btn {
-      background: #f8fafb;
-      border: 1.5px solid #dde3e7;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 12.5px;
-      font-weight: 700;
-      color: #206987;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-
-    .nav-tab-btn:hover {
-      background: #eef5f8;
-      border-color: #206987;
-    }
-
-    .nav-tab-btn.active-tab {
-      background: #206987;
-      color: white;
-      border-color: #206987;
-      box-shadow: 0 4px 10px rgba(32, 105, 135, 0.2);
-    }
-
-    /* 🚀 Botón Cerrar Sesión */
-    .btn-logout {
-      background: #ffc404;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 8px;
-      font-weight: 700;
-      color: #1c2430;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      letter-spacing: 0.03em;
-    }
-
-    .btn-logout:hover {
-      background: #e0ab00;
-      transform: translateY(-1px);
-    }
-
-    /* Control de paneles */
-    .admin-section-pane {
-      display: none;
-      width: 100%;
-    }
-
-    .admin-section-pane.pane-active {
-      display: block;
-    }
-
-    /* Mensaje de bienvenida */
-    .welcome-background-box {
-      background: white;
-      border-radius: 16px;
-      border: 1.5px solid #cdd5db;
-      padding: 50px 30px;
-      text-align: center;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.02);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-    }
-
-    .grid-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-
-    @media(min-width: 992px) {
-      .grid-layout {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .full-width {
-        grid-column: 1 / -1;
-      }
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      border: 1.5px solid #cdd5db;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.03);
-      margin-bottom: 20px;
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #206987;
-      margin-bottom: 15px;
-      border-bottom: 2px solid #3cbcae;
-      padding-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      font-size: 11px;
-      font-weight: 700;
-      color: #206987;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      letter-spacing: 0.03em;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 11px;
-      border: 1.5px solid #dde3e7;
-      border-radius: 8px;
-      font-size: 14px;
-      background: #f8fafb;
-      outline: none;
-      color: #1c2430;
-      transition: all 0.2s ease;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #3cbcae;
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(60, 188, 174, 0.12);
-    }
-
-    .btn {
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-      background: #206987;
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: #164f67;
-    }
-
-    .btn-danger {
-      background: #a32d2d;
-      color: #fff;
-    }
-
-    .btn-danger:hover {
-      background: #822323;
-    }
-
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-      margin-top: 15px;
-      border-radius: 8px;
-      border: 1px solid #eef1f3;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 13px;
-    }
-
-    th,
-    td {
-      padding: 12px 14px;
-      border-bottom: 1px solid #eef1f3;
-    }
-
-    th {
-      background: #f8fafb;
-      color: #206987;
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 11px;
-      letter-spacing: 0.04em;
-    }
-
-    td {
-      color: #2e3a4e;
-    }
-
-    .tag {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 12px;
-      display: inline-block;
-    }
-
-    .tag-green {
-      background: #e1f5ee;
-      color: #0f6e56;
-    }
-
-    .tag-red {
-      background: #fdecea;
-      color: #a32d2d;
-    }
-
-    .reprobado-row-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fdf2f2;
-      border: 1px solid #f5c2c2;
-      padding: 10px;
-      border-radius: 8px;
-    }
+    /* ESTILOS PLAN VALLE */
+    .valle-header { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .valle-header h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .valle-header p { font-size: 14px; opacity: 0.95; }
+    .nav-valle-interna { background: white; padding: 10px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-bar-valle { background: white; padding: 20px; border-radius: 12px; border: 1.5px solid #cdd5db; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .kpi-card { background: white; border-radius: 12px; padding: 20px; text-align: center; border-left: 4px solid #206987; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .kpi-value { font-size: 32px; font-weight: 800; color: #206987; margin: 10px 0; }
+    .kpi-label { font-size: 12px; color: #7a8f99; font-weight: 700; }
+    .pilar-safety { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+    .pilar-management { background: #dbeafe; color: #1e40af; border-left: 4px solid #3b82f6; }
+    .pilar-people { background: #f3e8ff; color: #6b21a8; border-left: 4px solid #a855f7; }
+    .pilar-delivery { background: #ffedd5; color: #9a3412; border-left: 4px solid #f97316; }
+    .pilar-warehouse { background: #dcfce7; color: #166534; border-left: 4px solid #22c55e; }
+    .pilar-fleet { background: #f3f4f6; color: #374151; border-left: 4px solid #6b7280; }
+    .semaforo { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: bold; }
+    .semaforo-verde { background: #22c55e; }
+    .semaforo-naranja { background: #f97316; }
+    .semaforo-rojo { background: #ef4444; }
+    .semaforo-violeta { background: #a855f7; }
+    .tag-cumplio { background: #dcfce7; color: #166534; }
+    .tag-pendiente { background: #ffedd5; color: #9a3412; }
+    .tag-no-cumplio { background: #fee2e2; color: #991b1b; }
+    .tag-programado { background: #f3e8ff; color: #6b21a8; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
+    .calendar-header { text-align: center; font-weight: 700; font-size: 12px; color: #206987; padding: 8px; background: #f8fafb; border-radius: 6px; }
+    .calendar-day { min-height: 100px; background: white; border: 1px solid #eef1f3; border-radius: 8px; padding: 6px; }
+    .day-number { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+    .session-chip { font-size: 10px; padding: 3px 6px; border-radius: 4px; margin-bottom: 3px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .valle-pestaña { display: none; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
+    .import-zone { background: #f4fbf9; border: 2px dashed #3cbcae; border-radius: 12px; padding: 25px; text-align: center; margin: 15px 0; }
+    .import-zone.dragover { background: #e0f7f4; border-color: #206987; }
+    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+    @media (max-width: 768px) { .calendar-grid { display: none; } .filter-bar-valle { grid-template-columns: 1fr 1fr; } }
   </style>
-
-  <!-- 🚀 SCRIPT MAESTRO DE NAVEGACIÓN Y CONFIGURACIÓN INICIAL -->
-  <script>
-    let idBeneficioEdicion = null; // Variable de control de edición global
-
-    function cambiarSeccionAdmin(targetPaneId, botonPresionado) {
-      document.querySelectorAll('.admin-section-pane').forEach(pane => {
-        pane.classList.remove('pane-active');
-      });
-      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
-        btn.classList.remove('active-tab');
-      });
-
-      const seccionObjetivo = document.getElementById('section-' + targetPaneId);
-      if (seccionObjetivo) {
-        seccionObjetivo.classList.add('pane-active');
-      }
-      if (botonPresionado) {
-        botonPresionado.classList.add('active-tab');
-      }
-    }
-
-    // ✏️ CARGA DE FORMULARIO DE EDICIÓN DE BENEFICIOS (CORREGIDO CON REGIÓN GEOGRÁFICA)
-    function cargarBeneficioForm(id, cargo, region, concepto, valor, indicador) {
-      idBeneficioEdicion = id;
-      document.getElementById('benCargo').value = cargo;
-      document.getElementById('benRegion').value = region || ''; // 🌟 Agregado: Llena el input manual con la región correcta
-      document.getElementById('benConcepto').value = concepto;
-      document.getElementById('benValor').value = valor;
-      document.getElementById('benIndicador').value = indicador;
-
-      const btnGuardar = document.querySelector('[onclick="guardarBeneficio()"]');
-      if (btnGuardar) {
-        btnGuardar.innerHTML = "💾 Actualizar Beneficio Existente";
-        btnGuardar.style.background = "#0f6e56";
-      }
-    }
-  </script>
 </head>
-
 <body>
-
   <div class="admin-container">
-
     <div class="header">
       <div class="header-left-block">
         <img src="logo.png" alt="Logística Logo" class="logo-admin-img">
         <h1>Panel Administrativo</h1>
       </div>
-
       <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <button id="btn-header-padrino" onclick="window.location.href='admin_padrino.html'"
-          style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; transition: all 0.2s;">
-          🤝 Módulo Plan Padrino
+        <button id="btn-header-padrino" onclick="window.location.href='admin_padrino.html'" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+           Módulo Plan Padrino
         </button>
-
-        <div
-          style="font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.12); padding: 7px 14px; border-radius: 8px; border: 0.5px solid rgba(255,255,255,0.2);">
+        <div style="font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.12); padding: 7px 14px; border-radius: 8px;">
           Bienvenido, <span id="adminName" style="color: #ffc404; font-weight: 700;">Cargando...</span>
         </div>
-
         <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
       </div>
     </div>
 
     <div class="navbar-menu">
-      <button class="nav-tab-btn active-tab" onclick="cambiarSeccionAdmin('inicio', this)"><i class="ti ti-home"></i>
-        Inicio</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('beneficios', this)"><i class="ti ti-gift"></i>
-        Beneficios</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('empleados', this)"><i class="ti ti-users"></i>
-        Empleados</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('onboarding', this)"><i class="ti ti-shield-check"></i>
-        Importar Onboarding</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('capacitaciones', this)"><i
-          class="ti ti-calendar-plus"></i> Capacitaciones & Auditoría</button>
+      <button class="nav-tab-btn active-tab" onclick="cambiarSeccionAdmin('inicio', this)"><i class="ti ti-home"></i> Inicio</button>
+      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('beneficios', this)"><i class="ti ti-gift"></i> Beneficios</button>
+      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('empleados', this)"><i class="ti ti-users"></i> Empleados</button>
+      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('onboarding', this)"><i class="ti ti-shield-check"></i> Importar Onboarding</button>
+      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('capacitaciones', this)"><i class="ti ti-calendar-plus"></i> Capacitaciones & Auditoría</button>
+      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('valle', this)" style="background: #f0f9ff; border-color: #0ea5e9;">
+        <i class="ti ti-chart-bar"></i> Plan Entrenamiento Valle
+      </button>
     </div>
 
     <!-- PESTAÑA A: INICIO -->
@@ -403,73 +122,41 @@
         <i class="ti ti-building-warehouse" style="font-size: 64px; color: #206987; margin-bottom: 15px;"></i>
         <h2 style="font-size: 22px; font-weight: 800; color: #1c2430; margin-bottom: 8px;">Consola de Mando Central</h2>
         <p style="font-size: 13px; color: #7a8f99; max-width: 500px; line-height: 1.5; margin-bottom: 25px;">
-          Selecciona una de las opciones del menú superior para empezar a configurar el sistema, realizar cargas masivas
-          de personal o auditar notas.
+          Selecciona una de las opciones del menú superior para empezar a configurar el sistema.
         </p>
         <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <span
-            style="font-size: 11px; font-weight: 700; background: #eef1f3; padding: 6px 12px; border-radius: 20px; color: #206987;">v2.6
-            Estable</span>
-          <span
-            style="font-size: 11px; font-weight: 700; background: #eef1f3; padding: 6px 12px; border-radius: 20px; color: #0f6e56;">Firebase
-            Conectado</span>
+          <span style="font-size: 11px; font-weight: 700; background: #eef1f3; padding: 6px 12px; border-radius: 20px; color: #206987;">v2.7 Estable</span>
+          <span style="font-size: 11px; font-weight: 700; background: #eef1f3; padding: 6px 12px; border-radius: 20px; color: #0f6e56;">Firebase Conectado</span>
         </div>
       </div>
     </div>
 
     <!-- PESTAÑA B: GESTIÓN DE BENEFICIOS -->
     <div id="section-beneficios" class="admin-section-pane">
-      <div
-        style="background: #fff; border-radius: 14px; padding: 20px; border: 0.5px solid #dde3e7; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <div
-          style="font-weight: bold; color: #1e6e7e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 18px;">🎁</span> GESTIÓN DE BENEFICIOS Y COMPENSACIÓN POR CARGO
+      <div style="background: #fff; border-radius: 14px; padding: 20px; border: 0.5px solid #dde3e7; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+        <div style="font-weight: bold; color: #1e6e7e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 18px;"></span> GESTIÓN DE BENEFICIOS Y COMPENSACIÓN POR CARGO
         </div>
-        <p style="font-size: 12px; color: #7a8f99; margin-bottom: 15px;">Configura y asigna paquetes de beneficios
-          específicos para cada cargo y región del sistema.</p>
-
         <div id="seccionFormBeneficios">
-          <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px;">
-            <div><label>CARGO LABORAL</label><input type="text" id="benCargo"
-                placeholder="Ej: Conductor, Auxiliar bodega"></div>
-
-            <div><label>REGIÓN / CD</label><input type="text" id="benRegion"
-                placeholder="Ej: DC Cali, DC Yumbo, Pereira"></div>
-
-            <div><label>CONCEPTO / BENEFICIO</label><input type="text" id="benConcepto"
-                placeholder="Ej: Compensación Variable, Bono"></div>
-            <div><label>VALOR ECONÓMICO ($)</label><input type="number" id="benValor" placeholder="Ej: 400000"></div>
-            <div><label>REQUISITO / INDICADOR</label><input type="text" id="benIndicador"
-                placeholder="Ej: Cero ausentismos"></div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px;">
+            <div><label>CARGO LABORAL</label><input type="text" id="benCargo" placeholder="Ej: Conductor"></div>
+            <div><label>REGIÓN / CD</label><input type="text" id="benRegion" placeholder="Ej: DC Cali"></div>
+            <div><label>CONCEPTO / BENEFICIO</label><input type="text" id="benConcepto" placeholder="Ej: Bono"></div>
+            <div><label>VALOR ECONÓMICO ($)</label><input type="number" id="benValor" placeholder="400000"></div>
+            <div><label>REQUISITO / INDICADOR</label><input type="text" id="benIndicador" placeholder="Cero ausentismos"></div>
           </div>
           <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <button onclick="guardarBeneficio()"
-              style="background:#1e6e7e; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">💾
-              Guardar / Actualizar Beneficio</button>
-            <button onclick="limpiarFormularioBeneficio()"
-              style="background:#7a8f99; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">🔄
-              Limpiar Campos</button>
+            <button onclick="guardarBeneficio()" style="background:#1e6e7e; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">💾 Guardar / Actualizar Beneficio</button>
+            <button onclick="limpiarFormularioBeneficio()" style="background:#7a8f99; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">🔄 Limpiar Campos</button>
           </div>
         </div>
-
         <div style="border: 1px solid #dde3e7; border-radius: 10px; overflow: hidden;">
           <table>
             <thead style="background: #f7fafb; color: #1e6e7e;">
-              <tr>
-                <th style="padding: 10px;">Cargo</th>
-                <th style="padding: 10px;">Región / CD</th>
-                <th style="padding: 10px;">Concepto</th>
-                <th style="padding: 10px;">Valor</th>
-                <th style="padding: 10px;">Indicador Metas</th>
-                <th id="thAccionesBeneficios" style="padding: 10px; text-align: center;">Acciones</th>
-              </tr>
+              <tr><th style="padding: 10px;">Cargo</th><th style="padding: 10px;">Región / CD</th><th style="padding: 10px;">Concepto</th><th style="padding: 10px;">Valor</th><th style="padding: 10px;">Indicador Metas</th><th id="thAccionesBeneficios" style="padding: 10px; text-align: center;">Acciones</th></tr>
             </thead>
             <tbody id="tablaBeneficiosBody">
-              <tr>
-                <td colspan="6" style="padding: 15px; text-align: center; color: #7a8f99;">Cargando lista de
-                  beneficios...</td>
-              </tr>
+              <tr><td colspan="6" style="padding: 15px; text-align: center; color: #7a8f99;">Cargando lista de beneficios...</td></tr>
             </tbody>
           </table>
         </div>
@@ -480,45 +167,27 @@
     <div id="section-empleados" class="admin-section-pane">
       <div class="card full-width">
         <div class="card-title"><i class="ti ti-users"></i> Gestión y Carga Masiva de Empleados</div>
-
-        <div id="bloqueCargaMasiva"
-          style="background: #f7fafb; padding: 15px; border-radius: 8px; border: 1px dashed #1e6e7e; margin-bottom: 20px;">
+        <div id="bloqueCargaMasiva" style="background: #f7fafb; padding: 15px; border-radius: 8px; border: 1px dashed #1e6e7e; margin-bottom: 20px;">
           <label style="color:#1e6e7e;"><strong>Carga Masiva de Personal (.xlsx / .xls / .csv)</strong></label>
-          <p style="font-size: 11px; color:#7a8f99; margin-bottom: 10px;">Columnas requeridas: <strong>cedula, nombre,
-              cargo, region, rol, fecha_ingreso, grupo</strong></p>
+          <p style="font-size: 11px; color:#7a8f99; margin-bottom: 10px;">Columnas requeridas: <strong>cedula, nombre, cargo, region, rol, fecha_ingreso, grupo</strong></p>
           <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
-            <input type="file" id="excelFile" accept=".xlsx, .xls, .csv"
-              style="flex: 1; min-width: 200px; background:transparent; border:none; padding:0;">
-            <button class="btn btn-primary" onclick="event.preventDefault(); cargarExcel(); return false;"><i
-                class="ti ti-upload"></i> Importar Archivo</button>
+            <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" style="flex: 1; min-width: 200px; background:transparent; border:none; padding:0;">
+            <button class="btn btn-primary" onclick="event.preventDefault(); cargarExcel(); return false;"><i class="ti ti-upload"></i> Importar Archivo</button>
           </div>
         </div>
-
-        <div
-          style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: flex-end; margin-bottom: 15px;">
-          <div class="form-group" style="margin:0;">
-            <label>Buscar o Registrar por Número de Cédula</label>
-            <input type="text" id="searchCedula" placeholder="Ingresa la cédula del empleado">
-          </div>
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: flex-end; margin-bottom: 15px;">
+          <div class="form-group" style="margin:0;"><label>Buscar o Registrar por Número de Cédula</label><input type="text" id="searchCedula" placeholder="Ingresa la cédula del empleado"></div>
           <div style="display:flex; gap:8px;">
             <button class="btn btn-primary" onclick="buscarEmpleado()"><i class="ti ti-search"></i> Buscar</button>
-            <button class="btn" style="background:#7a8f99; color:white;" onclick="limpiarFormularioCRUD()"><i
-                class="ti ti-refresh"></i> Limpiar</button>
+            <button class="btn" style="background:#7a8f99; color:white;" onclick="limpiarFormularioCRUD()"><i class="ti ti-refresh"></i> Limpiar</button>
           </div>
         </div>
-
-        <div id="crudForm"
-          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #f7fafb; padding: 15px; border-radius: 8px;">
-          <div class="form-group"><label>Nombre del Empleado</label><input type="text" id="crudNombre"
-              placeholder="Nombre completo"></div>
-          <div class="form-group"><label>Cargo Laboral</label><input type="text" id="crudCargo"
-              placeholder="Ej: Conductor, Warehouse, etc."></div>
-          <div class="form-group"><label>Grupo / Turno</label><input type="text" id="regEmpleadoGrupo"
-              placeholder="Ej: ABI, OL , UC"></div>
-          <div class="form-group"><label>Región Geográfica</label><input type="text" id="crudRegion"
-              placeholder="Ej: Sur, Norte, Cali"></div>
-          <div class="form-group"><label>Fecha de Contratación / Ingreso CD</label><input type="date"
-              id="crudFechaIngreso"></div>
+        <div id="crudForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #f7fafb; padding: 15px; border-radius: 8px;">
+          <div class="form-group"><label>Nombre del Empleado</label><input type="text" id="crudNombre" placeholder="Nombre completo"></div>
+          <div class="form-group"><label>Cargo Laboral</label><input type="text" id="crudCargo" placeholder="Ej: Conductor"></div>
+          <div class="form-group"><label>Grupo / Turno</label><input type="text" id="regEmpleadoGrupo" placeholder="Ej: ABI, OL, UC"></div>
+          <div class="form-group"><label>Región Geográfica</label><input type="text" id="crudRegion" placeholder="Ej: Cali"></div>
+          <div class="form-group"><label>Fecha de Contratación</label><input type="date" id="crudFechaIngreso"></div>
           <div class="form-group">
             <label>Rol del Sistema</label>
             <select id="empleadoRol">
@@ -530,10 +199,8 @@
             </select>
           </div>
           <div style="grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 5px;">
-            <button id="btnGuardarEmpleado" class="btn btn-primary" style="background:#0f6e56;"
-              onclick="guardarEmpleado()"><i class="ti ti-device-floppy"></i> Guardar / Actualizar Datos</button>
-            <button id="btnEliminarEmpleado" class="btn btn-danger" onclick="eliminarEmpleado()"><i
-                class="ti ti-user-x"></i> Eliminar Registro</button>
+            <button id="btnGuardarEmpleado" class="btn btn-primary" style="background:#0f6e56;" onclick="guardarEmpleado()"><i class="ti ti-device-floppy"></i> Guardar / Actualizar Datos</button>
+            <button id="btnEliminarEmpleado" class="btn btn-danger" onclick="eliminarEmpleado()"><i class="ti ti-user-x"></i> Eliminar Registro</button>
           </div>
         </div>
       </div>
@@ -542,66 +209,48 @@
     <!-- PESTAÑA D: IMPORTAR ONBOARDING -->
     <div id="section-onboarding" class="admin-section-pane">
       <div class="card full-width" id="bloqueCargaEvaluaciones" style="border-left: 5px solid #ffc404;">
-        <div class="card-title" style="color: #206987; border-bottom: 2px solid #ffc404;"><i
-            class="ti ti-database-import"></i> Importador Central de Notas (Onboarding & Pilares QR)</div>
-        <p style="font-size: 12px; color: #7a8f99; margin-bottom: 15px;">Carga los Excel de Microsoft Forms para
-          registrar automáticamente las notas de cada etapa.</p>
-
+        <div class="card-title" style="color: #206987; border-bottom: 2px solid #ffc404;"><i class="ti ti-database-import"></i> Importador Central de Notas (Onboarding & Pilares QR)</div>
+        <p style="font-size: 12px; color: #7a8f99; margin-bottom: 15px;">Carga los Excel de Microsoft Forms para registrar automáticamente las notas de cada etapa.</p>
         <div style="background:#f4fbf9; border:1.5px solid #3cbcae; border-radius:10px; padding:18px;">
-          <div style="font-size:11px; font-weight:700; color:#0f6e56; text-transform:uppercase; margin-bottom:12px;"><i
-              class="ti ti-shield-check"></i> Onboarding de Inducción (Días 1 y 2)</div>
+          <div style="font-size:11px; font-weight:700; color:#0f6e56; text-transform:uppercase; margin-bottom:12px;"><i class="ti ti-shield-check"></i> Onboarding de Inducción (Días 1 y 2)</div>
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:14px;">
             <div style="background:white; border:1px solid #dde3e7; border-radius:8px; padding:14px;">
-              <div style="font-size:12px; font-weight:700; color:#206987; margin-bottom:4px;">📋 Onboarding Safety — Día
-                1</div>
-              <div style="font-size:11px; color:#7a8f99; margin-bottom:10px;">Aprobación mínima: <strong>100%</strong>.
-              </div>
-              <input type="file" id="excel-onboarding-safety" accept=".xlsx,.xls,.csv" style="display:none;"
-                onchange="procesarOnboardingExcel(event, 'safety')">
-              <button type="button" class="btn btn-primary"
-                style="background:#206987; width:100%; justify-content:center;"
-                onclick="event.preventDefault(); document.getElementById('excel-onboarding-safety').click(); return false;"><i
-                  class="ti ti-upload"></i> Cargar Excel Safety</button>
+              <div style="font-size:12px; font-weight:700; color:#206987; margin-bottom:4px;">📋 Onboarding Safety — Día 1</div>
+              <div style="font-size:11px; color:#7a8f99; margin-bottom:10px;">Aprobación mínima: <strong>100%</strong>.</div>
+              <input type="file" id="excel-onboarding-safety" accept=".xlsx,.xls,.csv" style="display:none;" onchange="procesarOnboardingExcel(event, 'safety')">
+              <button type="button" class="btn btn-primary" style="background:#206987; width:100%; justify-content:center;" onclick="event.preventDefault(); document.getElementById('excel-onboarding-safety').click(); return false;"><i class="ti ti-upload"></i> Cargar Excel Safety</button>
             </div>
             <div style="background:white; border:1px solid #dde3e7; border-radius:8px; padding:14px;">
-              <div style="font-size:12px; font-weight:700; color:#3cbcae; margin-bottom:4px;">🤝 Onboarding People — Día
-                2</div>
-              <div style="font-size:11px; color:#7a8f99; margin-bottom:10px;">Aprobación mínima: <strong>80%</strong>.
-              </div>
-              <input type="file" id="excel-onboarding-people" accept=".xlsx,.xls,.csv" style="display:none;"
-                onchange="procesarOnboardingExcel(event, 'people')">
-              <button type="button" class="btn btn-primary"
-                style="background:#3cbcae; width:100%; justify-content:center;"
-                onclick="event.preventDefault(); document.getElementById('excel-onboarding-people').click(); return false;"><i
-                  class="ti ti-upload"></i> Cargar Excel People</button>
+              <div style="font-size:12px; font-weight:700; color:#3cbcae; margin-bottom:4px;">🤝 Onboarding People — Día 2</div>
+              <div style="font-size:11px; color:#7a8f99; margin-bottom:10px;">Aprobación mínima: <strong>80%</strong>.</div>
+              <input type="file" id="excel-onboarding-people" accept=".xlsx,.xls,.csv" style="display:none;" onchange="procesarOnboardingExcel(event, 'people')">
+              <button type="button" class="btn btn-primary" style="background:#3cbcae; width:100%; justify-content:center;" onclick="event.preventDefault(); document.getElementById('excel-onboarding-people').click(); return false;"><i class="ti ti-upload"></i> Cargar Excel People</button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-  <div id="section-capacitaciones" class="admin-section-pane">
-      
+    <!-- PESTAÑA E: CAPACITACIONES & AUDITORÍA -->
+    <div id="section-capacitaciones" class="admin-section-pane">
       <div class="grid-layout">
         <div class="card" id="seccionFormCapacitaciones">
           <div class="card-title"><i class="ti ti-calendar-plus"></i> Programar Tarea de Capacitación</div>
           <div class="form-group"><label>Cédula del Trabajador Asignado</label><input type="text" id="targetCedula" placeholder="Asigna la cédula"></div>
-          <div class="form-group"><label>Título de la Capacitación</label><input type="text" id="capTitulo" placeholder="Ej: Safety 360°, Manejo Seguro"></div>
-          <div class="form-group"><label>Enlace Completo de la Presentación</label><input type="url" id="capDriveId" placeholder="Pega el enlace web completo de la presentación" required></div>
-          <div class="form-group"><label>Enlace Web de la Evaluación</label><input type="url" id="capQrUrl" placeholder="Pega el enlace del formulario de evaluación"></div>
+          <div class="form-group"><label>Título de la Capacitación</label><input type="text" id="capTitulo" placeholder="Ej: Safety 360°"></div>
+          <div class="form-group"><label>Enlace Completo de la Presentación</label><input type="url" id="capDriveId" placeholder="Pega el enlace web" required></div>
+          <div class="form-group"><label>Enlace Web de la Evaluación</label><input type="url" id="capQrUrl" placeholder="Pega el enlace del formulario"></div>
           <div class="form-group"><label>Fecha Límite de Ejecución</label><input type="date" id="capFechaLimite"></div>
           <button class="btn btn-primary" onclick="publicarCapacitacion()"><i class="ti ti-cloud-upload"></i> Publicar en Cronograma</button>
         </div>
-
         <div class="card">
           <div class="card-title"><i class="ti ti-chart-bar"></i> Auditoría Detallada de Avance Real</div>
-          <div class="form-group"><label>Consultar Avance de Cédula</label><input type="text" id="auditCedula" placeholder="Digita el documento a auditar"></div>
+          <div class="form-group"><label>Consultar Avance de Cédula</label><input type="text" id="auditCedula" placeholder="Digita el documento"></div>
           <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 15px;">
             <div><label>Desde (Fecha límite)</label><input type="date" id="auditDesde" value="2026-01-01"></div>
             <div><label>Hasta (Fecha límite)</label><input type="date" id="auditHasta" value="2026-12-31"></div>
           </div>
-          <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="auditarAvanceReal()"><i class="ti ti-eye"></i> Consultar Historial y Progreso</button>
-
+          <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="auditarAvanceReal()"><i class="ti ti-eye"></i> Consultar Historial</button>
           <div id="auditResultPanel" style="margin-top: 20px; display: none;">
             <div style="display: flex; gap: 15px; margin-bottom: 15px; background: #f7fafb; padding: 12px; border-radius: 8px;">
               <div style="flex: 1; text-align: center;">
@@ -615,80 +264,210 @@
             </div>
             <label><strong>Listado de capacitaciones asignadas:</strong></label>
             <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Capacitación</th>
-                    <th>Límite</th>
-                    <th>¿Abrió PPT?</th>
-                    <th>Evaluación</th>
-                  </tr>
-                </thead>
-                <tbody id="auditTableBody"></tbody>
-              </table>
+              <table><thead><tr><th>Capacitación</th><th>Límite</th><th>¿Abrió PPT?</th><th>Evaluación</th></tr></thead><tbody id="auditTableBody"></tbody></table>
             </div>
           </div>
         </div>
-      </div> <div class="card" style="margin-top: 20px; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background: #fff;">
-          <div style="font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #206987; display: flex; align-items: center; gap: 8px;">
-              <i class="ti ti-users-group" style="font-size: 20px;"></i> Control de Padrinos, Alumnos y Evaluaciones
+      </div>
+      <div class="card" style="margin-top: 20px; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background: #fff;">
+        <div style="font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #206987; display: flex; align-items: center; gap: 8px;">
+          <i class="ti ti-users-group" style="font-size: 20px;"></i> Control de Padrinos, Alumnos y Evaluaciones
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+          <div style="border-right: 1px solid #edf2f7; padding-right: 15px;">
+            <label style="font-weight: 700; font-size: 11px; color: #206987; text-transform: uppercase;">1. Selecciona el Padrino</label>
+            <div id="listaPadrinosClick" style="margin-top: 10px; max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+              <div style="text-align: center; color: #7a8f99; padding: 20px; font-size: 13px;">Cargando tutores...</div>
+            </div>
           </div>
-          <p style="font-size: 13px; color: #7a8f99; margin-top: 0; margin-bottom: 15px;">Selecciona un padrino para auditar sus alumnos asociados y definir los enlaces de Forms para ambos roles.</p>
-
-          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
-              
-              <div style="border-right: 1px solid #edf2f7; padding-right: 15px;">
-                  <label style="font-weight: 700; font-size: 11px; color: #206987; text-transform: uppercase; letter-spacing: 0.5px;">1. Selecciona el Padrino</label>
-                  <div id="listaPadrinosClick" style="margin-top: 10px; max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
-                      <div style="text-align: center; color: #7a8f99; padding: 20px; font-size: 13px;">Cargando tutores...</div>
-                  </div>
+          <div>
+            <label style="font-weight: 700; font-size: 11px; color: #206987; text-transform: uppercase;">2. Alumnos a Cargo</label>
+            <div id="contenedorDetalleAlumnos" style="margin-top: 10px; padding: 15px; background: #f7fafb; border-radius: 6px; min-height: 200px; border: 1px solid #dde3e7;">
+              <div style="text-align: center; color: #7a8f99; padding: 40px; font-size: 13px;">
+                <i class="ti ti-arrow-bar-left" style="font-size: 24px; display: block; margin-bottom: 8px; color: #206987;"></i>
+                Haz clic en un padrino de la izquierda
               </div>
-
-              <div>
-                  <label style="font-weight: 700; font-size: 11px; color: #206987; text-transform: uppercase; letter-spacing: 0.5px;">2. Alumnos a Cargo y Configuración de Links</label>
-                  <div id="contenedorDetalleAlumnos" style="margin-top: 10px; padding: 15px; background: #f7fafb; border-radius: 6px; min-height: 200px; border: 1px solid #dde3e7;">
-                      <div style="text-align: center; color: #7a8f99; padding: 40px; font-size: 13px;">
-                          <i class="ti ti-arrow-bar-left" style="font-size: 24px; display: block; margin-bottom: 8px; color: #206987;"></i>
-                          Haz clic en un padrino de la izquierda para desplegar sus alumnos y gestionar las evaluaciones.
-                      </div>
-                  </div>
-              </div>
+            </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PESTAÑA F: PLAN ENTRENAMIENTO VALLE ==================== -->
+    <div id="section-valle" class="admin-section-pane">
+      <div class="valle-header">
+        <h2><i class="ti ti-chart-bar"></i> Plan de Entrenamiento Valle</h2>
+        <p>Cali · Yumbo · Tuluá · Popayán — Operaciones OL y UC</p>
       </div>
 
-    </div> <div id="modalAsignarLinks" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; font-family: sans-serif;">
-        <div style="background: white; padding: 22px; border-radius: 12px; width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid #dde3e7;">
-            <h4 style="margin-top: 0; color: #206987; font-size: 16px; font-weight: 700; border-bottom: 1px solid #eef1f3; padding-bottom: 10px;" id="modalTituloAlumno">Asignar Enlaces de Evaluación</h4>
-            <input type="hidden" id="modalCedulaAlumno">
-            
-            <div style="margin-top: 14px;">
-                <label style="font-size: 12px; font-weight: bold; color: #1c2430;">Link de Evaluación para el APADRINADO (Alumno)</label>
-                <input type="text" id="modalInputLinkApadrinado" style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;" placeholder="Pega el Forms del alumno">
-            </div>
+      <div class="nav-valle-interna">
+        <button class="nav-tab-btn active-tab" onclick="cambiarPestañaValle('resumen', this)"><i class="ti ti-chart-bar"></i> Resumen</button>
+        <button class="nav-tab-btn" onclick="cambiarPestañaValle('cronograma', this)"><i class="ti ti-calendar"></i> Cronograma</button>
+        <button class="nav-tab-btn" onclick="cambiarPestañaValle('personas', this)"><i class="ti ti-users"></i> Personas</button>
+        <button class="nav-tab-btn" onclick="cambiarPestañaValle('notas', this)"><i class="ti ti-edit"></i> Registrar notas</button>
+        <button class="nav-tab-btn" onclick="cambiarPestañaValle('config', this)"><i class="ti ti-settings"></i> Capacitaciones y personal</button>
+      </div>
 
-            <div style="margin-top: 14px;">
-                <label style="font-size: 12px; font-weight: bold; color: #1c2430;">Link de Evaluación para el PADRINO (Tutor)</label>
-                <input type="text" id="modalInputLinkPadrino" style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;" placeholder="Pega el Forms del padrino">
-            </div>
+      <div class="filter-bar-valle">
+        <div class="form-group"><label>CD</label><select id="valle-filtro-cd" onchange="aplicarFiltrosValle()"><option value="Todos">Todos</option><option>Cali</option><option>Yumbo</option><option>Tuluá</option><option>Popayán</option></select></div>
+        <div class="form-group"><label>Operación</label><select id="valle-filtro-op" onchange="aplicarFiltrosValle()"><option value="Todos">Todos</option><option>OL</option><option>UC</option></select></div>
+        <div class="form-group"><label>Pilar</label><select id="valle-filtro-pilar" onchange="aplicarFiltrosValle()"><option value="Todos">Todos</option><option>Safety</option><option>Management</option><option>People</option><option>Delivery</option><option>Warehouse</option><option>Fleet</option></select></div>
+        <div class="form-group"><label>Tipo Entrenamiento</label><select id="valle-filtro-tipo" onchange="aplicarFiltrosValle()"><option value="Todos">Todos</option><option>Tradicional</option><option>Kirkpatrick</option></select></div>
+        <div class="form-group"><label>Mes</label><input type="month" id="valle-filtro-mes" value="2026-10" onchange="aplicarFiltrosValle()"></div>
+        <div class="form-group"><label>Buscar Persona</label><input type="text" id="valle-filtro-busqueda" placeholder="Nombre, documento o cargo" onkeyup="aplicarFiltrosValle()"></div>
+      </div>
 
-            <div style="margin-top: 22px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eef1f3; padding-top: 14px;">
-                <button onclick="cerrarModalLinks()" style="background: #edf1f4; color: #206987; border: 1px solid #cdd5db; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700;">Cancelar</button>
-                <button onclick="procesarGuardadoLinksConTrazabilidad()" style="background: #206987; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700;">💾 Guardar Cambios</button>
-            </div>
+      <!-- PESTAÑA 1: RESUMEN -->
+      <div id="valle-resumen" class="valle-pestaña" style="display: block;">
+        <div class="kpi-grid">
+          <div class="kpi-card" style="border-left-color: #206987;"><div class="kpi-label">% CUMPLIMIENTO GLOBAL</div><div class="kpi-value" id="valle-kpi-cumplimiento">0%</div><div style="font-size: 11px; color: #7a8f99;">Cumplidas ÷ Vencidas</div></div>
+          <div class="kpi-card" style="border-left-color: #22c55e;"><div class="kpi-label">COLABORADORES AL DÍA</div><div class="kpi-value" id="valle-kpi-al-dia" style="color: #22c55e;">0</div></div>
+          <div class="kpi-card" style="border-left-color: #f97316;"><div class="kpi-label">PENDIENTES</div><div class="kpi-value" id="valle-kpi-pendiente" style="color: #f97316;">0</div></div>
+          <div class="kpi-card" style="border-left-color: #a855f7;"><div class="kpi-label">PROGRAMADOS</div><div class="kpi-value" id="valle-kpi-programado" style="color: #a855f7;">0</div></div>
         </div>
+        <div class="card"><div class="card-title"><i class="ti ti-chart-bar"></i> Avance por Dimensiones</div><div style="height: 350px;"><canvas id="valleChart"></canvas></div></div>
+        <div class="card"><div class="card-title"><i class="ti ti-alert-triangle"></i> Top 8 Personas con más Pendientes</div><div class="table-container"><table><thead><tr><th>Nombre</th><th>Cargo</th><th>CD</th><th>Pendientes</th><th>No Cumplió</th></tr></thead><tbody id="valle-tabla-top-pendientes"></tbody></table></div></div>
+      </div>
+
+      <!-- PESTAÑA 2: CRONOGRAMA -->
+      <div id="valle-cronograma" class="valle-pestaña">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="card-title" style="margin: 0; border: none;"><i class="ti ti-calendar-month"></i> Calendario Mensual</div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary" onclick="cambiarMesValle(-1)"><i class="ti ti-chevron-left"></i></button>
+              <button class="btn" style="background: #edf1f4;" onclick="irAHoyValle()">Hoy</button>
+              <button class="btn btn-primary" onclick="cambiarMesValle(1)"><i class="ti ti-chevron-right"></i></button>
+            </div>
+          </div>
+          <div id="valle-calendar-container" class="calendar-grid"></div>
+          <div id="valle-lista-sesiones" style="margin-top: 30px;"></div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 3: PERSONAS -->
+      <div id="valle-personas" class="valle-pestaña">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div class="card-title" style="margin: 0; border: none;"><i class="ti ti-users"></i> Avance Individual</div>
+            <button class="btn btn-success" onclick="exportarCSVValle()"><i class="ti ti-file-download"></i> Exportar CSV</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Nombre / Documento</th><th>CD / Op</th><th>Cargo</th><th>Avance</th><th>Safety</th><th>Management</th><th>People</th><th>Delivery</th><th>Warehouse</th><th>Fleet</th><th>Acción</th></tr></thead>
+              <tbody id="valle-tabla-personas"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 4: REGISTRAR NOTAS -->
+      <div id="valle-notas" class="valle-pestaña">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-edit"></i> Registro de Calificaciones</div>
+          <div class="form-group"><label>Seleccionar Capacitación</label><select id="valle-select-cap-notas" onchange="cargarListaParaNotasValle()"><option value="">-- Seleccione --</option></select></div>
+          <div id="valle-contenedor-notas" style="margin-top: 20px;"></div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 5: CAPACITACIONES Y PERSONAL -->
+      <div id="valle-config" class="valle-pestaña">
+        <div class="grid-layout">
+          <!-- Crear Capacitación -->
+          <div class="card">
+            <div class="card-title"><i class="ti ti-calendar-plus"></i> Nueva Capacitación</div>
+            <div class="form-group"><label>Nombre</label><input type="text" id="valle-cap-nombre"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="form-group"><label>Pilar</label><select id="valle-cap-pilar"><option>Safety</option><option>Management</option><option>People</option><option>Delivery</option><option>Warehouse</option><option>Fleet</option></select></div>
+              <div class="form-group"><label>Tipo</label><select id="valle-cap-tipo"><option>Tradicional</option><option>Kirkpatrick</option></select></div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="form-group"><label>Fecha</label><input type="date" id="valle-cap-fecha"></div>
+              <div class="form-group"><label>Mínimo Aprobación (%)</label><input type="number" id="valle-cap-minimo" value="80"></div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+              <div class="form-group"><label>CDs</label><input type="text" id="valle-cap-cds" value="Todos" placeholder="Cali,Yumbo o Todos"></div>
+              <div class="form-group"><label>Operación</label><input type="text" id="valle-cap-op" value="Todos" placeholder="OL,UC o Todos"></div>
+              <div class="form-group"><label>Cargos</label><input type="text" id="valle-cap-cargos" value="Todos" placeholder="Cargo1,Cargo2 o Todos"></div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;" onclick="guardarCapacitacionValle()"><i class="ti ti-device-floppy"></i> Guardar y Asignar Automáticamente</button>
+          </div>
+
+          <!-- Importar desde Excel (Carga Masiva Real) -->
+          <div class="card">
+            <div class="card-title"><i class="ti ti-file-upload"></i> Carga Masiva desde Excel (Plan Maestro)</div>
+            <div class="import-zone" id="importZone">
+              <i class="ti ti-file-spreadsheet" style="font-size: 48px; color: #3cbcae;"></i>
+              <p style="margin: 10px 0; font-weight: 700; color: #206987;">Arrastra tu archivo Excel aquí o haz clic para seleccionar</p>
+              <p style="font-size: 11px; color: #7a8f99;">Formato: Columnas Pilar | TEMAS | MES | APLICABILIDAD</p>
+              <input type="file" id="valleExcelFile" accept=".xlsx,.xls" style="display: none;" onchange="procesarExcelValle(event)">
+              <button class="btn btn-primary" onclick="document.getElementById('valleExcelFile').click()" style="margin-top: 10px;"><i class="ti ti-upload"></i> Seleccionar Archivo</button>
+            </div>
+            <div id="valle-import-status" style="margin-top: 15px;"></div>
+          </div>
+
+          <!-- Importar por Pegado -->
+          <div class="card">
+            <div class="card-title"><i class="ti ti-clipboard-text"></i> Importación Rápida (Pegar desde Excel)</div>
+            <div class="form-group">
+              <label>Formato esperado (columnas separadas por Tab)</label>
+              <div style="background: #f8fafb; padding: 10px; border-radius: 6px; font-size: 11px; font-family: monospace; color: #7a8f99;">
+                Pilar | TEMAS | MES | APLICABILIDAD (Front Line/Líderes)
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Pega aquí las filas copiadas desde Excel (Ctrl+V)</label>
+              <textarea id="valle-area-pegado" rows="8" style="font-family: monospace; font-size: 12px;" placeholder="Safety&#9;Políticas ABI&#9;Enero&#9;Front Line&#9;Líderes&#9;1&#9;1&#9;1&#9;1"></textarea>
+            </div>
+            <button class="btn btn-success" style="width: 100%; justify-content: center;" onclick="procesarPegadoExcelValle()"><i class="ti ti-upload"></i> Procesar e Importar</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+          <div class="card-title"><i class="ti ti-list"></i> Listado de Capacitaciones Programadas (<span id="valle-count-caps">0</span>)</div>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Nombre</th><th>Pilar</th><th>Tipo</th><th>Fecha</th><th>Mes</th><th>Aplicabilidad</th><th>Asignados</th><th>Acciones</th></tr></thead>
+              <tbody id="valle-lista-capacitaciones-config"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
-
-
-    <!-- Pie de página -->
-    <div style="text-align: center; padding: 25px 15px 40px 15px; margin-top: 30px; grid-column: 1 / -1; width: 100%;">
-      <div style="font-size: 11px; font-weight: 600; color: #7a8f99; letter-spacing: 0.03em;">© 2026 Todos los derechos
-        reservados</div>
-      <div
-        style="font-size: 10px; font-weight: 700; color: #1e6e7e; letter-spacing: 0.05em; margin-top: 2px; text-transform: uppercase;">
-        Anderson Alexander Devs</div>
+    <div id="modalAsignarLinks" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; font-family: sans-serif;">
+      <div style="background: white; padding: 22px; border-radius: 12px; width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid #dde3e7;">
+        <h4 style="margin-top: 0; color: #206987; font-size: 16px; font-weight: 700; border-bottom: 1px solid #eef1f3; padding-bottom: 10px;" id="modalTituloAlumno">Asignar Enlaces de Evaluación</h4>
+        <input type="hidden" id="modalCedulaAlumno">
+        <div style="margin-top: 14px;">
+          <label style="font-size: 12px; font-weight: bold; color: #1c2430;">Link de Evaluación para el APADRINADO (Alumno)</label>
+          <input type="text" id="modalInputLinkApadrinado" style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;" placeholder="Pega el Forms del alumno">
+        </div>
+        <div style="margin-top: 14px;">
+          <label style="font-size: 12px; font-weight: bold; color: #1c2430;">Link de Evaluación para el PADRINO (Tutor)</label>
+          <input type="text" id="modalInputLinkPadrino" style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;" placeholder="Pega el Forms del padrino">
+        </div>
+        <div style="margin-top: 22px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eef1f3; padding-top: 14px;">
+          <button onclick="cerrarModalLinks()" style="background: #edf1f4; color: #206987; border: 1px solid #cdd5db; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700;">Cancelar</button>
+          <button onclick="procesarGuardadoLinksConTrazabilidad()" style="background: #206987; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700;">💾 Guardar Cambios</button>
+        </div>
+      </div>
     </div>
 
+    <div id="valle-modal-persona" class="modal-overlay" onclick="if(event.target===this) cerrarModalValle()">
+      <div class="modal-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eef1f3; padding-bottom: 15px;">
+          <h3 id="valle-modal-nombre" style="color: #206987;"></h3>
+          <button class="btn" style="background: #edf1f4;" onclick="cerrarModalValle()"><i class="ti ti-x"></i></button>
+        </div>
+        <div id="valle-modal-detalle-contenido"></div>
+      </div>
+    </div>
+
+    <div style="text-align: center; padding: 25px 15px 40px 15px; margin-top: 30px; width: 100%;">
+      <div style="font-size: 11px; font-weight: 600; color: #7a8f99; letter-spacing: 0.03em;">© 2026 Todos los derechos reservados</div>
+      <div style="font-size: 10px; font-weight: 700; color: #1e6e7e; letter-spacing: 0.05em; margin-top: 2px; text-transform: uppercase;">Anderson Alexander Devs</div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -696,14 +475,12 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="config.js"></script>
 
-  <!-- 📋 SCRIPT CENTRAL DE BASE DE DATOS DE FIRESTORE Y PROCESAMIENTO -->
   <script>
+    let idBeneficioEdicion = null;
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
     const rolLogueado = localStorage.getItem('usuario_rol');
 
-    // ✅ CORREGIDO: Permite el ingreso de admin, people y lider al panel administrativo
     if (rolLogueado !== 'admin' && rolLogueado !== 'people' && rolLogueado !== 'lider') {
       window.location.href = 'login.html';
     } else {
@@ -711,59 +488,558 @@
       cargarPerfilAdmin(cedulaAdminLogueado);
     }
 
-   window.addEventListener('DOMContentLoaded', () => {
-      if (localStorage.getItem('usuario_rol') === 'people') {
-        if (document.getElementById('seccionFormBeneficios')) document.getElementById('seccionFormBeneficios').style.display = 'none';
-        if (document.getElementById('bloqueCargaMasiva')) document.getElementById('bloqueCargaMasiva').style.display = 'none';
-        if (document.getElementById('bloqueCargaEvaluaciones')) document.getElementById('bloqueCargaEvaluaciones').style.display = 'none';
-        if (document.getElementById('seccionFormCapacitaciones')) document.getElementById('seccionFormCapacitaciones').style.display = 'none';
+    // ==================== DATOS REALES DEL PLAN MAESTRO ====================
+    let valleData = {
+      capacitaciones: [],
+      empleados: [
+        { id: '1', nombre: 'Juan Pérez', documento: '12345678', cargo: 'Auxiliar Bodega', cd: 'Cali', operacion: 'OL', activo: true },
+        { id: '2', nombre: 'Maria Lopez', documento: '87654321', cargo: 'Conductor', cd: 'Yumbo', operacion: 'UC', activo: true },
+        { id: '3', nombre: 'Carlos Ruiz', documento: '11223344', cargo: 'Coordinador', cd: 'Cali', operacion: 'OL', activo: true },
+        { id: '4', nombre: 'Ana Gómez', documento: '55667788', cargo: 'Auxiliar Bodega', cd: 'Tuluá', operacion: 'OL', activo: true },
+        { id: '5', nombre: 'Luis Martínez', documento: '99887766', cargo: 'Conductor', cd: 'Popayán', operacion: 'UC', activo: true }
+      ],
+      asignaciones: [],
+      mesActual: new Date()
+    };
 
-        if (document.getElementById('btnGuardarEmpleado')) document.getElementById('btnGuardarEmpleado').style.display = 'none';
-        if (document.getElementById('btnEliminarEmpleado')) document.getElementById('btnEliminarEmpleado').style.display = 'none';
+    // Capacitaciones reales extraídas del Plan Maestro
+    const capacitacionesReales = [
+      // SAFETY
+      { nombre: 'Políticas ABI', pilar: 'Safety', tipo: 'Tradicional', mes: 'Enero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Reporte e investigación de accidentes', pilar: 'Safety', tipo: 'Tradicional', mes: 'Enero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Conducción Segura de Vehículos', pilar: 'Safety', tipo: 'Tradicional', mes: 'Enero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Trimestral' } },
+      { nombre: 'Manipulación de cargas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Enero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Trimestral' } },
+      { nombre: 'Safety Champions', pilar: 'Safety', tipo: 'Tradicional', mes: 'Febrero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Prevención contra caídas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Febrero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Trimestral' } },
+      { nombre: 'Regreso Seguro a Casa', pilar: 'Safety', tipo: 'Tradicional', mes: 'Febrero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Trimestral' } },
+      { nombre: 'Gestión de Contratistas - Espacios Confinados', pilar: 'Safety', tipo: 'Tradicional', mes: 'Marzo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
+      { nombre: 'EPP', pilar: 'Safety', tipo: 'Tradicional', mes: 'Marzo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'SAM/LOTO', pilar: 'Safety', tipo: 'Tradicional', mes: 'Marzo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
+      { nombre: 'Riesgo Sicosocial', pilar: 'Safety', tipo: 'Kirkpatrick', mes: 'Abril', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'COPASST', pilar: 'Safety', tipo: 'Tradicional', mes: 'Abril', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
+      { nombre: 'Operación Segura de Montacargas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Abril', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Trimestral' } },
+      { nombre: 'WTS', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mayo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Check list preoperacional', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mayo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Safe Together', pilar: 'Safety', tipo: 'Kirkpatrick', mes: 'Junio', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
+      { nombre: 'Seguridad en el Conductor', pilar: 'Safety', tipo: 'Tradicional', mes: 'Junio', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
+      { nombre: 'Sustancias químicas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Junio', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Prevención de explosiones', pilar: 'Safety', tipo: 'Tradicional', mes: 'Julio', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Todos', frecuencia: 'Anual' } },
+      { nombre: 'Herramientas Safety', pilar: 'Safety', tipo: 'Tradicional', mes: 'Octubre', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
+      { nombre: 'Rutogramas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mensual', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Mensual' } },
+      { nombre: 'Seguridad en el reparto', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mensual', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Mensual' } },
+      { nombre: 'Prevención de la violencia', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mensual', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Mensual' } },
+      { nombre: 'Trabajo en alturas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mayo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
+      // MANAGEMENT
+      { nombre: 'Compliance', pilar: 'Management', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Sueño', pilar: 'Management', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Descripción del negocio', pilar: 'Management', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Mapa de procesos', pilar: 'Management', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Semestral' } },
+      { nombre: 'Conexión de Pi con Kpis', pilar: 'Management', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Semestral' } },
+      { nombre: '5s', pilar: 'Management', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Estandar y capacitaciones (SOP)', pilar: 'Management', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Diagnóstico de trabajo operativo (OWD)', pilar: 'Management', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Workstation', pilar: 'Management', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Solución de problemas', pilar: 'Management', tipo: 'Kirkpatrick', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Semestral' } },
+      { nombre: 'Buenas prácticas', pilar: 'Management', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'GOPS', pilar: 'Management', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Semestral' } },
+      // PEOPLE
+      { nombre: 'Bias breaking', pilar: 'People', tipo: 'Kirkpatrick', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
+      { nombre: 'Principios ABI', pilar: 'People', tipo: 'Tradicional', mes: 'Febrero', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
+      { nombre: 'Rol y responsabilidades', pilar: 'People', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
+      { nombre: 'Reconocimiento y recompensa', pilar: 'People', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
+      { nombre: 'Aprendizaje y desarrollo', pilar: 'People', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
+      { nombre: 'Ambiente de trabajo seguro e inclusivo', pilar: 'People', tipo: 'Kirkpatrick', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
+      { nombre: 'Equipos Autónomos', pilar: 'People', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
+      // DELIVERY
+      { nombre: 'Proceso de pre ruta', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Proceso en ruta', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Proceso post ruta', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Entrega de productos de Calidad', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Gestión del cliente', pilar: 'Delivery', tipo: 'Kirkpatrick', mes: 'Coronitas', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Coronitas' } },
+      { nombre: 'NPS', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Trimestral' } },
+      { nombre: 'Nivel de servicio SERVIR + RMD', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Trimestral' } },
+      { nombre: 'Rechazos + Modulación', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Coronitas', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Coronitas' } },
+      { nombre: 'Ruteo + Distancia + Conexión Planning', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Coronitas', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Coronitas' } },
+      { nombre: 'Gestión y mejora productividad Entrega', pilar: 'Delivery', tipo: 'Kirkpatrick', mes: 'Coronitas', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Coronitas' } },
+      // WAREHOUSE
+      { nombre: 'Layout & ABC', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
+      { nombre: 'Calidad', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
+      { nombre: 'Gestión de inventarios', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
+      { nombre: 'Picking', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      { nombre: 'Reabastecimiento del picking', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      { nombre: 'Precisión del picking', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      { nombre: 'Clasificación de envase (Sorting)', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Octubre', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      { nombre: 'Eficiencia de cargue y descargue', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      { nombre: 'Tiempos de atención de vehículos T1 y MKP', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      { nombre: 'Mejoras de productividad', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      { nombre: 'NPS Warehouse', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      // FLEET
+      { nombre: 'Documentos', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Estandar de Flota', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Check list', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Mantenimiento Preventivo', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Combustible', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Neumáticos', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'ATO', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Mejoras', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Sostenibilidad', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
+      { nombre: 'Flota eléctrica - Auteco / Distoyota', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Agosto', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
+      { nombre: 'Conducción efectiva - Distoyota', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Agosto', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
+      { nombre: 'Neumáticos - Automundial', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Noviembre', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
+      { nombre: 'Combustible - Terpel', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Noviembre', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
+      { nombre: 'Amarre de carga - PVX', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Noviembre', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
+      { nombre: 'Cilindros de gas - Unigas', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Agosto', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } }
+    ];
 
-        if (document.getElementById('crudNombre')) document.getElementById('crudNombre').disabled = true;
-        if (document.getElementById('crudCargo')) document.getElementById('crudCargo').disabled = true;
-        if (document.getElementById('crudRegion')) document.getElementById('crudRegion').disabled = true;
-        if (document.getElementById('regEmpleadoGrupo')) document.getElementById('regEmpleadoGrupo').disabled = true;
-        if (document.getElementById('crudFechaIngreso')) document.getElementById('crudFechaIngreso').disabled = true;
-        if (document.getElementById('empleadoRol')) document.getElementById('empleadoRol').disabled = true;
-
-        if (document.getElementById('thAccionesBeneficios')) document.getElementById('thAccionesBeneficios').style.display = 'none';
+    // Función para convertir mes a fecha
+    function mesAFecha(mes, anio = 2026) {
+      const meses = { 'Enero': 0, 'Febrero': 1, 'Marzo': 2, 'Abril': 3, 'Mayo': 4, 'Junio': 5, 'Julio': 6, 'Agosto': 7, 'Septiembre': 8, 'Octubre': 9, 'Noviembre': 10, 'Diciembre': 11 };
+      if (meses[mes] !== undefined) {
+        return `${anio}-${String(meses[mes]+1).padStart(2,'0')}-15`;
       }
+      return `${anio}-10-15`; // Default
+    }
 
-      // 🌟 LÍNEAS A AGREGAR AQUÍ:
-      setTimeout(() => {
-        if (typeof inicializarModuloGestionPadrinos === 'function') {
-          inicializarModuloGestionPadrinos();
+    // Cargar capacitaciones reales
+    capacitacionesReales.forEach((cap, idx) => {
+      valleData.capacitaciones.push({
+        id: 'c' + (idx + 1),
+        nombre: cap.nombre,
+        pilar: cap.pilar,
+        tipo: cap.tipo,
+        mes: cap.mes,
+        fecha: mesAFecha(cap.mes),
+        minimo: cap.minimo,
+        cds: cap.aplicabilidad.cds,
+        operacion: cap.aplicabilidad.operaciones,
+        cargos: cap.aplicabilidad.cargos,
+        frecuencia: cap.aplicabilidad.frecuencia
+      });
+    });
+
+    // ==================== NAVEGACIÓN ====================
+    function cambiarSeccionAdmin(targetPaneId, botonPresionado) {
+      document.querySelectorAll('.admin-section-pane').forEach(pane => pane.classList.remove('pane-active'));
+      document.querySelectorAll('.navbar-menu .nav-tab-btn').forEach(btn => btn.classList.remove('active-tab'));
+      const seccionObjetivo = document.getElementById('section-' + targetPaneId);
+      if (seccionObjetivo) seccionObjetivo.classList.add('pane-active');
+      if (botonPresionado) botonPresionado.classList.add('active-tab');
+      if (targetPaneId === 'valle') {
+        setTimeout(() => {
+          cambiarPestañaValle('resumen', document.querySelector('.nav-valle-interna .nav-tab-btn'));
+        }, 100);
+      }
+    }
+
+    function cambiarPestañaValle(pestaña, btn) {
+      document.querySelectorAll('.valle-pestaña').forEach(p => p.style.display = 'none');
+      document.querySelectorAll('.nav-valle-interna .nav-tab-btn').forEach(b => b.classList.remove('active-tab'));
+      document.getElementById('valle-' + pestaña).style.display = 'block';
+      if (btn) btn.classList.add('active-tab');
+      if (pestaña === 'resumen') renderizarResumenValle();
+      if (pestaña === 'cronograma') renderizarCalendarioValle();
+      if (pestaña === 'personas') renderizarPersonasValle();
+      if (pestaña === 'notas') cargarSelectNotasValle();
+      if (pestaña === 'config') renderizarListaConfigValle();
+    }
+
+    // ==================== FUNCIONES PLAN VALLE ====================
+    function obtenerEstadoAsignacionValle(asig, cap) {
+      const hoy = new Date().toISOString().split('T')[0];
+      if (asig.estado === 'Cumplió' || asig.estado === 'No cumplió') return asig.estado;
+      if (cap.fecha < hoy && !asig.nota) return 'Pendiente';
+      if (cap.fecha >= hoy) return 'Programado';
+      return 'Pendiente';
+    }
+
+    function aplicarFiltrosValle() { renderizarResumenValle(); }
+
+    function renderizarResumenValle() {
+      let cumplidas = 0, vencidas = 0, programadas = 0, pendientes = 0, noCumplio = 0;
+      let empAlDia = 0;
+
+      valleData.empleados.forEach(emp => {
+        let asigsEmp = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
+        let empPendiente = false, empNoCumplio = false;
+        asigsEmp.forEach(a => {
+          const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
+          const estado = obtenerEstadoAsignacionValle(a, cap);
+          if (estado === 'Programado') programadas++;
+          else {
+            vencidas++;
+            if (estado === 'Cumplió') cumplidas++;
+            else if (estado === 'Pendiente') { pendientes++; empPendiente = true; }
+            else if (estado === 'No cumplió') { noCumplio++; empNoCumplio = true; }
+          }
+        });
+        if (!empPendiente && !empNoCumplio && asigsEmp.length > 0) empAlDia++;
+      });
+
+      const pct = vencidas > 0 ? Math.round((cumplidas / vencidas) * 100) : 0;
+      document.getElementById('valle-kpi-cumplimiento').textContent = pct + '%';
+      document.getElementById('valle-kpi-al-dia').textContent = empAlDia;
+      document.getElementById('valle-kpi-pendiente').textContent = pendientes;
+      document.getElementById('valle-kpi-programado').textContent = programadas;
+
+      const ctx = document.getElementById('valleChart').getContext('2d');
+      if (window.valleChartInstance) window.valleChartInstance.destroy();
+      window.valleChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Safety', 'Management', 'People', 'Delivery', 'Warehouse', 'Fleet'],
+          datasets: [
+            { label: 'Cumplió', data: [12, 19, 8, 15, 10, 5], backgroundColor: '#22c55e' },
+            { label: 'Pendiente', data: [2, 3, 5, 2, 4, 1], backgroundColor: '#f97316' },
+            { label: 'No Cumplió', data: [0, 1, 2, 0, 1, 0], backgroundColor: '#ef4444' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
+      });
+
+      const topPendientes = valleData.empleados.map(emp => {
+        const pend = valleData.asignaciones.filter(a => {
+          if(a.empleado_id !== emp.id) return false;
+          const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
+          return obtenerEstadoAsignacionValle(a, cap) === 'Pendiente';
+        }).length;
+        const nc = valleData.asignaciones.filter(a => {
+          if(a.empleado_id !== emp.id) return false;
+          const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
+          return obtenerEstadoAsignacionValle(a, cap) === 'No cumplió';
+        }).length;
+        return { ...emp, pend, nc };
+      }).sort((a, b) => b.pend - a.pend).slice(0, 8);
+
+      document.getElementById('valle-tabla-top-pendientes').innerHTML = topPendientes.length > 0 ? topPendientes.map(e => `
+        <tr><td>${e.nombre}</td><td>${e.cargo}</td><td>${e.cd}</td><td style="color:#f97316; font-weight:bold;">${e.pend}</td><td style="color:#ef4444; font-weight:bold;">${e.nc}</td></tr>
+      `).join('') : '<tr><td colspan="5" style="text-align:center; padding:20px; color:#7a8f99;">Sin datos pendientes</td></tr>';
+    }
+
+    function renderizarCalendarioValle() {
+      const year = valleData.mesActual.getFullYear();
+      const month = valleData.mesActual.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+
+      let html = '';
+      ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].forEach(d => html += `<div class="calendar-header">${d}</div>`);
+      for(let i=0; i<startOffset; i++) html += `<div class="calendar-day" style="background:transparent; border:none;"></div>`;
+
+      let listaHTML = '<h3 style="margin-bottom:15px; color:#206987;">Sesiones del Mes</h3><div class="table-container"><table><thead><tr><th>Fecha</th><th>Pilar</th><th>Tipo</th><th>Aplica a</th><th>Avance</th><th>Acción</th></tr></thead><tbody>';
+
+      for(let d=1; d<=daysInMonth; d++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const capsDia = valleData.capacitaciones.filter(c => c.fecha === dateStr);
+        html += `<div class="calendar-day"><div class="day-number">${d}</div><div>${capsDia.map(c => {
+          const count = valleData.asignaciones.filter(a => a.capacitacion_id === c.id).length;
+          return `<div class="session-chip pilar-${c.pilar.toLowerCase()}" title="${c.nombre}">${c.tipo === 'Kirkpatrick' ? 'K' : 'T'} ${c.nombre.substring(0,15)}... (${count})</div>`;
+        }).join('')}</div></div>`;
+
+        capsDia.forEach(c => {
+          const count = valleData.asignaciones.filter(a => a.capacitacion_id === c.id).length;
+          const cumplidos = valleData.asignaciones.filter(a => a.capacitacion_id === c.id && a.estado === 'Cumplió').length;
+          listaHTML += `<tr class="pilar-${c.pilar.toLowerCase()}"><td>${c.fecha}</td><td>${c.pilar}</td><td>${c.tipo}</td><td>CD: ${c.cds} | Op: ${c.operacion}</td><td>${cumplidos}/${count}</td><td><button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="cambiarPestañaValle('notas', document.querySelectorAll('.nav-valle-interna .nav-tab-btn')[3]); document.getElementById('valle-select-cap-notas').value='${c.id}'; cargarListaParaNotasValle();">Notas</button></td></tr>`;
+        });
+      }
+      listaHTML += '</tbody></table></div>';
+      document.getElementById('valle-calendar-container').innerHTML = html;
+      document.getElementById('valle-lista-sesiones').innerHTML = listaHTML;
+    }
+
+    function cambiarMesValle(delta) {
+      valleData.mesActual.setMonth(valleData.mesActual.getMonth() + delta);
+      document.getElementById('valle-filtro-mes').value = `${valleData.mesActual.getFullYear()}-${String(valleData.mesActual.getMonth()+1).padStart(2,'0')}`;
+      renderizarCalendarioValle();
+    }
+
+    function irAHoyValle() {
+      valleData.mesActual = new Date();
+      document.getElementById('valle-filtro-mes').value = `${valleData.mesActual.getFullYear()}-${String(valleData.mesActual.getMonth()+1).padStart(2,'0')}`;
+      renderizarCalendarioValle();
+    }
+
+    function calcularSemaforoPillarValle(empId, pilar) {
+      const capsPilar = valleData.capacitaciones.filter(c => c.pilar === pilar);
+      const asigsPilar = valleData.asignaciones.filter(a => a.empleado_id === empId && capsPilar.some(c => c.id === a.capacitacion_id));
+      if (asigsPilar.length === 0) return 'violeta';
+      let tieneRojo = false, tieneNaranja = false, todasVerdes = true;
+      asigsPilar.forEach(a => {
+        const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
+        const estado = obtenerEstadoAsignacionValle(a, cap);
+        if (estado === 'No cumplió') tieneRojo = true;
+        if (estado === 'Pendiente') tieneNaranja = true;
+        if (estado !== 'Cumplió') todasVerdes = false;
+      });
+      if (tieneRojo) return 'rojo';
+      if (tieneNaranja) return 'naranja';
+      if (todasVerdes) return 'verde';
+      return 'violeta';
+    }
+
+    function renderizarPersonasValle() {
+      const html = valleData.empleados.map(emp => {
+        const asigs = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
+        const total = asigs.length;
+        const cumplidas = asigs.filter(a => a.estado === 'Cumplió').length;
+        const pct = total > 0 ? Math.round((cumplidas / total) * 100) : 0;
+        const pilares = ['Safety', 'Management', 'People', 'Delivery', 'Warehouse', 'Fleet'];
+        const semaforos = pilares.map(p => `<td style="text-align:center;"><div class="semaforo semaforo-${calcularSemaforoPillarValle(emp.id, p)}"></div></td>`).join('');
+        return `<tr><td><strong>${emp.nombre}</strong><br><small style="color:#7a8f99;">${emp.documento}</small></td><td>${emp.cd}<br><small>${emp.operacion}</small></td><td>${emp.cargo}</td><td><div style="display:flex; align-items:center; gap:8px;"><div style="flex:1; background:#eef1f3; height:8px; border-radius:4px; overflow:hidden;"><div style="width:${pct}%; background:#206987; height:100%;"></div></div><span style="font-size:12px; font-weight:700;">${pct}%</span></div></td>${semaforos}<td><button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="abrirDetallePersonaValle('${emp.id}')">Ver</button></td></tr>`;
+      }).join('');
+      document.getElementById('valle-tabla-personas').innerHTML = html || '<tr><td colspan="11" style="text-align:center; padding:20px; color:#7a8f99;">Sin datos</td></tr>';
+    }
+
+    function abrirDetallePersonaValle(empId) {
+      const emp = valleData.empleados.find(e => e.id === empId);
+      document.getElementById('valle-modal-nombre').textContent = emp.nombre;
+      const asigs = valleData.asignaciones.filter(a => a.empleado_id === empId);
+      let html = '<table style="width:100%; font-size:12px;"><thead><tr><th>Capacitación</th><th>Fecha</th><th>Pilar</th><th>Estado</th><th>Notas</th></tr></thead><tbody>';
+      asigs.forEach(a => {
+        const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
+        const estado = obtenerEstadoAsignacionValle(a, cap);
+        let notasStr = '-';
+        if(cap.tipo === 'Kirkpatrick' && a.n2) notasStr = `N1:${a.n1} | N2:${a.n2} | N3:${a.n3} | N4:${a.n4}`;
+        else if(a.nota) notasStr = `Nota: ${a.nota}%`;
+        html += `<tr><td>${cap.nombre}</td><td>${cap.fecha}</td><td><span class="tag pilar-${cap.pilar.toLowerCase()}">${cap.pilar}</span></td><td><span class="tag tag-${estado.toLowerCase().replace(' ', '-')}">${estado}</span></td><td>${notasStr}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('valle-modal-detalle-contenido').innerHTML = html;
+      document.getElementById('valle-modal-persona').style.display = 'flex';
+    }
+
+    function cerrarModalValle() { document.getElementById('valle-modal-persona').style.display = 'none'; }
+
+    function cargarSelectNotasValle() {
+      const select = document.getElementById('valle-select-cap-notas');
+      select.innerHTML = '<option value="">-- Seleccione Capacitación --</option>' + valleData.capacitaciones.map(c => `<option value="${c.id}">${c.nombre} (${c.fecha})</option>`).join('');
+    }
+
+    function cargarListaParaNotasValle() {
+      const capId = document.getElementById('valle-select-cap-notas').value;
+      if(!capId) { document.getElementById('valle-contenedor-notas').innerHTML = ''; return; }
+      const cap = valleData.capacitaciones.find(c => c.id === capId);
+      const asigs = valleData.asignaciones.filter(a => a.capacitacion_id === capId);
+      let html = `<div style="background:#f8fafb; padding:12px; border-radius:8px; margin-bottom:15px; border-left:4px solid #206987;"><strong>Regla de aprobación:</strong> Mínimo ${cap.minimo}% ${cap.pilar === 'Safety' ? '(Safety exige 100%)' : ''}. La aprobación se mide con N2 en Kirkpatrick.</div>`;
+      html += '<div class="table-container"><table><thead><tr><th>Colaborador</th><th>Estado Actual</th><th>Calificación</th><th>Acción</th></tr></thead><tbody>';
+      asigs.forEach(a => {
+        const emp = valleData.empleados.find(e => e.id === a.empleado_id);
+        html += `<tr><td><strong>${emp.nombre}</strong><br><small>${emp.documento}</small></td><td><span class="tag tag-${obtenerEstadoAsignacionValle(a, cap).toLowerCase().replace(' ', '-')}">${obtenerEstadoAsignacionValle(a, cap)}</span></td><td>`;
+        if(cap.tipo === 'Tradicional') {
+          html += `<input type="number" id="nota-${a.id}" value="${a.nota || ''}" min="0" max="100" placeholder="Nota %" style="width:80px; padding:6px;">`;
+        } else {
+          html += `<div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"><input type="number" id="n1-${a.id}" value="${a.n1 || ''}" placeholder="N1" max="100" style="padding:4px;"><input type="number" id="n2-${a.id}" value="${a.n2 || ''}" placeholder="N2 (Aprob)" max="100" style="padding:4px; border-color:#206987; font-weight:bold;"><input type="number" id="n3-${a.id}" value="${a.n3 || ''}" placeholder="N3" max="100" style="padding:4px;"><input type="number" id="n4-${a.id}" value="${a.n4 || ''}" placeholder="N4" max="100" style="padding:4px;"></div>`;
         }
-      }, 500);
+        html += `</td><td><button class="btn btn-success" style="padding:6px 10px; font-size:11px;" onclick="guardarNotaValle('${a.id}', '${cap.tipo}', ${cap.minimo}, '${cap.pilar}')">Guardar</button></td></tr>`;
+      });
+      html += '</tbody></table></div>';
+      document.getElementById('valle-contenedor-notas').innerHTML = html;
+    }
 
-      // 🛡️ CANDADO EXCLUSIVO PARA LÍDER DIRECTO
-      // 🛡️ CANDADO EXCLUSIVO PARA LÍDER DIRECTO (Normalizado por selectores de clase)
-      if (localStorage.getItem('usuario_rol') === 'lider') {
-        // 1. Capturamos todos los botones que están dentro de la barra de navegación superior
-        const botonesMenu = document.querySelectorAll('.navbar-menu .nav-tab-btn');
-        
-        // 2. Escondemos forzadamente las primeras 4 pestañas (Inicio, Beneficios, Empleados, Importar)
-        if (botonesMenu.length >= 5) {
-          botonesMenu[0].style.display = 'none'; // Inicio
-          botonesMenu[1].style.display = 'none'; // Beneficios
-          botonesMenu[2].style.display = 'none'; // Empleados
-          botonesMenu[3].style.display = 'none'; // Importar Onboarding
+    function guardarNotaValle(asigId, tipo, minimo, pilar) {
+      let notaFinal = 0;
+      if(tipo === 'Tradicional') notaFinal = Number(document.getElementById(`nota-${asigId}`).value);
+      else notaFinal = Number(document.getElementById(`n2-${asigId}`).value);
+      const estado = (notaFinal >= minimo) ? 'Cumplió' : 'No cumplió';
+      const asig = valleData.asignaciones.find(a => a.id === asigId);
+      asig.estado = estado;
+      asig.nota = notaFinal;
+      if(tipo === 'Kirkpatrick') {
+        asig.n1 = document.getElementById(`n1-${asigId}`).value;
+        asig.n2 = document.getElementById(`n2-${asigId}`).value;
+        asig.n3 = document.getElementById(`n3-${asigId}`).value;
+        asig.n4 = document.getElementById(`n4-${asigId}`).value;
+      }
+      alert(`Nota guardada. Estado actualizado a: ${estado}`);
+      cargarListaParaNotasValle();
+      renderizarResumenValle();
+    }
+
+    function guardarCapacitacionValle() {
+      const nuevaCap = {
+        id: 'c' + Date.now(),
+        nombre: document.getElementById('valle-cap-nombre').value,
+        pilar: document.getElementById('valle-cap-pilar').value,
+        tipo: document.getElementById('valle-cap-tipo').value,
+        fecha: document.getElementById('valle-cap-fecha').value,
+        minimo: Number(document.getElementById('valle-cap-minimo').value),
+        cds: document.getElementById('valle-cap-cds').value,
+        operacion: document.getElementById('valle-cap-op').value,
+        cargos: document.getElementById('valle-cap-cargos').value
+      };
+      if(!nuevaCap.nombre || !nuevaCap.fecha) return alert('Complete nombre y fecha');
+      valleData.capacitaciones.push(nuevaCap);
+      let asignadosCount = 0;
+      valleData.empleados.forEach(emp => {
+        if(!emp.activo) return;
+        if(nuevaCap.cds !== 'Todos' && !nuevaCap.cds.includes(emp.cd)) return;
+        if(nuevaCap.operacion !== 'Todos' && !nuevaCap.operacion.includes(emp.operacion)) return;
+        if(nuevaCap.cargos !== 'Todos' && !nuevaCap.cargos.includes(emp.cargo)) return;
+        valleData.asignaciones.push({
+          id: 'a' + Date.now() + Math.random().toString().slice(2,5),
+          capacitacion_id: nuevaCap.id,
+          empleado_id: emp.id,
+          estado: nuevaCap.fecha >= new Date().toISOString().split('T')[0] ? 'Programado' : 'Pendiente',
+          nota: null, n1: null, n2: null, n3: null, n4: null
+        });
+        asignadosCount++;
+      });
+      alert(`Capacitación creada y asignada automáticamente a ${asignadosCount} colaboradores.`);
+      renderizarListaConfigValle();
+      document.getElementById('valle-cap-nombre').value = '';
+      document.getElementById('valle-cap-fecha').value = '';
+    }
+
+    // ==================== OPCIÓN 2: CARGA MASIVA DESDE EXCEL ====================
+    async function procesarExcelValle(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const statusDiv = document.getElementById('valle-import-status');
+      statusDiv.innerHTML = '<div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #206987;"><i class="ti ti-loader-2" style="animation: spin 1s linear infinite;"></i> Procesando archivo Excel...</div>';
+
+      try {
+        const data = new Uint8Array(await file.arrayBuffer());
+        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+        let capacitacionesImportadas = 0;
+        let empleadosImportados = 0;
+
+        // Detectar formato del Plan Maestro
+        for (let i = 1; i < jsonData.length; i++) {
+          const row = jsonData[i];
+          if (!row || row.length < 3) continue;
+
+          const pilar = String(row[0] || '').trim();
+          const tema = String(row[1] || '').trim();
+          const mes = String(row[2] || '').trim();
+
+          if (pilar && tema && mes) {
+            // Mapear pilar
+            let pilarMapped = pilar;
+            if (pilar.toLowerCase().includes('seguridad')) pilarMapped = 'Safety';
+            else if (pilar.toLowerCase().includes('gestion')) pilarMapped = 'Management';
+            else if (pilar.toLowerCase().includes('gente')) pilarMapped = 'People';
+            else if (pilar.toLowerCase().includes('reparto')) pilarMapped = 'Delivery';
+            else if (pilar.toLowerCase().includes('almacen')) pilarMapped = 'Warehouse';
+            else if (pilar.toLowerCase().includes('flota')) pilarMapped = 'Fleet';
+
+            // Verificar si ya existe
+            const existe = valleData.capacitaciones.some(c => c.nombre.toLowerCase() === tema.toLowerCase() && c.pilar === pilarMapped);
+            if (!existe) {
+              valleData.capacitaciones.push({
+                id: 'c' + Date.now() + Math.random().toString().slice(2,5),
+                nombre: tema,
+                pilar: pilarMapped,
+                tipo: 'Tradicional',
+                mes: mes,
+                fecha: mesAFecha(mes),
+                minimo: pilarMapped === 'Safety' ? 100 : 80,
+                cds: 'Todos',
+                operacion: 'Todos',
+                cargos: 'Todos',
+                frecuencia: 'Importado'
+              });
+              capacitacionesImportadas++;
+            }
+          }
         }
 
-        // 3. Capturamos y escondemos el botón de "Módulo Plan Padrino" que está en el Header
-        const btnPlanPadrino = document.querySelector('.header button');
-        if (btnPlanPadrino) {
-          btnPlanPadrino.style.display = 'none';
-        }
+        // Guardar en Firebase
+        const batch = db.batch();
+        valleData.capacitaciones.slice(-capacitacionesImportadas).forEach(cap => {
+          const docRef = db.collection('capacitaciones_valle').doc();
+          batch.set(docRef, cap);
+        });
+        await batch.commit();
 
-        // 4. Forzamos al sistema a situar al líder en la pestaña número 5 (Capacitaciones & Auditoría)
-        if (botonesMenu[4]) {
-          cambiarSeccionAdmin('capacitaciones', botonesMenu[4]);
-        }
-      }});
+        statusDiv.innerHTML = `<div style="background: #dcfce7; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e;"><strong>✅ Importación Exitosa!</strong><br>• Capacitaciones importadas: ${capacitacionesImportadas}<br>• Empleados importados: ${empleadosImportados}</div>`;
+        renderizarListaConfigValle();
 
+      } catch (error) {
+        console.error(error);
+        statusDiv.innerHTML = `<div style="background: #fee2e2; padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444;"><strong>❌ Error:</strong> ${error.message}</div>`;
+      }
+    }
+
+    // ==================== OPCIÓN 1: IMPORTACIÓN POR PEGADO ====================
+    function procesarPegadoExcelValle() {
+      const texto = document.getElementById('valle-area-pegado').value.trim();
+      if(!texto) return alert('Pega los datos primero');
+      
+      const filas = texto.split('\n');
+      let importados = 0;
+      let errores = 0;
+
+      filas.forEach(fila => {
+        const cols = fila.split('\t');
+        if (cols.length >= 3) {
+          const pilar = cols[0]?.trim();
+          const tema = cols[1]?.trim();
+          const mes = cols[2]?.trim();
+
+          if (pilar && tema && mes) {
+            const existe = valleData.capacitaciones.some(c => c.nombre.toLowerCase() === tema.toLowerCase());
+            if (!existe) {
+              valleData.capacitaciones.push({
+                id: 'c' + Date.now() + Math.random().toString().slice(2,5),
+                nombre: tema,
+                pilar: pilar,
+                tipo: 'Tradicional',
+                mes: mes,
+                fecha: mesAFecha(mes),
+                minimo: pilar === 'Safety' ? 100 : 80,
+                cds: 'Todos',
+                operacion: 'Todos',
+                cargos: 'Todos',
+                frecuencia: 'Pegado'
+              });
+              importados++;
+            }
+          } else {
+            errores++;
+          }
+        } else {
+          errores++;
+        }
+      });
+
+      alert(`✅ Importación completada:\n• Importados: ${importados}\n• Errores: ${errores}`);
+      document.getElementById('valle-area-pegado').value = '';
+      renderizarListaConfigValle();
+    }
+
+    function renderizarListaConfigValle() {
+      document.getElementById('valle-count-caps').textContent = valleData.capacitaciones.length;
+      document.getElementById('valle-lista-capacitaciones-config').innerHTML = valleData.capacitaciones.map(c => {
+        const count = valleData.asignaciones.filter(a => a.capacitacion_id === c.id).length;
+        return `<tr><td>${c.nombre}</td><td><span class="tag pilar-${c.pilar.toLowerCase()}">${c.pilar}</span></td><td>${c.tipo}</td><td>${c.fecha}</td><td>${c.mes}</td><td>${c.cargos}</td><td>${count}</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="eliminarCapValle('${c.id}')">Eliminar</button></td></tr>`;
+      }).join('') || '<tr><td colspan="8" style="text-align:center; padding:20px; color:#7a8f99;">Sin capacitaciones</td></tr>';
+    }
+
+    function eliminarCapValle(id) {
+      if(!confirm('¿Eliminar esta capacitación y sus asignaciones?')) return;
+      valleData.capacitaciones = valleData.capacitaciones.filter(c => c.id !== id);
+      valleData.asignaciones = valleData.asignaciones.filter(a => a.capacitacion_id !== id);
+      renderizarListaConfigValle();
+    }
+
+    function exportarCSVValle() {
+      let csv = 'Nombre,Documento,Cargo,CD,Operacion,Avance %\n';
+      valleData.empleados.forEach(emp => {
+        const asigs = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
+        const cumplidas = asigs.filter(a => a.estado === 'Cumplió').length;
+        const pct = asigs.length > 0 ? Math.round((cumplidas / asigs.length) * 100) : 0;
+        csv += `${emp.nombre},${emp.documento},${emp.cargo},${emp.cd},${emp.operacion},${pct}%\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'avance_personas_valle.csv'; a.click();
+    }
+
+    // ==================== FUNCIONES EXISTENTES ====================
     async function cargarPerfilAdmin(cedulaAdminLogueado) {
       try {
         const snapshot = await db.collection('empleados').where('cedula', '==', String(cedulaAdminLogueado)).limit(1).get();
@@ -776,98 +1052,48 @@
       } catch (error) { console.error(error); document.getElementById('adminName').textContent = "Administrador"; }
     }
 
-   // 💾 GUARDAR / ACTUALIZAR BENEFICIO CON ALERTAS DE ERROR DETALLADAS Y LIBERACIÓN DE BOTÓN
     async function guardarBeneficio() {
       const btnGuardar = document.querySelector('[onclick="guardarBeneficio()"]');
-      
       const cargo = document.getElementById('benCargo').value.trim();
       const region = document.getElementById('benRegion').value.trim();
       const concepto = document.getElementById('benConcepto').value.trim();
-      
-      // 🌟 Corrección de lectura: Limpia puntos o comas que se digiten manualmente
       const valorRaw = document.getElementById('benValor').value.toString().replace(/[^0-9]/g, '');
       const valor = Number(valorRaw);
-
       const indicador = document.getElementById('benIndicador').value.trim();
-
-      if (!cargo || !region || !concepto || !valor) {
-        return alert("Por favor llena los campos obligatorios. Asegúrate de escribir el valor numérico sin puntos.");
-      }
-
-      // 🛡️ Bloqueo inicial anti-doble clic
+      if (!cargo || !region || !concepto || !valor) return alert("Por favor llena los campos obligatorios.");
       if (btnGuardar) btnGuardar.disabled = true;
-
       try {
         if (idBeneficioEdicion) {
-          // ✏️ MODO EDICIÓN: Actualiza directo sin pasar por el filtro de duplicados
           await db.collection('beneficios').doc(idBeneficioEdicion).update({ cargo, region, concepto, valor, indicador });
           alert("¡Beneficio modificado con éxito!");
           limpiarFormularioBeneficio();
         } else {
-          // ➕ MODO CREACIÓN: Valida que no se repita la combinación Cargo + Región
-          const consultaDuplicado = await db.collection('beneficios')
-            .where('cargo', '==', cargo)
-            .where('region', '==', region)
-            .get();
-
-
-          if (!consultaDuplicado.empty) {
-            alert(`⚠️ Ya existe un beneficio configurado para el cargo "${cargo}" en la región "${region}".`);
-            return; // El bloque finally se encargará de reactivar el botón
-          }
-
+          const consultaDuplicado = await db.collection('beneficios').where('cargo', '==', cargo).where('region', '==', region).get();
+          if (!consultaDuplicado.empty) { alert(`⚠️ Ya existe un beneficio configurado para el cargo "${cargo}" en la región "${region}".`); return; }
           await db.collection('beneficios').add({ cargo, region, concepto, valor, indicador });
           alert("¡Beneficio creado con éxito!");
           limpiarFormularioBeneficio();
         }
-      } catch (err) { 
-        console.error(err); 
-        alert("❌ Error de Firebase: " + err.message);
-      } finally {
-        // 🌟 SEGURO ABSOLUTO: Siempre, pase lo que pase, se vuelve a activar el botón aquí
-        if (btnGuardar) btnGuardar.disabled = false;
-      }
+      } catch (err) { console.error(err); alert("❌ Error de Firebase: " + err.message); }
+      finally { if (btnGuardar) btnGuardar.disabled = false; }
     }
 
-    // 🗑️ ELIMINAR BENEFICIO DIRECTO DESDE FIRESTORE
     async function eliminarBeneficioReal(idDoc) {
       if (!idDoc) return;
       if (!confirm("⚠️ ¿Estás seguro de que deseas eliminar este beneficio?")) return;
-
-      try {
-        await db.collection('beneficios').doc(idDoc).delete();
-        alert("✅ ¡Beneficio eliminado correctamente!");
-        limpiarFormularioBeneficio();
-      } catch (err) { console.error(err); }
+      try { await db.collection('beneficios').doc(idDoc).delete(); alert("✅ ¡Beneficio eliminado correctamente!"); limpiarFormularioBeneficio(); }
+      catch (err) { console.error(err); }
     }
 
-    // Escuchador en tiempo real de beneficios en la base de datos
     db.collection('beneficios').onSnapshot((snapshot) => {
       const tbody = document.getElementById('tablaBeneficiosBody'); if (!tbody) return;
-
-      // 🌟 Cambiado colspan a 6 por la nueva columna de región
       if (snapshot.empty) { tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center; color:#7a8f99;">No hay beneficios creados.</td></tr>`; return; }
-
       let html = '';
       snapshot.forEach((doc) => {
         const b = doc.data();
         const idDoc = doc.id;
-        // ✅ Fuerza al sistema a tratar el número como valor entero absoluto y le aplica los separadores de miles de pesos colombianos
-        const valorFormateado = new Intl.NumberFormat('es-CO', {
-          style: 'currency',
-          currency: 'COP',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0
-        }).format(Number(b.valor) || 0);
-
-        // 🌟 Se añade '${b.region || ''}' al cargador del formulario de edición
-        const celdaAcciones = localStorage.getItem('usuario_rol') === 'people' ? '' : `
-      <td style="padding:10px; text-align:center; display: flex; gap: 6px; justify-content: center;">
-        <button onclick="cargarBeneficioForm('${idDoc}', '${b.cargo}', '${b.region || ''}', '${b.concepto}', ${b.valor}, '${b.indicador || ''}')" style="background:#fff8e1; color:#8a6e00; border:1px solid #c89b00; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">✏️ Editar</button>
-        <button onclick="eliminarBeneficioReal('${idDoc}')" style="background:#fff5f5; color:#a32d2d; border:1px solid #f09595; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">🗑️ Eliminar</button>
-      </td>`;
-
-        // 🌟 Se añade la celda de región <td>${b.region || 'General'}</td> en el orden correcto
+        const valorFormateado = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(b.valor) || 0);
+        const celdaAcciones = localStorage.getItem('usuario_rol') === 'people' ? '' : `<td style="padding:10px; text-align:center; display: flex; gap: 6px; justify-content: center;"><button onclick="cargarBeneficioForm('${idDoc}', '${b.cargo}', '${b.region || ''}', '${b.concepto}', ${b.valor}, '${b.indicador || ''}')" style="background:#fff8e1; color:#8a6e00; border:1px solid #c89b00; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">✏️ Editar</button><button onclick="eliminarBeneficioReal('${idDoc}')" style="background:#fff5f5; color:#a32d2d; border:1px solid #f09595; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">🗑️ Eliminar</button></td>`;
         html += `<tr><td>${b.cargo}</td><td>${b.region || 'General'}</td><td>${b.concepto}</td><td>${valorFormateado}</td><td><span>🎯 ${b.indicador || 'General'}</span></td>${celdaAcciones}</tr>`;
       });
       tbody.innerHTML = html;
@@ -875,111 +1101,34 @@
 
     function limpiarFormularioBeneficio() {
       document.getElementById('benCargo').value = '';
-      document.getElementById('benRegion').value = ''; // 🌟 Limpieza del campo región
+      document.getElementById('benRegion').value = '';
       document.getElementById('benConcepto').value = '';
       document.getElementById('benValor').value = '';
       document.getElementById('benIndicador').value = '';
       idBeneficioEdicion = null;
-
       const btnGuardar = document.querySelector('[onclick="guardarBeneficio()"]');
-      if (btnGuardar) {
-        btnGuardar.innerHTML = "💾 Guardar / Actualizar Beneficio";
-        btnGuardar.style.background = "#1e6e7e";
-      }
+      if (btnGuardar) { btnGuardar.innerHTML = "💾 Guardar / Actualizar Beneficio"; btnGuardar.style.background = "#1e6e7e"; }
     }
 
-    // 📊 INDICADORES GENERALES DE LA COMPAÑÍA
-    db.collection('empleados').onSnapshot((snapshot) => {
-      let ingresosMes = 0; let ingresosAnio = 0;
-      let padrinosActivos = 0;
-      let planesActivos = 0; let planesFinalizados = 0; let planesVencidos = 0;
-      let tOnboardingTotal = 0; let tOnboardingComp = 0;
-      let examenesRealizados = 0; let examenesPendientes = 0;
-      let sumaNota7 = 0; let sumaNota30 = 0; let totalApadrinados = 0;
-      let totalEvaluadosOnboarding = 0; let arrayReprobadosHTML = [];
-      const hoy = new Date('2026-06-08T00:00:00');
+    function cargarBeneficioForm(id, cargo, region, concepto, valor, indicador) {
+      idBeneficioEdicion = id;
+      document.getElementById('benCargo').value = cargo;
+      document.getElementById('benRegion').value = region || '';
+      document.getElementById('benConcepto').value = concepto;
+      document.getElementById('benValor').value = valor;
+      document.getElementById('benIndicador').value = indicador;
+      const btnGuardar = document.querySelector('[onclick="guardarBeneficio()"]');
+      if (btnGuardar) { btnGuardar.innerHTML = "💾 Actualizar Beneficio Existente"; btnGuardar.style.background = "#0f6e56"; }
+    }
 
-      snapshot.forEach((doc) => {
-        const emp = doc.data();
-        if (emp.es_padrino === true || emp.es_padrino === "true") { if (emp.padrino_estado !== "Inactivo") padrinosActivos++; }
-        if (emp.es_apadrinado === true) {
-          totalApadrinados++;
-          if (emp.estado_plan_padrino === "Plan Padrino Finalizado") { planesFinalizados++; } else {
-            planesActivos++;
-            if (emp.fechas_limite_evaluaciones) {
-              const f7 = new Date(emp.fechas_limite_evaluaciones.eval_7_dias + 'T00:00:00');
-              const f30 = new Date(emp.fechas_limite_evaluaciones.eval_30_dias + 'T00:00:00');
-              const f90 = new Date(emp.fechas_limite_evaluaciones.eval_90_dias + 'T00:00:00');
-              if (emp.etapa_actual === "Etapa Técnico" && hoy > f7) planesVencidos++;
-              else if (emp.etapa_actual === "Etapa Funcional" && hoy > f30) planesVencidos++;
-              else if (emp.etapa_actual === "Etapa Autónomo" && hoy > f90) planesVencidos++;
-            }
-          }
-          if (emp.fecha_ingreso) {
-            if (emp.fecha_ingreso.startsWith("2026-06")) ingresosMes++;
-            if (emp.fecha_ingreso.startsWith("2026")) ingresosAnio++;
-          }
-          tOnboardingTotal += 2;
-          if (emp.onboarding_dia1 && emp.onboarding_dia1.estado === "Completado") tOnboardingComp++;
-          if (emp.onboarding_dia2 && emp.onboarding_dia2.estado === "Completado") tOnboardingComp++;
-          if (emp.hitos) {
-            const nSafety = emp.hitos.onboarding_safety_nota || 0;
-            const nPeople = emp.hitos.onboarding_people_nota || 0;
-            let cargoFallas = [];
-            if (nSafety > 0 && nSafety < 100) cargoFallas.push(`Safety (${nSafety}%)`);
-            if (nPeople > 0 && nPeople < 80) cargoFallas.push(`People (${nPeople}%)`);
-            if (nSafety > 0 || nPeople > 0) totalEvaluadosOnboarding++;
-            if (cargoFallas.length > 0) {
-              arrayReprobadosHTML.push(`<div class="reprobado-row-item"><div style="flex:1;"><strong>${emp.nombre}</strong><div style="font-size:10.5px; color:#7a8f99;">CC ${emp.cedula}</div></div><div style="text-align:right;"><span style="font-size:10.5px; font-weight:700; color:#a32d2d; background:#fff0f0; padding:3px 8px; border-radius:4px;">❌ ${cargoFallas.join(' y ')}</span></div></div>`);
-            }
-            if (emp.hitos.eval_tecnico_nota > 0) { sumaNota7 += emp.hitos.eval_tecnico_nota; examenesRealizados++; } else { examenesPendientes++; }
-            if (emp.hitos.eval_funcional_nota > 0) { sumaNota30 += emp.hitos.eval_funcional_nota; examenesRealizados++; } else { examenesPendientes++; }
-          }
-        }
-      });
-
-      if (document.getElementById('dashTotalReprobados')) {
-        document.getElementById('dashTotalReprobados').textContent = arrayReprobadosHTML.length;
-        document.getElementById('dashTotalReprobados').style.background = arrayReprobadosHTML.length > 0 ? '#FCEBEB' : '#e1f5ee';
-        document.getElementById('dashTotalReprobados').style.color = arrayReprobadosHTML.length > 0 ? '#a32d2d' : '#0f6e56';
-      }
-      if (document.getElementById('dashEvaluadosOnboarding')) document.getElementById('dashEvaluadosOnboarding').textContent = totalEvaluadosOnboarding;
-      if (document.getElementById('lista-desplegable-reprobados')) document.getElementById('lista-desplegable-reprobados').innerHTML = arrayReprobadosHTML.length === 0 ? `<div style="text-align:center; padding:15px; color:#0f6e56; font-size:11.5px; font-weight:600; background:#e1f5ee; border-radius:6px;">✅ Todos aprobados.</div>` : arrayReprobadosHTML.join('');
-      if (document.getElementById('dashIngresosMes')) document.getElementById('dashIngresosMes').textContent = ingresosMes;
-      if (document.getElementById('dashIngresosAnio')) document.getElementById('dashIngresosAnio').textContent = ingresosAnio;
-      if (document.getElementById('dashPadrinosActivos')) document.getElementById('dashPadrinosActivos').textContent = padrinosActivos;
-      if (document.getElementById('dashPlanesActivos')) document.getElementById('dashPlanesActivos').textContent = planesActivos;
-      if (document.getElementById('dashPlanesFinalizados')) document.getElementById('dashPlanesFinalizados').textContent = planesFinalizados;
-      if (document.getElementById('dashPlanesVencidos')) document.getElementById('dashPlanesVencidos').textContent = planesVencidos;
-      if (document.getElementById('countEvalRealizadas')) document.getElementById('countEvalRealizadas').textContent = examenesRealizados;
-      if (document.getElementById('countEvalPendientes')) document.getElementById('countEvalPendientes').textContent = examenesPendientes;
-
-      const denominadorReal = totalApadrinados || 1;
-      const pctOnboard = tOnboardingTotal > 0 ? Math.round((tOnboardingComp / tOnboardingTotal) * 100) : 0;
-      const pct7 = Math.round(sumaNota7 / denominadorReal);
-      const pct30 = Math.round(sumaNota30 / denominadorReal);
-
-      if (document.getElementById('barPctOnboarding')) document.getElementById('barPctOnboarding').textContent = pctOnboard + "%";
-      if (document.getElementById('fillOnboarding')) document.getElementById('fillOnboarding').style.width = pctOnboard + "%";
-      if (document.getElementById('barPct7Dias')) document.getElementById('barPct7Dias').textContent = pct7 + "%";
-      if (document.getElementById('fill7Dias')) document.getElementById('fill7Dias').style.width = pct7 + "%";
-      if (document.getElementById('barPct30Dias')) document.getElementById('barPct30Dias').textContent = pct30 + "%";
-      if (document.getElementById('fill30Dias')) document.getElementById('fill30Dias').style.width = pct30 + "%";
-    });
-
-    // 📂 CARGA MASIVA DE PERSONAL CORREGIDA (CERO DUPLICADOS, ALTA VELOCIDAD POR LOTES Y ALERTAS ASENTADAS)
     async function cargarExcel() {
       const fileInput = document.getElementById('excelFile');
       if (!fileInput || !fileInput.files.length) return alert("Por favor, selecciona un archivo de Excel primero.");
-
       const file = fileInput.files[0];
       const btn = document.querySelector('#bloqueCargaMasiva .btn-primary');
       const textoOriginal = btn ? btn.innerHTML : '';
-
-      // 🌟 ALERT 1: Avisa visualmente que el motor inició la carga masiva y la validación anti-duplicados
       alert("⏳ Iniciando sincronización masiva de personal y auditoría anti-duplicados.\n\nPor favor, haz clic en Aceptar para procesar el archivo Excel.");
       if (btn) btn.innerHTML = '⏳ Importando Personal...';
-
       const reader = new FileReader();
       reader.onload = async function (e) {
         try {
@@ -987,123 +1136,60 @@
           const workbook = XLSX.read(data, { type: 'array', cellDates: true });
           const firstSheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[firstSheetName];
-
           const listaEmpleados = XLSX.utils.sheet_to_json(worksheet);
-          if (listaEmpleados.length === 0) {
-            if (btn) btn.innerHTML = textoOriginal;
-            return alert("❌ Error: El archivo de Excel seleccionado está vacío.");
-          }
-
-          // 🧠 FILTRADO PREVIO EN MEMORIA RAM: Mapeamos los datos del Excel para normalizarlos
+          if (listaEmpleados.length === 0) { if (btn) btn.innerHTML = textoOriginal; return alert("❌ Error: El archivo de Excel seleccionado está vacío."); }
           const empleadosExcelMap = new Map();
           for (const emp of listaEmpleados) {
             const regNorm = {};
-            Object.keys(emp).forEach(k => {
-              regNorm[k.toLowerCase().trim().replace(/[\s.\-,]/g, '_')] = emp[k];
-            });
-
+            Object.keys(emp).forEach(k => { regNorm[k.toLowerCase().trim().replace(/[\s.\-,]/g, '_')] = emp[k]; });
             const cedulaExcel = regNorm['cedula'] ? String(regNorm['cedula']).trim() : null;
             if (!cedulaExcel) continue;
-
             const rawFecha = regNorm['fecha_de_ingreso'] || regNorm['fecha_ingreso'] || null;
-            const fecha_ingreso = rawFecha instanceof Date
-              ? rawFecha.toISOString().split('T')[0]
-              : (rawFecha ? String(rawFecha).trim() : "");
-
-            empleadosExcelMap.set(cedulaExcel, {
-              cedula: cedulaExcel,
-              nombre: regNorm['nombre'] ? String(regNorm['nombre']).trim() : "Sin Nombre",
-              cargo: regNorm['cargo'] ? String(regNorm['cargo']).trim() : "Operativo",
-              region: regNorm['region'] ? String(regNorm['region']).trim() : "General",
-              grupo: regNorm['grupo'] ? String(regNorm['grupo']).trim() : "General",
-              rol: regNorm['rol'] ? String(regNorm['rol']).toLowerCase().trim() : "empleado",
-              fecha_ingreso: fecha_ingreso
-            });
+            const fecha_ingreso = rawFecha instanceof Date ? rawFecha.toISOString().split('T')[0] : (rawFecha ? String(rawFecha).trim() : "");
+            empleadosExcelMap.set(cedulaExcel, { cedula: cedulaExcel, nombre: regNorm['nombre'] ? String(regNorm['nombre']).trim() : "Sin Nombre", cargo: regNorm['cargo'] ? String(regNorm['cargo']).trim() : "Operativo", region: regNorm['region'] ? String(regNorm['region']).trim() : "General", grupo: regNorm['grupo'] ? String(regNorm['grupo']).trim() : "General", rol: regNorm['rol'] ? String(regNorm['rol']).toLowerCase().trim() : "empleado", fecha_ingreso: fecha_ingreso });
           }
-
-          // ⚡ EXTRACCIÓN EN RÁFAGA (CHUNKS): Traemos los perfiles existentes desde Firebase de un solo viaje
           const cedulasArray = Array.from(empleadosExcelMap.keys());
           const mapFirestore = new Map();
           const chunkSize = 30;
-
           for (let i = 0; i < cedulasArray.length; i += chunkSize) {
             const chunk = cedulasArray.slice(i, i + chunkSize);
-
             const snapNumeric = await db.collection('empleados').where('cedula', 'in', chunk.map(Number)).get();
             snapNumeric.forEach(doc => mapFirestore.set(String(doc.data().cedula), { docId: doc.id, data: doc.data() }));
-
             const snapString = await db.collection('empleados').where('cedula', 'in', chunk.map(String)).get();
             snapString.forEach(doc => mapFirestore.set(String(doc.data().cedula), { docId: doc.id, data: doc.data() }));
           }
-
-          // 💾 ESCRITURA EN BATCH EM-BLOQUE (Cero sobrecarga de canales de red)
           let batch = db.batch();
           let opsEnBatch = 0;
           let creados = 0;
           let actualizados = 0;
-
           for (const [cedula, datosExcel] of empleadosExcelMap) {
             const registroExistente = mapFirestore.get(cedula);
-
-            if (registroExistente) {
-              // 🎯 SI YA EXISTE: Actualizamos campos base sin duplicar jamás el documento ni alterar hitos
-              const docRef = db.collection('empleados').doc(registroExistente.docId);
-              batch.update(docRef, datosExcel);
-              actualizados++;
-            } else {
-              // 🎯 SI ES NUEVO: Creamos el documento e inicializamos la estructura del Plan Padrino
+            if (registroExistente) { const docRef = db.collection('empleados').doc(registroExistente.docId); batch.update(docRef, datosExcel); actualizados++; }
+            else {
               if (datosExcel.rol === 'empleado') {
                 datosExcel.es_apadrinado = true;
                 datosExcel.estado_plan_padrino = "Activo";
                 datosExcel.etapa_actual = "Inducción";
-
                 const formatFecha = (d) => d.toISOString().split('T')[0];
                 const baseDate = datosExcel.fecha_ingreso ? new Date(datosExcel.fecha_ingreso + 'T00:00:00') : new Date();
                 const f7 = new Date(baseDate); f7.setDate(f7.getDate() + 7);
                 const f30 = new Date(baseDate); f30.setDate(f30.getDate() + 30);
                 const f90 = new Date(baseDate); f90.setDate(f90.getDate() + 90);
-
-                datosExcel.fechas_limite_evaluaciones = {
-                  eval_7_dias: formatFecha(f7),
-                  eval_30_dias: formatFecha(f30),
-                  eval_90_dias: formatFecha(f90)
-                };
-
-                datosExcel.hitos = {
-                  fecha_contratacion: datosExcel.fecha_ingreso,
-                  onboarding_safety_nota: 0,
-                  onboarding_people_nota: 0,
-                  eval_tecnico_nota: 0,
-                  eval_funcional_nota: 0,
-                  eval_autonomo_nota: 0
-                };
+                datosExcel.fechas_limite_evaluaciones = { eval_7_dias: formatFecha(f7), eval_30_dias: formatFecha(f30), eval_90_dias: formatFecha(f90) };
+                datosExcel.hitos = { fecha_contratacion: datosExcel.fecha_ingreso, onboarding_safety_nota: 0, onboarding_people_nota: 0, eval_tecnico_nota: 0, eval_funcional_nota: 0, eval_autonomo_nota: 0 };
               }
-
-              const nuevoDocRef = db.collection('empleados').doc(); // Genera ID único automático localmente
+              const nuevoDocRef = db.collection('empleados').doc();
               batch.set(nuevoDocRef, datosExcel);
               creados++;
             }
-
             opsEnBatch++;
-            if (opsEnBatch >= 400) {
-              await batch.commit();
-              batch = db.batch();
-              opsEnBatch = 0;
-            }
+            if (opsEnBatch >= 400) { await batch.commit(); batch = db.batch(); opsEnBatch = 0; }
           }
-
           if (opsEnBatch > 0) await batch.commit();
           if (btn) btn.innerHTML = textoOriginal;
-
-          // 🌟 ALERT 2: Mensaje de confirmación final definitivo
           alert(`¡Sincronización Masiva Completa! 🚀\n\n· Registros Nuevos Creados: ${creados}\n· Registros Existentes Actualizados: ${actualizados}`);
           fileInput.value = '';
-
-        } catch (error) {
-          if (btn) btn.innerHTML = textoOriginal;
-          console.error("Error en Carga Masiva:", error);
-          alert("❌ Ocurrió un error crítico al procesar el archivo Excel.");
-        }
+        } catch (error) { if (btn) btn.innerHTML = textoOriginal; console.error("Error en Carga Masiva:", error); alert("❌ Ocurrió un error crítico al procesar el archivo Excel."); }
       };
       reader.readAsArrayBuffer(file);
     }
@@ -1126,32 +1212,14 @@
     async function guardarEmpleado() {
       const cc = document.getElementById('searchCedula').value.trim();
       const nom = document.getElementById('crudNombre').value.trim();
-      const fechaRaw = document.getElementById('crudFechaIngreso').value; // "2026-05-02"
+      const fechaRaw = document.getElementById('crudFechaIngreso').value;
       if (!cc || !nom) return alert("Cédula y nombre requeridos.");
-
-      const datos = {
-        cedula: cc,
-        nombre: nom,
-        cargo: document.getElementById('crudCargo').value.trim(),
-        region: document.getElementById('crudRegion').value.trim(),
-        grupo: document.getElementById('regEmpleadoGrupo').value.trim() || 'General',
-        rol: document.getElementById('empleadoRol').value,
-        fecha_ingreso: fechaRaw || ""
-      };
-
+      const datos = { cedula: cc, nombre: nom, cargo: document.getElementById('crudCargo').value.trim(), region: document.getElementById('crudRegion').value.trim(), grupo: document.getElementById('regEmpleadoGrupo').value.trim() || 'General', rol: document.getElementById('empleadoRol').value, fecha_ingreso: fechaRaw || "" };
       try {
-        // Busca si ya existe
         let snap = await db.collection('empleados').where('cedula', '==', cc).limit(1).get();
-        if (snap.empty) {
-          snap = await db.collection('empleados').where('cedula', '==', Number(cc)).limit(1).get();
-        }
-
-        if (!snap.empty) {
-          // ✅ Ya existe → actualiza
-          await db.collection('empleados').doc(snap.docs[0].id).update(datos);
-          alert("✅ Empleado actualizado correctamente.");
-        } else {
-          // 🆕 No existe → crea con hitos iniciales
+        if (snap.empty) snap = await db.collection('empleados').where('cedula', '==', Number(cc)).limit(1).get();
+        if (!snap.empty) { await db.collection('empleados').doc(snap.docs[0].id).update(datos); alert("✅ Empleado actualizado correctamente."); }
+        else {
           if (datos.rol === 'empleado') {
             datos.es_apadrinado = true;
             datos.estado_plan_padrino = "Activo";
@@ -1160,19 +1228,8 @@
             const f7 = new Date(base); f7.setDate(f7.getDate() + 7);
             const f30 = new Date(base); f30.setDate(f30.getDate() + 30);
             const f90 = new Date(base); f90.setDate(f90.getDate() + 90);
-            datos.fechas_limite_evaluaciones = {
-              eval_7_dias: f7.toISOString().split('T')[0],
-              eval_30_dias: f30.toISOString().split('T')[0],
-              eval_90_dias: f90.toISOString().split('T')[0]
-            };
-            datos.hitos = {
-              fecha_contratacion: fechaRaw || "",
-              onboarding_safety_nota: 0,
-              onboarding_people_nota: 0,
-              eval_tecnico_nota: 0,
-              eval_funcional_nota: 0,
-              eval_autonomo_nota: 0
-            };
+            datos.fechas_limite_evaluaciones = { eval_7_dias: f7.toISOString().split('T')[0], eval_30_dias: f30.toISOString().split('T')[0], eval_90_dias: f90.toISOString().split('T')[0] };
+            datos.hitos = { fecha_contratacion: fechaRaw || "", onboarding_safety_nota: 0, onboarding_people_nota: 0, eval_tecnico_nota: 0, eval_funcional_nota: 0, eval_autonomo_nota: 0 };
           }
           await db.collection('empleados').add(datos);
           alert("✅ Empleado creado correctamente.");
@@ -1184,10 +1241,8 @@
     async function eliminarEmpleado() {
       const cc = document.getElementById('searchCedula').value.trim();
       if (!cc || !confirm("¿Eliminar empleado?")) return;
-      try {
-        let snap = await db.collection('empleados').where('cedula', '==', cc).limit(1).get();
-        if (!snap.empty) { await db.collection('empleados').doc(snap.docs[0].id).delete(); alert("Eliminado."); limpiarFormularioCRUD(); }
-      } catch (e) { console.error(e); }
+      try { let snap = await db.collection('empleados').where('cedula', '==', cc).limit(1).get(); if (!snap.empty) { await db.collection('empleados').doc(snap.docs[0].id).delete(); alert("Eliminado."); limpiarFormularioCRUD(); } }
+      catch (e) { console.error(e); }
     }
 
     function limpiarFormularioCRUD() { document.getElementById('searchCedula').value = ''; document.getElementById('crudNombre').value = ''; document.getElementById('crudCargo').value = ''; document.getElementById('crudRegion').value = ''; document.getElementById('regEmpleadoGrupo').value = ''; }
@@ -1199,82 +1254,47 @@
       const qr = document.getElementById('capQrUrl').value.trim();
       const date = document.getElementById('capFechaLimite').value;
       if (!cc || !tit || !ppt || !date) return alert("Llenar campos obligatorios.");
-      try {
-        await db.collection('items_cronograma').add({ empleado_id: cc, titulo: tit, ppt_drive_id: ppt, qr_url: qr, fecha_limite: date, completado: false, visto_ppt: false });
-        alert("¡Publicada exitosamente!");
-      } catch (e) { console.error(e); }
+      try { await db.collection('items_cronograma').add({ empleado_id: cc, titulo: tit, ppt_drive_id: ppt, qr_url: qr, fecha_limite: date, completado: false, visto_ppt: false }); alert("¡Publicada exitosamente!"); }
+      catch (e) { console.error(e); }
     }
 
-  async function auditarAvanceReal() {
+    async function auditarAvanceReal() {
       const cc = document.getElementById('auditCedula').value.trim();
       if (!cc) return alert("⚠️ Digita la cédula a consultar.");
-
-      // 🎯 LECTURA DIRECTA POR ID REAL: Rápido, exacto y sin adivinar
       const inputDesdeReal = document.getElementById('auditDesde').value;
       const inputHastaReal = document.getElementById('auditHasta').value;
-
-      // Validación estricta
-      if (!inputDesdeReal || !inputHastaReal) {
-        return alert("⚠️ Por favor selecciona el rango Desde / Hasta para la auditoría.");
-      }
-
+      if (!inputDesdeReal || !inputHastaReal) return alert("⚠️ Por favor selecciona el rango Desde / Hasta para la auditoría.");
       try {
         const snap = await db.collection('items_cronograma').where('empleado_id', '==', cc).get();
-        const tbody = document.getElementById('auditTableBody'); 
-        if (!tbody) return; 
-        
+        const tbody = document.getElementById('auditTableBody'); if (!tbody) return;
         tbody.innerHTML = '';
         let asig = 0, hechas = 0;
         let htmlFilas = '';
-
         snap.forEach(doc => {
           const item = doc.data();
-          const limiteTarea = item.fecha_limite; 
-
-          // 🌟 FILTRO DE CONTROL DE RANGO ESTRICTO
+          const limiteTarea = item.fecha_limite;
           if (limiteTarea >= inputDesdeReal && limiteTarea <= inputHastaReal) {
-            asig++; 
+            asig++;
             if (item.completado) hechas++;
-            
-            htmlFilas += `<tr>
-              <td><strong>${item.titulo}</strong></td>
-              <td>${item.fecha_limite}</td>
-              <td>${item.visto_ppt ? '✓ Sí' : '✗ No'}</td>
-              <td>${item.completado ? '✓ Hecho' : '✗ Pendiente'}</td>
-            </tr>`;
+            htmlFilas += `<tr><td><strong>${item.titulo}</strong></td><td>${item.fecha_limite}</td><td>${item.visto_ppt ? '✓ Sí' : '✗ No'}</td><td>${item.completado ? '✓ Hecho' : '✗ Pendiente'}</td></tr>`;
           }
         });
-
-        if (asig === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#7a8f99; padding: 15px;">No se registran capacitaciones asignadas en el rango de fechas seleccionado.</td></tr>`;
-        } else {
-          tbody.innerHTML = htmlFilas;
-        }
-
+        if (asig === 0) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#7a8f99; padding: 15px;">No se registran capacitaciones asignadas en el rango de fechas seleccionado.</td></tr>`;
+        else tbody.innerHTML = htmlFilas;
         const pct = asig > 0 ? Math.round((hechas / asig) * 100) : 0;
         document.getElementById('auditPctText').textContent = pct + "%";
         document.getElementById('auditCountText').textContent = `${hechas} / ${asig}`;
         document.getElementById('auditResultPanel').style.display = 'block';
-
-      } catch (error) {
-        console.error("Error en auditoría:", error);
-        alert("❌ Error al procesar el historial de capacitación.");
-      }
+      } catch (error) { console.error("Error en auditoría:", error); alert("❌ Error al procesar el historial de capacitación."); }
     }
 
-    // 📋 IMPORTADOR MAESTRO DE RESPUESTAS MICROSOFT FORMS CON MENSAJES DE NOTIFICACIÓN
-    // 📋 IMPORTADOR MAESTRO DE RESPUESTAS MICROSOFT FORMS (VERSIÓN OPTIMIZADA DE ALTA VELOCIDAD)
     async function procesarOnboardingExcel(event, tipoOnboarding) {
       const file = event.target.files[0];
       if (!file) return;
-
       const btn = event.target.nextElementSibling || document.querySelector(`[onclick*="'${tipoOnboarding}'"]`);
       const textoOriginal = btn ? btn.innerHTML : '';
-
-      // 🌟 ALERT 1: Avisa visualmente que el motor inició la auditoría masiva
       alert(`⏳ Iniciando procesamiento de notas para Onboarding ${tipoOnboarding.toUpperCase()}.\n\nPor favor, haz clic en Aceptar para comenzar el cruce inteligente.`);
       if (btn) btn.innerHTML = '⏳ Procesando Excel...';
-
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
@@ -1282,281 +1302,157 @@
           const wb = XLSX.read(data, { type: 'array', cellDates: true });
           const ws = wb.Sheets[wb.SheetNames[0]];
           const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
-
-          if (rows.length <= 1) {
-            if (btn) btn.innerHTML = textoOriginal;
-            return alert("❌ Error: El archivo de respuestas seleccionado está vacío.");
-          }
-
+          if (rows.length <= 1) { if (btn) btn.innerHTML = textoOriginal; return alert("❌ Error: El archivo de respuestas seleccionado está vacío."); }
           const rawRows = rows.slice(1);
-          const idxTotalPuntos = 5;  // Columna F (Puntos totales de Microsoft Forms)
-          const idxCedula = 32; // Columna AG (Cédula del encuestado)
+          const idxTotalPuntos = 5;
+          const idxCedula = 32;
           const umbral = tipoOnboarding === 'safety' ? 100 : 80;
-
-          // 🧠 FILTRADO PREVIO EN MEMORIA: Almacena la mejor nota de cada cédula sin tocar la red todavía
           const mejorNotaPorCedula = new Map();
           for (let row of rawRows) {
             if (row.length === 1 && typeof row[0] === 'string') row = row[0].split(';');
-
             let cedulaRaw = String(row[idxCedula] || '').trim().replace(/['"\s.\-,]/g, '');
             if (!cedulaRaw || cedulaRaw === 'null' || cedulaRaw === '0') continue;
-
             let nota = Math.min(100, Math.max(0, Math.round(Number(row[idxTotalPuntos] || 0))));
             const aprobado = nota >= umbral;
             const fecha = row[1] instanceof Date ? row[1].toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-
-            if (mejorNotaPorCedula.has(cedulaRaw)) {
-              if (nota > mejorNotaPorCedula.get(cedulaRaw).nota) {
-                mejorNotaPorCedula.set(cedulaRaw, { nota, aprobado, fecha });
-              }
-            } else {
-              mejorNotaPorCedula.set(cedulaRaw, { nota, aprobado, fecha });
-            }
+            if (mejorNotaPorCedula.has(cedulaRaw)) { if (nota > mejorNotaPorCedula.get(cedulaRaw).nota) mejorNotaPorCedula.set(cedulaRaw, { nota, aprobado, fecha }); }
+            else mejorNotaPorCedula.set(cedulaRaw, { nota, aprobado, fecha });
           }
-
-          // ⚡ EXTRACCIÓN EN RÁFAGA (CHUNKS): Trae todos los perfiles de Firebase de un solo golpe
           const cedulasArray = Array.from(mejorNotaPorCedula.keys());
           const mapFirestore = new Map();
           const chunkSize = 30;
-
           for (let i = 0; i < cedulasArray.length; i += chunkSize) {
             const chunk = cedulasArray.slice(i, i + chunkSize);
-
-            // Consultas masivas optimizadas en paralelo por lotes de 30 cédulas
             const snapNumeric = await db.collection('empleados').where('cedula', 'in', chunk.map(Number)).get();
             snapNumeric.forEach(doc => mapFirestore.set(String(doc.data().cedula), { docId: doc.id, data: doc.data() }));
-
             const snapString = await db.collection('empleados').where('cedula', 'in', chunk.map(String)).get();
             snapString.forEach(doc => mapFirestore.set(String(doc.data().cedula), { docId: doc.id, data: doc.data() }));
           }
-
-          // 💾 ESCRITURA EN BATCH EN BLOQUE (Una sola petición de red para guardar todo)
           let batch = db.batch();
           let opsEnBatch = 0;
           let totalActualizados = 0;
-
           for (const [cedula, { nota, aprobado, fecha }] of mejorNotaPorCedula) {
             const registro = mapFirestore.get(cedula);
-            if (!registro) continue; // Si la cédula del Excel no existe en tu base de datos, se la salta
-
+            if (!registro) continue;
             const { docId, data } = registro;
             const hitos = { ...(data.hitos || {}) };
             const up = {};
-
-            if (tipoOnboarding === 'safety') {
-              hitos.onboarding_safety_nota = nota;
-              hitos.onboarding_safety_fecha = fecha;
-              up.onboarding_dia1 = { estado: aprobado ? 'Completado' : 'Reprobado', fecha_completado: fecha };
-            } else {
-              hitos.onboarding_people_nota = nota;
-              hitos.onboarding_people_fecha = fecha;
-              up.onboarding_dia2 = { estado: aprobado ? 'Completado' : 'Reprobado', fecha_completado: fecha };
-            }
-
+            if (tipoOnboarding === 'safety') { hitos.onboarding_safety_nota = nota; hitos.onboarding_safety_fecha = fecha; up.onboarding_dia1 = { estado: aprobado ? 'Completado' : 'Reprobado', fecha_completado: fecha }; }
+            else { hitos.onboarding_people_nota = nota; hitos.onboarding_people_fecha = fecha; up.onboarding_dia2 = { estado: aprobado ? 'Completado' : 'Reprobado', fecha_completado: fecha }; }
             up.hitos = hitos;
-
             const docRef = db.collection('empleados').doc(docId);
             batch.update(docRef, up);
             opsEnBatch++;
             totalActualizados++;
-
-            if (opsEnBatch >= 400) { // Límite de seguridad de Firebase Firestore (500 operaciones por batch)
-              await batch.commit();
-              batch = db.batch();
-              opsEnBatch = 0;
-            }
+            if (opsEnBatch >= 400) { await batch.commit(); batch = db.batch(); opsEnBatch = 0; }
           }
-
           if (opsEnBatch > 0) await batch.commit();
           if (btn) btn.innerHTML = textoOriginal;
-
-          // 🌟 ALERT 2: Cuadro de confirmación final detallado
-          if (totalActualizados > 0) {
-            alert(`✅ ¡Carga de Onboarding ${tipoOnboarding.toUpperCase()} Exitosa!\n\nSe procesaron las calificaciones de ${totalActualizados} colaboradores en milisegundos.`);
-            location.reload();
-          } else {
-            alert("⚠️ Proceso finalizado.\nNo se detectó ninguna coincidencia entre las cédulas del formulario y los empleados registrados actualmente.");
-          }
+          if (totalActualizados > 0) { alert(`✅ ¡Carga de Onboarding ${tipoOnboarding.toUpperCase()} Exitosa!\n\nSe procesaron las calificaciones de ${totalActualizados} colaboradores en milisegundos.`); location.reload(); }
+          else alert("️ Proceso finalizado.\nNo se detectó ninguna coincidencia entre las cédulas del formulario y los empleados registrados actualmente.");
           event.target.value = '';
-
-        } catch (err) {
-          if (btn) btn.innerHTML = textoOriginal;
-          console.error(err);
-          alert("❌ Ocurrió un error crítico al procesar la estructura del Microsoft Forms.");
-        }
+        } catch (err) { if (btn) btn.innerHTML = textoOriginal; console.error(err); alert("❌ Ocurrió un error crítico al procesar la estructura del Microsoft Forms."); }
       };
       reader.readAsArrayBuffer(file);
     }
 
-    // 🔄 Ejecutar al cargar la sección de administración del Plan Padrino
-async function inicializarModuloGestionPadrinos() {
-    const contenedorLista = document.getElementById('listaPadrinosClick');
-    if (!contenedorLista) return;
-
-    try {
-        // 1. Buscamos todos los empleados que estén marcados con rol de Padrino o Tutor Certificado
-        // (Ajusta la condición 'es_padrino' según cómo almacenes esa bandera)
+    async function inicializarModuloGestionPadrinos() {
+      const contenedorLista = document.getElementById('listaPadrinosClick');
+      if (!contenedorLista) return;
+      try {
         const snap = await db.collection('empleados').where('es_padrino', '==', true).get();
-        
-        if (snap.empty) {
-            contenedorLista.innerHTML = `<div style="text-align:center;color:#7f8c8d;padding:10px;">No hay padrinos registrados.</div>`;
-            return;
-        }
-
+        if (snap.empty) { contenedorLista.innerHTML = `<div style="text-align:center;color:#7f8c8d;padding:10px;">No hay padrinos registrados.</div>`; return; }
         contenedorLista.innerHTML = '';
         snap.forEach(doc => {
-            const padrino = doc.data();
-            contenedorLista.innerHTML += `
-                <button onclick="verApadrinadosAsociados('${padrino.cedula}', '${padrino.nombre}')" 
-                        style="width: 100%; text-align: left; padding: 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 13px; font-weight: 600; color: #334155;"
-                        onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
-                    👨‍🏫 ${padrino.nombre} <br>
-                    <span style="font-size:11px; color:#64748b; font-weight:normal;">CC ${padrino.cedula}</span>
-                </button>
-            `;
+          const padrino = doc.data();
+          contenedorLista.innerHTML += `<button onclick="verApadrinadosAsociados('${padrino.cedula}', '${padrino.nombre}')" style="width: 100%; text-align: left; padding: 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 13px; font-weight: 600; color: #334155;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">👨‍ ${padrino.nombre} <br><span style="font-size:11px; color:#64748b; font-weight:normal;">CC ${padrino.cedula}</span></button>`;
         });
-
-    } catch (error) {
-        console.error("Error cargando lista de padrinos:", error);
+      } catch (error) { console.error("Error cargando lista de padrinos:", error); }
     }
-}
 
-// 🎯 PRIMER CLICK: Ver apadrinados del tutor seleccionado
-async function verApadrinadosAsociados(cedulaPadrino, nombrePadrino) {
-    const detalleDiv = document.getElementById('contenedorDetalleAlumnos');
-    detalleDiv.innerHTML = `<div style="text-align:center; padding:30px; color:#7f8c8d;">Buscando alumnos asignados...</div>`;
-
-    try {
-        const snap = await db.collection('empleados')
-                            .where('padrino_id', '==', cedulaPadrino)
-                            .where('es_apadrinado', '==', true)
-                            .get();
-
-        if (snap.empty) {
-            detalleDiv.innerHTML = `
-                <div style="padding: 20px; text-align: center; color: #e11d48; background: #fff1f2; border-radius: 6px; font-size: 13px;">
-                    El padrino <strong>${nombrePadrino}</strong> no tiene alumnos asociados actualmente.
-                </div>`;
-            return;
-        }
-
-        let htmlTabla = `
-            <div style="font-size:13px; margin-bottom:10px; color:#475569;">Alumnos a cargo de: <strong>${nombrePadrino}</strong></div>
-            <table style="width:100%; border-collapse:collapse; background:white; border-radius:6px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.02);">
-                <thead>
-                    <tr style="background:#edf2f7; text-align:left; font-size:12px;">
-                        <th style="padding:10px;">Nombre Apadrinado</th>
-                        <th style="padding:10px;">Link Alumno</th>
-                        <th style="padding:10px;">Link Padrino</th>
-                        <th style="padding:10px; text-align:center;">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
+    async function verApadrinadosAsociados(cedulaPadrino, nombrePadrino) {
+      const detalleDiv = document.getElementById('contenedorDetalleAlumnos');
+      detalleDiv.innerHTML = `<div style="text-align:center; padding:30px; color:#7f8c8d;">Buscando alumnos asignados...</div>`;
+      try {
+        const snap = await db.collection('empleados').where('padrino_id', '==', cedulaPadrino).where('es_apadrinado', '==', true).get();
+        if (snap.empty) { detalleDiv.innerHTML = `<div style="padding: 20px; text-align: center; color: #e11d48; background: #fff1f2; border-radius: 6px; font-size: 13px;">El padrino <strong>${nombrePadrino}</strong> no tiene alumnos asociados actualmente.</div>`; return; }
+        let htmlTabla = `<div style="font-size:13px; margin-bottom:10px; color:#475569;">Alumnos a cargo de: <strong>${nombrePadrino}</strong></div><table style="width:100%; border-collapse:collapse; background:white; border-radius:6px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.02);"><thead><tr style="background:#edf2f7; text-align:left; font-size:12px;"><th style="padding:10px;">Nombre Apadrinado</th><th style="padding:10px;">Link Alumno</th><th style="padding:10px;">Link Padrino</th><th style="padding:10px; text-align:center;">Acción</th></tr></thead><tbody>`;
         snap.forEach(doc => {
-            const alumno = doc.data();
-            
-            // 🌟 CORRECCIÓN AQUÍ: Convertir el texto en un enlace dinámico clickable
-            const linkAp = alumno.link_evaluacion_apadrinado 
-                ? `<a href="${alumno.link_evaluacion_apadrinado}" target="_blank" style="color: #16a34a; text-decoration: underline; font-weight: bold;">✅ Configurado</a>` 
-                : '<span style="color: #dc2626;">❌ Pendiente</span>';
-                
-            const linkPad = alumno.link_evaluacion_padrino 
-                ? `<a href="${alumno.link_evaluacion_padrino}" target="_blank" style="color: #16a34a; text-decoration: underline; font-weight: bold;">✅ Configurado</a>` 
-                : '<span style="color: #dc2626;">❌ Pendiente</span>';
-
-            // Convertimos los datos a string seguro para pasarlos al modal
-            htmlTabla += `
-                <tr style="border-bottom:1px solid #f1f5f9; font-size:12px;">
-                    <td style="padding:10px;"><strong>${alumno.nombre}</strong><br><span style="color:#64748b;font-size:11px;">CC ${alumno.cedula}</span></td>
-                    <td style="padding:10px; color:${alumno.link_evaluacion_apadrinado ? '#16a34a':'#dc2626'}">${linkAp}</td>
-                    <td style="padding:10px; color:${alumno.link_evaluacion_padrino ? '#16a34a':'#dc2626'}">${linkPad}</td>
-                    <td style="padding:10px; text-align:center;">
-                        <button onclick="abrirModalAsignacion('${alumno.cedula}', '${alumno.nombre}', '${alumno.link_evaluacion_apadrinado || ''}', '${alumno.link_evaluacion_padrino || ''}')" 
-                                style="background:#206987; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:11px;">
-                            🔗 Configurar Links
-                        </button>
-                    </td>
-                </tr>
-            `;
+          const alumno = doc.data();
+          const linkAp = alumno.link_evaluacion_apadrinado ? `<a href="${alumno.link_evaluacion_apadrinado}" target="_blank" style="color: #16a34a; text-decoration: underline; font-weight: bold;">✅ Configurado</a>` : '<span style="color: #dc2626;">❌ Pendiente</span>';
+          const linkPad = alumno.link_evaluacion_padrino ? `<a href="${alumno.link_evaluacion_padrino}" target="_blank" style="color: #16a34a; text-decoration: underline; font-weight: bold;">✅ Configurado</a>` : '<span style="color: #dc2626;">❌ Pendiente</span>';
+          htmlTabla += `<tr style="border-bottom:1px solid #f1f5f9; font-size:12px;"><td style="padding:10px;"><strong>${alumno.nombre}</strong><br><span style="color:#64748b;font-size:11px;">CC ${alumno.cedula}</span></td><td style="padding:10px; color:${alumno.link_evaluacion_apadrinado ? '#16a34a':'#dc2626'}">${linkAp}</td><td style="padding:10px; color:${alumno.link_evaluacion_padrino ? '#16a34a':'#dc2626'}">${linkPad}</td><td style="padding:10px; text-align:center;"><button onclick="abrirModalAsignacion('${alumno.cedula}', '${alumno.nombre}', '${alumno.link_evaluacion_apadrinado || ''}', '${alumno.link_evaluacion_padrino || ''}')" style="background:#206987; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:11px;">🔗 Configurar Links</button></td></tr>`;
         });
-
         htmlTabla += `</tbody></table>`;
         detalleDiv.innerHTML = htmlTabla;
-
-    } catch (error) {
-        console.error("Error al traer apadrinados:", error);
+      } catch (error) { console.error("Error al traer apadrinados:", error); }
     }
-}
 
-// 🛠️ Control del Modal Interactivo
-function abrirModalAsignacion(cedula, nombre, linkAp, linkPad) {
-    document.getElementById('modalCedulaAlumno').value = cedula;
-    document.getElementById('modalTituloAlumno').innerText = `Asignar Evaluaciones para: ${nombre}`;
-    document.getElementById('modalInputLinkApadrinado').value = linkAp;
-    document.getElementById('modalInputLinkPadrino').value = linkPad;
-    document.getElementById('modalAsignarLinks').style.display = 'flex';
-}
+    function abrirModalAsignacion(cedula, nombre, linkAp, linkPad) {
+      document.getElementById('modalCedulaAlumno').value = cedula;
+      document.getElementById('modalTituloAlumno').innerText = `Asignar Evaluaciones para: ${nombre}`;
+      document.getElementById('modalInputLinkApadrinado').value = linkAp;
+      document.getElementById('modalInputLinkPadrino').value = linkPad;
+      document.getElementById('modalAsignarLinks').style.display = 'flex';
+    }
 
-function cerrarModalLinks() {
-    document.getElementById('modalAsignarLinks').style.display = 'none';
-}
+    function cerrarModalLinks() { document.getElementById('modalAsignarLinks').style.display = 'none'; }
 
-// 💾 GUARDAR DATOS EN FIRESTORE CON HISTORIAL DE TRAZABILIDAD AUTOMÁTICO
-async function procesarGuardadoLinksConTrazabilidad() {
-    const cedulaAlumno = document.getElementById('modalCedulaAlumno').value;
-    const linkApadrinado = document.getElementById('modalInputLinkApadrinado').value.trim();
-    const linkPadrino = document.getElementById('modalInputLinkPadrino').value.trim();
-
-    try {
+    async function procesarGuardadoLinksConTrazabilidad() {
+      const cedulaAlumno = document.getElementById('modalCedulaAlumno').value;
+      const linkApadrinado = document.getElementById('modalInputLinkApadrinado').value.trim();
+      const linkPadrino = document.getElementById('modalInputLinkPadrino').value.trim();
+      try {
         let snap = await db.collection('empleados').where('cedula', '==', cedulaAlumno).limit(1).get();
         if (snap.empty) return alert("Error: El alumno no existe.");
-
         const docRef = snap.docs[0].ref;
         const datosActuales = snap.docs[0].data();
-
-        let actualizaciones = {
-            link_evaluacion_apadrinado: linkApadrinado,
-            link_evaluacion_padrino: linkPadrino
-        };
-
-        // 🔄 Si se cambia el link y ya existía uno previo, guardamos traza en el historial del alumno
+        let actualizaciones = { link_evaluacion_apadrinado: linkApadrinado, link_evaluacion_padrino: linkPadrino };
         if (datosActuales.link_evaluacion_padrino && datosActuales.link_evaluacion_padrino !== linkPadrino) {
-            const registroHistorico = {
-                padrino_id_historico: datosActuales.padrino_id || "Desconocido",
-                link_padrino_anterior: datosActuales.link_evaluacion_padrino,
-                fecha_modificacion: new Date().toISOString().split('T')[0],
-                motivo: "Actualización manual de enlace de evaluación por el administrador"
-            };
-            // Agregamos al arreglo sin machacar los anteriores
-            actualizaciones.historial_padrinos = firebase.firestore.FieldValue.arrayUnion(registroHistorico);
+          const registroHistorico = { padrino_id_historico: datosActuales.padrino_id || "Desconocido", link_padrino_anterior: datosActuales.link_evaluacion_padrino, fecha_modificacion: new Date().toISOString().split('T')[0], motivo: "Actualización manual de enlace de evaluación por el administrador" };
+          actualizaciones.historial_padrinos = firebase.firestore.FieldValue.arrayUnion(registroHistorico);
         }
-
         await docRef.update(actualizaciones);
-        
         alert("✅ Enlaces de evaluación asignados correctamente.");
         cerrarModalLinks();
-        
-        // Refrescamos la vista de la tabla para ver los cambios aplicados en tiempo real
         verApadrinadosAsociados(datosActuales.padrino_id, "Padrino Actual");
-
-    } catch (error) {
-        console.error("Error actualizando enlaces:", error);
-        alert("Hubo un error al guardar en Firestore.");
+      } catch (error) { console.error("Error actualizando enlaces:", error); alert("Hubo un error al guardar en Firestore."); }
     }
-}
 
     function logout() { localStorage.clear(); window.location.href = 'login.html'; }
-    function poblarFiltrosEstrategicos() { }
 
-    // Añade esto al final de tu archivo admin_padrino.js junto a las demás exportaciones
-window.inicializarModuloGestionPadrinos = inicializarModuloGestionPadrinos;
-window.verApadrinadosAsociados = verApadrinadosAsociados;
-window.abrirModalAsignacion = abrirModalAsignacion;
-window.cerrarModalLinks = cerrarModalLinks;
-window.procesarGuardadoLinksConTrazabilidad = procesarGuardadoLinksConTrazabilidad;
+    window.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('usuario_rol') === 'people') {
+        if (document.getElementById('seccionFormBeneficios')) document.getElementById('seccionFormBeneficios').style.display = 'none';
+        if (document.getElementById('bloqueCargaMasiva')) document.getElementById('bloqueCargaMasiva').style.display = 'none';
+        if (document.getElementById('bloqueCargaEvaluaciones')) document.getElementById('bloqueCargaEvaluaciones').style.display = 'none';
+        if (document.getElementById('seccionFormCapacitaciones')) document.getElementById('seccionFormCapacitaciones').style.display = 'none';
+        if (document.getElementById('btnGuardarEmpleado')) document.getElementById('btnGuardarEmpleado').style.display = 'none';
+        if (document.getElementById('btnEliminarEmpleado')) document.getElementById('btnEliminarEmpleado').style.display = 'none';
+        if (document.getElementById('crudNombre')) document.getElementById('crudNombre').disabled = true;
+        if (document.getElementById('crudCargo')) document.getElementById('crudCargo').disabled = true;
+        if (document.getElementById('crudRegion')) document.getElementById('crudRegion').disabled = true;
+        if (document.getElementById('regEmpleadoGrupo')) document.getElementById('regEmpleadoGrupo').disabled = true;
+        if (document.getElementById('crudFechaIngreso')) document.getElementById('crudFechaIngreso').disabled = true;
+        if (document.getElementById('empleadoRol')) document.getElementById('empleadoRol').disabled = true;
+        if (document.getElementById('thAccionesBeneficios')) document.getElementById('thAccionesBeneficios').style.display = 'none';
+      }
+      setTimeout(() => { if (typeof inicializarModuloGestionPadrinos === 'function') inicializarModuloGestionPadrinos(); }, 500);
+      if (localStorage.getItem('usuario_rol') === 'lider') {
+        const botonesMenu = document.querySelectorAll('.navbar-menu .nav-tab-btn');
+        if (botonesMenu.length >= 5) { botonesMenu[0].style.display = 'none'; botonesMenu[1].style.display = 'none'; botonesMenu[2].style.display = 'none'; botonesMenu[3].style.display = 'none'; }
+        const btnPlanPadrino = document.querySelector('.header button');
+        if (btnPlanPadrino) btnPlanPadrino.style.display = 'none';
+        if (botonesMenu[4]) cambiarSeccionAdmin('capacitaciones', botonesMenu[4]);
+      }
+      renderizarListaConfigValle();
+    });
+
+    window.inicializarModuloGestionPadrinos = inicializarModuloGestionPadrinos;
+    window.verApadrinadosAsociados = verApadrinadosAsociados;
+    window.abrirModalAsignacion = abrirModalAsignacion;
+    window.cerrarModalLinks = cerrarModalLinks;
+    window.procesarGuardadoLinksConTrazabilidad = procesarGuardadoLinksConTrazabilidad;
   </script>
 </body>
-
 </html>

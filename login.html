@@ -116,14 +116,19 @@
           // =========================================================================
           // 🎯 ENRUTAMIENTO CONTROLADO Y SEGMENTACIÓN DE ACCESOS
           // =========================================================================
-          if (rolUsuario === 'admin') {
+          // =========================================================================
+          // 🎯 ENRUTAMIENTO CONTROLADO Y SEGMENTACIÓN DE ACCESOS (SINCRO CORREGIDA)
+          // =========================================================================
+          if (rolUsuario === 'admin' || rolUsuario === 'people' || rolUsuario === 'lider' || rolUsuario === 'jefe') {
+            // ✅ Todos los roles con facultades de gestión entran por admin.html
+            // (El script de admin.html se encargará de esconder las pestañas si es líder)
             window.location.href = 'admin.html';
-          } else if (rolUsuario === 'people' || rolUsuario === 'lider' || rolUsuario === 'jefe') {
-            window.location.href = 'admin_padrino.html'; // Panel Administrativo / Estratégico
-          } else if (esPadrinoReal) {
-            window.location.href = 'portal_padrino.html'; // 👨‍🏫 ¡Su nuevo portal exclusivo de tutoría!
+          } else if (esPadrinoReal || rolUsuario === 'padrino') {
+            // ✅ El padrino va directo a su portal operativo de campo sin tocar administración
+            window.location.href = 'portal_padrino.html'; 
           } else {
-            window.location.href = 'index.html'; // Portal Móvil del Empleado
+            // Colaboradores de base ingresan a su pantalla móvil estándar
+            window.location.href = 'index.html'; 
           }
 
         } else {
