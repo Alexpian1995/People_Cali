@@ -65,25 +65,147 @@
     .tag { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
     .tag.green { background: #e1f5ee; color: #0f6e56; }
     .tag.yellow { background: #fef9e7; color: #8a6e00; }
+    .tag.blue { background: #e1f0f5; color: #206987; }
 
     .alert-card { background: #fff8e6; border: 0.5px solid #ffc404; border-radius: 12px; padding: 10px 12px; display: flex; gap: 9px; align-items: flex-start; margin-bottom: 8px; }
     .alert-card i { color: #c89b00; font-size: 18px; margin-top: 1px; }
     .alert-text { font-size: 10.5px; color: #5a4200; line-height: 1.45; }
     .alert-time { font-size: 9px; color: #a08030; margin-top: 2px; }
 
-    .cap-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid #eef1f3; }
-    .cap-item:last-child { border-bottom: none; }
-    .cap-num { width: 26px; height: 26px; border-radius: 50%; background: #e1f5ee; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #206987; flex-shrink: 0; }
-    .cap-num.done { background: #206987; color: #fff; }
-    .cap-info { flex: 1; }
-    .cap-title { font-size: 11px; font-weight: 600; color: #1a3540; }
-    .cap-date { font-size: 9.5px; color: #7a8f99; margin-top: 1px; }
-    .cap-actions { display: flex; gap: 5px; align-items: center; }
-
-    .btn-ppt { font-size: 9px; padding: 6px 10px; border-radius: 7px; background: #e1f5ee; color: #0f6e56; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 3px; }
-    .btn-ppt:hover { opacity: 0.9; }
-    .btn-qr { font-size: 9px; padding: 6px 10px; border-radius: 7px; background: #fff8e1; color: #8a6e00; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; gap: 3px; }
-    .btn-qr:disabled { background: #f1efe8; color: #9da3a6; cursor: not-allowed; opacity: 0.6; }
+    /* 🎥 NUEVOS ESTILOS PARA CAPACITACIONES CON VIDEO EMBEBIDO */
+    .capacitacion-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #dde3e7;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .cap-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .cap-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 22px;
+    }
+    
+    .cap-icon.safety { background: #fee2e2; color: #dc2626; }
+    .cap-icon.management { background: #dbeafe; color: #2563eb; }
+    .cap-icon.people { background: #f3e8ff; color: #9333ea; }
+    .cap-icon.delivery { background: #ffedd5; color: #ea580c; }
+    .cap-icon.warehouse { background: #dcfce7; color: #16a34a; }
+    .cap-icon.fleet { background: #f3f4f6; color: #4b5563; }
+    
+    .cap-info h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a3540;
+      margin-bottom: 4px;
+    }
+    
+    .cap-meta {
+      font-size: 10px;
+      color: #7a8f99;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .cap-video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
+      background: #000;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    
+    .cap-video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    .cap-progress {
+      background: #eef1f3;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    
+    .cap-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #206987, #3cbcae);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+    
+    .cap-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .btn-watch {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    
+    .btn-watch.primary {
+      background: linear-gradient(135deg, #206987, #3cbcae);
+      color: white;
+    }
+    
+    .btn-watch.secondary {
+      background: #e1f5ee;
+      color: #0f6e56;
+    }
+    
+    .btn-watch:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
     .avance-global { background: #206987; border-radius: 14px; padding: 14px; margin-bottom: 10px; border-bottom: 4px solid #3cbcae; }
     .avance-label { font-size: 10px; color: #a8d8e0; font-weight: 600; margin-bottom: 2px; }
@@ -98,12 +220,10 @@
     .profile-info .cargo { font-size: 10.5px; color: #7a8f99; }
     .btn-logout { background: none; border: none; color: #a32d2d; font-size: 11px; cursor: pointer; font-weight: 600; margin-top: 5px; }
 
-    /* Estilos de las etiquetas de habilidades del Padrino */
     .tag-skill { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 600; }
     .tag-tecnica { background: #e1f5ee; color: #0f6e56; border: 1px solid #3cbcae; }
     .tag-blanda { background: #fff8e1; color: #8a6e00; border: 1px solid #ffc404; }
 
-    /* 🌟 Estilos propios del nuevo bloque de progreso de hitos del empleado */
     .hito-progreso-wrap {
       padding: 22px 18px;
       border-radius: 18px;
@@ -155,6 +275,80 @@
       border-radius: 20px; width: fit-content;
     }
     .hito-card-meta { font-size: 8.5px; color: #7a8f99; line-height: 1.4; margin-top: 2px; }
+
+    /* Modal para video */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      font-size: 15px;
+      color: #1a3540;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #718096;
+    }
+    
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -212,21 +406,21 @@
   </div>
 
   <div class="screen" id="screen-beneficios">
-    <div class="section-title" style="margin-top:10px;">Beneficios &amp; compensación por cargo</div>
+    <div class="section-title" style="margin-top:10px;">Beneficios & compensación por cargo</div>
     <div id="contenedor-beneficios-lista">
       <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Cargando tus beneficios asignados...</div>
     </div>
   </div>
 
   <div class="screen" id="screen-capacitaciones">
-    <div class="section-title" style="margin-top:10px;">Mi plan de entrenamiento</div>
-    <div class="card" id="cap-list">
-      <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Cargando tus capacitaciones programadas...</div>
+    <div class="section-title" style="margin-top:10px;">Mis Capacitaciones Asignadas</div>
+    <div id="capacitaciones-list">
+      <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Cargando tus capacitaciones...</div>
     </div>
   </div>
 
   <div class="screen" id="screen-notif">
-    <div class="section-title" style="margin-top:10px;">Alertas de Entrenamiento Informativas</div>
+    <div class="section-title" style="margin-top:10px;">Alertas de Entrenamiento</div>
     <div id="alert-list">
       <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Sin mensajes ni asignaciones nuevas.</div>
     </div>
@@ -260,7 +454,6 @@
       <i class="ti ti-timeline" style="font-size: 14px; color: #206987;"></i> Mi Progreso de Onboarding
     </div>
 
-    <!-- 🌟 NUEVO BLOQUE: Tarjetas de progreso de hitos en tiempo real -->
     <div class="hito-progreso-wrap">
       <div class="hito-fecha-contrato-row">
         <div class="hito-fecha-icon">
@@ -276,7 +469,7 @@
       </div>
     </div>
 
-    <div class="section-title">🤝 Mi Padrino Certificado Asignado</div>
+    <div class="section-title"> Mi Padrino Certificado Asignado</div>
     <div class="card" style="background: #fff; border: 1.5px solid #dde3e7; padding: 0; overflow:hidden; border-radius:14px; box-shadow: 0 4px 12px rgba(0,0,0,0.01);">
       
       <div style="background: #206987; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; border-bottom: 3px solid #3cbcae;">
@@ -315,6 +508,26 @@
 
 </div>
 
+<!-- Modal para ver videos -->
+<div id="videoModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalVideoTitle">Capacitación</h3>
+      <button class="modal-close" onclick="cerrarVideoModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="video-wrapper">
+        <iframe id="modalVideoIframe" src="" allowfullscreen></iframe>
+      </div>
+      <div style="margin-top: 16px; text-align: center;">
+        <button class="btn-watch primary" onclick="marcarComoVisto()" style="width: 100%;">
+          <i class="ti ti-check"></i> Marcar como visto y continuar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="config.js"></script>
@@ -328,7 +541,11 @@
     window.location.href = 'login.html';
   }
 
-  // 🇨🇴 Matriz Oficial Unificada de Días Festivos en Colombia (2026 - 2027)
+  let capacitacionActual = null;
+  let asignacionActualId = null;
+  let youtubePlayer = null;
+  let videoProgress = 0;
+
   const FESTIVOS_COLOMBIA = [
       "2026-01-01", "2026-01-12", "2026-03-23", "2026-04-02", "2026-04-03",
       "2026-05-01", "2026-05-18", "2026-06-08", "2026-06-15", "2026-06-29",
@@ -341,7 +558,7 @@
   ];
 
   function esDiaInhabilColombia(fechaObjeto) {
-      if (fechaObjeto.getDay() === 0) return true; // Domingo
+      if (fechaObjeto.getDay() === 0) return true;
       const formatoISO = fechaObjeto.toISOString().split('T')[0];
       return FESTIVOS_COLOMBIA.includes(formatoISO);
   }
@@ -366,7 +583,6 @@
       return d.toISOString().split('T')[0];
   }
 
-  // 🎨 Construye una tarjeta de hito con diseño propio y elegante para el empleado
   function buildHitoEmpleadoCard(label, icono, nota, fechaEjecucion, fechaBase, diasDesfase, umbralAprobacion) {
       const limiteStr = (diasDesfase === 0 || diasDesfase === 1 || diasDesfase === 7)
           ? calcularFechaLimiteHabilesColombia(fechaBase, diasDesfase)
@@ -394,7 +610,7 @@
               if (ejecutoATiempo) {
                   estadoTexto = 'A tiempo'; estadoColor = '#0f6e56'; estadoBg = '#e1f5ee'; estadoBorder = '#3cbcae'; estadoIcono = '✓';
               } else {
-                  estadoTexto = 'Fuera de plazo'; estadoColor = '#206987'; estadoBg = '#e8f3f6'; estadoBorder = '#8fc4d6'; estadoIcono = '🎓';
+                  estadoTexto = 'Fuera de plazo'; estadoColor = '#206987'; estadoBg = '#e8f3f6'; estadoBorder = '#8fc4d6'; estadoIcono = '';
               }
           }
       }
@@ -417,11 +633,10 @@
 
   window.addEventListener('DOMContentLoaded', () => {
     inicializarEscuchadorEmpleadoRealtime();
-    cargarCronogramaYProgreso();
+    cargarCapacitacionesAsignadas();
     cargarMensajesAlertaAutomaticas();
   });
 
- // 🌟 ESCUCHADOR MAESTRO EN TIEMPO REAL CON DETECCIÓN DE FECHA EXACTA Y SEGMENTACIÓN POR CD
   function inicializarEscuchadorEmpleadoRealtime() {
     db.collection('empleados')
       .where('cedula', '==', String(cedulaLogueada))
@@ -433,22 +648,17 @@
         const cargoEmpleado = usuario.cargo || "Operativo";
         const regionEmpleado = usuario.region || "General";
 
-        // 🌟 CORRECCIÓN DE ORIGEN: Detecta la fecha real de contratación guardada en el perfil
         const fechaBaseReal = usuario.fecha_ingreso || (usuario.hitos && usuario.hitos.fecha_contratacion) || "";
 
-        // Llenamos el perfil básico de la cabecera
         document.getElementById('userName').textContent = usuario.nombre;
         document.getElementById('userCargo').textContent = cargoEmpleado + " · Región " + regionEmpleado;
         document.getElementById('headerRegion').textContent = "Región " + regionEmpleado;
         document.getElementById('userAvatar').textContent = usuario.nombre.substring(0,2).toUpperCase();
 
-        // =========================================================
-        // 🤝 SECCIÓN DE MONITOREO Y RENDIMIENTO DEL PLAN PADRINO
-        // =========================================================
+        // Padrino
         if (usuario.es_apadrinado === true || usuario.padrino_id) {
           if(document.getElementById('tab-padrino')) document.getElementById('tab-padrino').style.display = 'flex';
 
-          // Cálculo informativo de días transcurridos usando el reloj del equipo en tiempo real
           let diasTranscurridos = 0;
           if (fechaBaseReal) {
             const fechaIngresoObj = new Date(fechaBaseReal + 'T00:00:00');
@@ -459,15 +669,10 @@
             diasTranscurridos = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
           }
           
-          // Pintamos los datos consolidados en la pantalla
           document.getElementById('padrinoFichaNombre').textContent = usuario.nombre;
           document.getElementById('padrinoFichaCargo').textContent = cargoEmpleado;
           document.getElementById('padrinoFichaEtapa').textContent = usuario.etapa_actual || "Etapa Técnico";
-          
-          // ✅ Sincronización del contador de días superior
           document.getElementById('padrinoFichaTiempoTranscurrido').textContent = (diasTranscurridos >= 0 ? diasTranscurridos : 0) + " días activos";
-
-          // 🧮 INYECCIÓN DINÁMICA DE TARJETAS DE PROGRESO POR HITO (Safety, People, 7d, 30d, 90d)
           document.getElementById('hitoFechaContrato').textContent = fechaBaseReal || "---";
 
           const h = usuario.hitos || {};
@@ -476,17 +681,16 @@
           if (gridHitos) {
             if (fechaBaseReal) {
               gridHitos.innerHTML =
-                  buildHitoEmpleadoCard("Safety (D1)", "🛡️", h.onboarding_safety_nota, h.onboarding_safety_fecha, fechaBaseReal, 0, 100) +
-                  buildHitoEmpleadoCard("People (D2)", "🤝", h.onboarding_people_nota, h.onboarding_people_fecha, fechaBaseReal, 1, 80) +
-                  buildHitoEmpleadoCard("7 DIAS", "⚙️", h.eval_tecnico_nota, h.eval_tecnico_fecha, fechaBaseReal, 7, 60) +
-                  buildHitoEmpleadoCard("30 DIAS", "📈", h.eval_funcional_nota, h.eval_funcional_fecha, fechaBaseReal, 32, 60) +
+                  buildHitoEmpleadoCard("Safety (D1)", "️", h.onboarding_safety_nota, h.onboarding_safety_fecha, fechaBaseReal, 0, 100) +
+                  buildHitoEmpleadoCard("People (D2)", "", h.onboarding_people_nota, h.onboarding_people_fecha, fechaBaseReal, 1, 80) +
+                  buildHitoEmpleadoCard("7 DIAS", "️", h.eval_tecnico_nota, h.eval_tecnico_fecha, fechaBaseReal, 7, 60) +
+                  buildHitoEmpleadoCard("30 DIAS", "", h.eval_funcional_nota, h.eval_funcional_fecha, fechaBaseReal, 32, 60) +
                   buildHitoEmpleadoCard("90 DIAS", "🏆", h.eval_autonomo_nota, h.eval_autonomo_fecha, fechaBaseReal, 92, 60);
             } else {
               gridHitos.innerHTML = '<div style="text-align:center; padding:15px; color:#7a8f99; font-size:11px; grid-column: 1 / -1;">Fecha de contratación no registrada aún.</div>';
             }
           }
 
-          // 🔍 BÚSQUEDA CRUZADA: Hoja de vida extendida del Padrino (CON FOTO BASE64 Y CORREO)
           if (usuario.padrino_id) {
             const tutorSnapshot = await db.collection('empleados').where('cedula', '==', String(usuario.padrino_id)).limit(1).get();
             
@@ -528,158 +732,390 @@
                   tData.habilidades_blandas.forEach(h => { boxBlandas.innerHTML += `<span class="tag-skill tag-blanda">${h}</span>`; });
                 } else { boxBlandas.innerHTML = '<span style="color:#7a8f99;">Ninguna</span>'; }
               }
-            } else {
-              document.getElementById('nombrePadrinoAsignado').textContent = "Padrino asignado no disponible";
             }
           }
         }
 
-        // =========================================================
-            // 📜 🌟 NUEVA INYECCIÓN: LÍNEA DE TIEMPO DE PADRINOS ANTERIORES
-            // =========================================================
-            const contenedorHistorial = document.getElementById('historialPadrinosAnteriores');
-            if (contenedorHistorial) {
-                contenedorHistorial.innerHTML = ''; // Limpiamos residuos
-                
-                if (usuario.historial_padrinos && usuario.historial_padrinos.length > 0) {
-                    let htmlHistorial = `<div style="margin-top: 15px; border-top: 1px dashed #ced4da; padding-top: 12px;">
-                        <h5 style="margin: 0 0 8px 0; color: #495057; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
-                            <i class="ti ti-history"></i> Historial de Acompañamiento:
-                        </h5>`;
-                        
-                    usuario.historial_padrinos.forEach(reg => {
-                        htmlHistorial += `
-                            <div style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 6px 10px; border-radius: 0 4px 4px 0; margin-bottom: 6px; font-size: 11px; color: #6c757d;">
-                                👥 <strong>${reg.padrino_nombre_anterior}</strong><br>
-                                📅 Relevo: ${reg.fecha_relevo} · <span style="font-style: italic;">${reg.motivo || 'Cambio operativo'}</span>
-                            </div>`;
-                    });
-                    
-                   htmlHistorial += `</div>`;
-                    contenedorHistorial.innerHTML = htmlHistorial;
-                }
-            }
+        // Beneficios - CON PARSER ROBUSTO PARA FORMATOS MIXTOS
+        const beneficioSnapshot = await db.collection('beneficios')
+          .where('cargo', '==', cargoEmpleado)
+          .where('region', '==', regionEmpleado)
+          .get();
 
-            // =========================================================
-            // 🎁 RECEPTOR DINÁMICO DE BENEFICIOS ASIGNADOS POR CARGO Y REGION
-            // =========================================================
-            const beneficioSnapshot = await db.collection('beneficios')
-              .where('cargo', '==', cargoEmpleado)
-              .where('region', '==', regionEmpleado)
-              .get();
-
-            const listaContainer = document.getElementById('contenedor-beneficios-lista');
-            if (listaContainer) {
-              listaContainer.innerHTML = '';
-              if (!beneficioSnapshot.empty) {
-                beneficioSnapshot.forEach((doc) => {
-                  const bReal = doc.data();
-                  const valorFormateado = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(bReal.valor || 0);
-                  listaContainer.innerHTML += `
-                    <div class="card" style="margin-bottom: 15px;">
-                      <div class="card-header">
-                        <div class="card-icon yellow"><i class="ti ti-coin"></i></div>
-                        <div>
-                          <div class="card-title" style="color: #206987; font-weight: 700;">${bReal.concepto || "Compensación"}</div>
-                          <div class="card-sub">Cargo: ${cargoEmpleado} · Sede: ${regionEmpleado}</div>
-                        </div>
-                      </div>
-                      <div class="benefit-row">
-                        <span class="benefit-label">Monto asignado para tu perfil:</span>
-                        <span class="benefit-amount" style="color: #206987; font-weight: 700;">${valorFormateado}</span>
-                      </div>
-                    </div>`;
-                });
-              } else {
-                listaContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">No registras beneficios configurados para el cargo de ${cargoEmpleado} en la sede de ${regionEmpleado}.</div>`;
-              }
-            }
+        const listaContainer = document.getElementById('contenedor-beneficios-lista');
+        if (listaContainer) {
+          listaContainer.innerHTML = '';
+          if (!beneficioSnapshot.empty) {
             
-        }, (error) => { // ✅ AHROA SÍ: Todos los procesos asíncronos cierran juntos de forma segura
-            console.error("Error en el canal en tiempo real del colaborador:", error);
-        });
-    }
-  
+            // Función robusta para parsear montos en formato COP
+            function parseMonto(v) {
+              if (typeof v === 'number') return v;
+              const s = String(v).trim().replace(/[^\d.,]/g, '');
+              // Si termina en ,dd o .dd (1-2 decimales), se trata como decimal
+              const m = s.match(/^(.*)[.,](\d{1,2})$/);
+              const entero = (m ? m[1] : s).replace(/[.,]/g, '');
+              return parseFloat(entero + (m ? '.' + m[2] : '')) || 0;
+            }
 
-  
-  function cargarCronogramaYProgreso() {
-    db.collection('items_cronograma').where('empleado_id', '==', cedulaLogueada).onSnapshot((snapshot) => {
-      const listContainer = document.getElementById('cap-list');
-      if(!listContainer) return;
-      listContainer.innerHTML = '';
+            beneficioSnapshot.forEach((doc) => {
+              const bReal = doc.data();
+              
+              // Usar el parser robusto
+              const valorNumerico = parseMonto(bReal.valor);
+              
+              // Formatear correctamente para Colombia
+              const valorFormateado = new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+              }).format(valorNumerico);
+              
+              listaContainer.innerHTML += `
+                <div class="card" style="margin-bottom: 15px;">
+                  <div class="card-header">
+                    <div class="card-icon yellow"><i class="ti ti-coin"></i></div>
+                    <div>
+                      <div class="card-title" style="color: #206987; font-weight: 700;">${bReal.concepto || "Compensación"}</div>
+                      <div class="card-sub">Cargo: ${cargoEmpleado} · Sede: ${regionEmpleado}</div>
+                    </div>
+                  </div>
+                  <div class="benefit-row">
+                    <span class="benefit-label">Monto asignado para tu perfil:</span>
+                    <span class="benefit-amount" style="color: #206987; font-weight: 700; font-size: 18px;">${valorFormateado}</span>
+                  </div>
+                </div>`;
+            });
+          } else {
+            listaContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">No registras beneficios configurados para el cargo de ${cargoEmpleado} en la sede de ${regionEmpleado}.</div>`;
+          }
+        }
+      });
+  }
 
-      let total = 0; let completadas = 0;
+  // 🎥 CARGAR CAPACITACIONES ASIGNADAS CON VIDEO EMBEBIDO
+  async function cargarCapacitacionesAsignadas() {
+    const container = document.getElementById('capacitaciones-list');
+    
+    try {
+      const snapshot = await db.collection('asignaciones_valle')
+        .where('empleado_documento', '==', cedulaLogueada)
+        .get();
+
       if (snapshot.empty) {
-        listContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">No tienes capacitaciones programadas.</div>';
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:#7a8f99; font-size:12px;">No tienes capacitaciones asignadas aún.</div>';
         actualizarBarraProgreso(0, 0);
         return;
       }
 
-      snapshot.forEach((doc) => {
-        total++;
-        const item = doc.data();
-        const itemId = doc.id;
-        if (item.completado) completadas++;
-
-        const habilitarEval = item.visto_ppt ? '' : 'disabled';
-        const iconoCandado = item.visto_ppt ? '<i class="ti ti-qrcode"></i> Eval' : '<i class="ti ti-lock"></i> Bloqueado';
-
-        listContainer.innerHTML += `
-          <div class="cap-item">
-            <div class="cap-num ${item.completado ? 'done' : ''}">${total}</div>
-            <div class="cap-info">
-              <div class="cap-title">${item.titulo}</div>
-              <div class="cap-date">Límite: ${item.fecha_limite}</div>
-            </div>
-            <div class="cap-actions">
-              ${!item.completado ? `
-                <button class="btn-ppt" onclick="abrirPPT('${itemId}', '${item.ppt_drive_id}')"><i class="ti ti-presentation"></i> PPT</button>
-                <button class="btn-qr" id="btn-eval-${itemId}" ${habilitarEval} onclick="completarEvaluacion('${itemId}', '${item.qr_url}')">${iconoCandado}</button>
-              ` : '<span class="tag green">Aprobado</span>'}
-            </div>
-          </div>`;
+      // Convertir a array y ordenar en el cliente
+      let asignaciones = [];
+      snapshot.forEach(doc => {
+        asignaciones.push({ id: doc.id, ...doc.data() });
       });
+
+      // Ordenar por fecha de creación (más reciente primero)
+      asignaciones.sort((a, b) => {
+        const dateA = a.creado_en?.toDate() || new Date(0);
+        const dateB = b.creado_en?.toDate() || new Date(0);
+        return dateB - dateA;
+      });
+
+      let html = '';
+      let total = asignaciones.length;
+      let completadas = 0;
+
+      asignaciones.forEach(asig => {
+        if (asig.estado === 'Cumplió') completadas++;
+
+        const videoVisto = asig.video_visto === true;
+        const evaluacionCompletada = asig.estado === 'Cumplió';
+        
+        const iconClass = getPilarIconClass(asig.pilar || 'Safety');
+        const estadoClass = getEstadoClass(asig.estado);
+        const progresoWidth = videoVisto ? 50 : (evaluacionCompletada ? 100 : 0);
+
+        html += `
+          <div class="capacitacion-card">
+            <div class="cap-header">
+              <div class="cap-icon ${iconClass}">
+                <i class="ti ti-video"></i>
+              </div>
+              <div class="cap-info">
+                <h3>${asig.capacitacion_nombre || 'Capacitación sin nombre'}</h3>
+                <div class="cap-meta">
+                  <span class="tag ${estadoClass}">${asig.estado || 'Programado'}</span>
+                  <span style="color:#7a8f99;"> ${asig.fecha_limite || 'Sin fecha'}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="cap-progress">
+              <div class="cap-progress-bar" style="width: ${progresoWidth}%"></div>
+            </div>
+            
+            ${!evaluacionCompletada ? `
+              <div class="cap-actions">
+                <button class="btn-watch primary" onclick="abrirVideo('${asig.id}', '${asig.video_url || ''}', '${asig.youtube_video_id || ''}', '${asig.capacitacion_nombre || 'Capacitación'}')">
+                  <i class="ti ti-player-play"></i> ${videoVisto ? 'Continuar video' : 'Ver video'}
+                </button>
+                <button class="btn-watch secondary" ${!videoVisto ? 'disabled' : ''} onclick="irAEvaluacion('${asig.id}', '${asig.link_evaluacion || ''}')" style="${!videoVisto ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                  <i class="ti ti-clipboard-text"></i> ${videoVisto ? 'Evaluación' : 'Evaluación (bloqueada)'}
+                </button>
+                <button class="btn-whatsapp" onclick="compartirPorWhatsApp('${asig.capacitacion_nombre || 'Capacitación'}', '${asig.fecha_limite || ''}')">
+                  <i class="ti ti-brand-whatsapp"></i> Alerta
+                </button>
+              </div>
+            ` : `
+              <div style="text-align:center; padding:10px; color:#0f6e56; font-weight:700;">
+                <i class="ti ti-check-circle" style="font-size:20px;"></i> Capacitación completada
+              </div>
+            `}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
       actualizarBarraProgreso(completadas, total);
+
+    } catch (error) {
+      console.error("Error cargando capacitaciones:", error);
+      container.innerHTML = `
+        <div style="text-align:center; padding:20px; color:#dc2626; font-size:12px;">
+          Error al cargar capacitaciones<br>
+          <small>${error.message}</small>
+        </div>`;
+    }
+  }
+
+  function getPilarIconClass(pilar) {
+    const map = {
+      'Safety': 'safety',
+      'Management': 'management',
+      'People': 'people',
+      'Delivery': 'delivery',
+      'Warehouse': 'warehouse',
+      'Fleet': 'fleet'
+    };
+    return map[pilar] || 'safety';
+  }
+
+  function getEstadoClass(estado) {
+    const map = {
+      'Programado': 'blue',
+      'Pendiente evaluación': 'yellow',
+      'Cumplió': 'green',
+      'No cumplió': 'red'
+    };
+    return map[estado] || 'blue';
+  }
+
+  // 🎥 FUNCIONES DE VIDEO CON TRACKING DE PROGRESO
+  function abrirVideo(asigId, videoUrl, youtubeVideoId, titulo) {
+    capacitacionActual = asigId;
+    asignacionActualId = asigId;
+    videoProgress = 0; // Resetear progreso
+    
+    document.getElementById('modalVideoTitle').textContent = titulo;
+    
+    // Construir URL con API habilitada
+    let embedUrl = '';
+    if (youtubeVideoId) {
+      embedUrl = `https://www.youtube.com/embed/${youtubeVideoId}?rel=0&modestbranding=1&enablejsapi=1&playsinline=1`;
+    } else if (videoUrl) {
+      const videoId = extraerIdYouTube(videoUrl);
+      if (videoId) {
+        embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1&playsinline=1`;
+      }
+    }
+    
+    document.getElementById('modalVideoIframe').src = embedUrl;
+    
+    // Deshabilitar botón inicialmente
+    const btnMarcarVisto = document.querySelector('#videoModal .btn-watch.primary');
+    btnMarcarVisto.disabled = true;
+    btnMarcarVisto.style.opacity = '0.5';
+    btnMarcarVisto.style.cursor = 'not-allowed';
+    btnMarcarVisto.innerHTML = '<i class="ti ti-lock"></i> Video bloqueado - Reprodúcelo para continuar';
+    btnMarcarVisto.style.background = '';
+    
+    document.getElementById('videoModal').classList.add('active');
+    
+    // Inicializar tracking después de que cargue el iframe
+    setTimeout(initYouTubeTracking, 1000);
+  }
+
+  function initYouTubeTracking() {
+    // Verificar si la API de YouTube está disponible
+    if (typeof YT === 'undefined' || !YT.Player) {
+      // Cargar API si no está disponible
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
+      
+      window.onYouTubeIframeAPIReady = function() {
+        setupPlayer();
+      };
+    } else {
+      setupPlayer();
+    }
+  }
+
+  function setupPlayer() {
+    const iframe = document.getElementById('modalVideoIframe');
+    if (!iframe) return;
+    
+    try {
+      youtubePlayer = new YT.Player('modalVideoIframe', {
+        events: {
+          'onReady': onModalPlayerReady,
+          'onStateChange': onModalPlayerStateChange
+        }
+      });
+      
+      // Iniciar tracking de progreso cada 2 segundos
+      setInterval(trackModalProgress, 2000);
+    } catch (err) {
+      console.error('Error inicializando player:', err);
+    }
+  }
+
+  function onModalPlayerReady(event) {
+    console.log('Modal player ready');
+  }
+
+  function onModalPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+      // Video completado
+      enableMarkAsSeenButton();
+    }
+  }
+
+  function trackModalProgress() {
+    if (!youtubePlayer || typeof youtubePlayer.getCurrentTime !== 'function') return;
+    
+    try {
+      const currentTime = youtubePlayer.getCurrentTime();
+      const duration = youtubePlayer.getDuration();
+      
+      if (duration > 0) {
+        const percentage = Math.round((currentTime / duration) * 100);
+        videoProgress = percentage;
+        
+        // Actualizar texto del botón si está cerca del final
+        if (percentage >= 95) {
+          enableMarkAsSeenButton();
+        } else if (percentage > 50) {
+          const btn = document.querySelector('#videoModal .btn-watch.primary');
+          btn.innerHTML = `<i class="ti ti-clock"></i> Progreso: ${percentage}% - Sigue viendo...`;
+        }
+      }
+    } catch (err) {
+      // Silenciar errores de tracking
+    }
+  }
+
+  function enableMarkAsSeenButton() {
+    const btn = document.querySelector('#videoModal .btn-watch.primary');
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    btn.innerHTML = '<i class="ti ti-check"></i> Marcar como visto y continuar';
+    btn.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+  }
+
+  function cerrarVideoModal() {
+    // Pausar video al cerrar
+    if (youtubePlayer && typeof youtubePlayer.pauseVideo === 'function') {
+      youtubePlayer.pauseVideo();
+    }
+    
+    document.getElementById('videoModal').classList.remove('active');
+    document.getElementById('modalVideoIframe').src = '';
+    youtubePlayer = null;
+    videoProgress = 0;
+    capacitacionActual = null;
+  }
+
+  async function marcarComoVisto() {
+    // Verificar que haya visto al menos 95% del video
+    if (videoProgress < 95) {
+      alert(`Debes ver al menos el 95% del video para continuar. Progreso actual: ${videoProgress}%`);
+      return;
+    }
+    
+    if (!asignacionActualId) return;
+    
+    try {
+      await db.collection('asignaciones_valle').doc(asignacionActualId).update({
+        video_visto: true,
+        video_visto_fecha: firebase.firestore.FieldValue.serverTimestamp(),
+        video_progreso: videoProgress
+      });
+      
+      alert('✅ Video marcado como visto. Ahora puedes realizar la evaluación.');
+      cerrarVideoModal();
+      cargarCapacitacionesAsignadas();
+      
+    } catch (error) {
+      console.error("Error marcando video:", error);
+      alert('Error al guardar progreso');
+    }
+  }
+
+  function extraerIdYouTube(url) {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+
+  function irAEvaluacion(asigId, evalUrl) {
+    window.open(evalUrl, '_blank');
+    
+    db.collection('asignaciones_valle').doc(asigId).update({
+      form_abierto: true,
+      form_abierto_fecha: firebase.firestore.FieldValue.serverTimestamp()
     });
+  }
+
+  function compartirPorWhatsApp(titulo, fechaLimite) {
+    const mensaje = ` Nueva capacitación asignada: *${titulo}*\n\n⏰ Fecha límite: ${fechaLimite || 'Por definir'}\n\nDebo completarla lo antes posible.`;
+    const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
   }
 
   function actualizarBarraProgreso(hechas, totales) {
     const pct = totales > 0 ? Math.round((hechas / totales) * 100) : 0;
     if(document.getElementById('homeAvancePct')) document.getElementById('homeAvancePct').textContent = pct + "%";
-    if(document.getElementById('homeAvanceSub')) document.getElementById('homeAvanceSub').textContent = `${hechas} de ${totales} evaluaciones completadas`;
+    if(document.getElementById('homeAvanceSub')) document.getElementById('homeAvanceSub').textContent = `${hechas} de ${totales} capacitaciones completadas`;
     if(document.getElementById('homeAvanceBar')) document.getElementById('homeAvanceBar').style.width = pct + "%";
   }
 
-  async function abrirPPT(itemId, urlCompleta) {
-    window.open(urlCompleta, '_blank');
-    try { await db.collection('items_cronograma').doc(itemId).update({ visto_ppt: true }); } catch(e) { console.error(e); }
-  }
-
-  async function completarEvaluacion(itemId, urlQr) {
-    window.open(urlQr, '_blank');
-    try { await db.collection('items_cronograma').doc(itemId).update({ completado: true, fecha_completado: new Date().toISOString().split('T')[0] }); } catch(e) { console.error(e); }
-  }
-
   function cargarMensajesAlertaAutomaticas() {
-    db.collection('items_cronograma').where('empleado_id', '==', cedulaLogueada).onSnapshot((snapshot) => {
-      const container = document.getElementById('alert-list');
-      if(!container) return;
-      let alertasHtml = '';
-      
-      snapshot.forEach(doc => {
-        const item = doc.data();
-        if(!item.completado) {
+    db.collection('asignaciones_valle')
+      .where('empleado_documento', '==', cedulaLogueada)
+      .where('estado', 'in', ['Programado', 'Pendiente evaluación'])
+      .onSnapshot((snapshot) => {
+        const container = document.getElementById('alert-list');
+        if(!container) return;
+        
+        let alertasHtml = '';
+        
+        snapshot.forEach(doc => {
+          const item = doc.data();
           alertasHtml += `
             <div class="alert-card">
               <i class="ti ti-alert-circle"></i>
               <div>
-                <div class="alert-text">Nueva capacitación asignada: Tienes pendiente estudiar el tema <strong>"${item.titulo}"</strong> antes del ${item.fecha_limite}.</div>
+                <div class="alert-text">Tienes pendiente: <strong>"${item.capacitacion_nombre || 'Capacitación'}"</strong> ${item.fecha_limite ? 'antes del ' + item.fecha_limite : ''}</div>
+                <div class="alert-time">Estado: ${item.estado || 'Programado'}</div>
               </div>
             </div>`;
-        }
+        });
+        
+        container.innerHTML = alertasHtml || '<div style="text-align:center; padding:20px; color:#7a8f99;">✓ Al día. Sin alertas pendientes.</div>';
       });
-      container.innerHTML = alertasHtml || '<div style="text-align:center; padding:20px; color:#7a8f99;">✓ Al día. Sin alertas pendientes.</div>';
-    });
   }
 
   function showTab(name) {
@@ -687,9 +1123,16 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     if(document.getElementById('screen-' + name)) document.getElementById('screen-' + name).classList.add('active');
     if(document.getElementById('tab-' + name)) document.getElementById('tab-' + name).classList.add('active');
+    
+    if (name === 'capacitaciones') {
+      cargarCapacitacionesAsignadas();
+    }
   }
 
-  function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+  function logout() { 
+    localStorage.clear(); 
+    window.location.href = 'login.html'; 
+  }
 </script>
 </body>
 </html>

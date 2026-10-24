@@ -77,7 +77,45 @@
     .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #718096; }
     .preview-box { background: #edf2f7; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #206987; }
 
-    /* RESPONSIVE REAL PARA MÓVILES */
+    /* CALENDARIO MEJORADO */
+    .calendar-day {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .calendar-day:hover {
+      border-color: #206987;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(32,105,135,0.15);
+    }
+    .calendar-day.has-events {
+      border-color: #3cbcae;
+      background: #f0f9ff;
+    }
+    .calendar-day-number {
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #2d3748;
+    }
+    .calendar-event {
+      background: #206987;
+      color: white;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .calendar-event.vencido {
+      background: #ef4444;
+    }
+
     @media (max-width: 768px) {
       .admin-container { padding: 10px; }
       .header { flex-direction: column; gap: 15px; text-align: center; padding: 15px; }
@@ -86,7 +124,7 @@
       .header-actions .btn-header { font-size: 12px; padding: 8px 12px; }
       .main-nav { padding: 10px; gap: 6px; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
       .nav-btn { padding: 10px 14px; font-size: 12px; flex-shrink: 0; }
-      .nav-btn span { display: none; } /* Oculta texto en móvil, deja solo íconos */
+      .nav-btn span { display: none; }
       .nav-btn i { font-size: 18px; }
       .card { padding: 15px; border-radius: 12px; }
       .card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -102,11 +140,12 @@
       .import-zone { padding: 25px 15px; }
       .import-zone i { font-size: 48px; }
       .modal-content { padding: 20px 15px; }
+      .calendar-day { min-height: 60px; padding: 5px; }
     }
     @media (max-width: 480px) {
       .header h1 { font-size: 20px; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
-      .form-group input, .form-group select { font-size: 16px; /* Evita zoom automático en iOS */ }
+      .form-group input, .form-group select { font-size: 16px; }
     }
   </style>
 </head>
@@ -214,9 +253,12 @@
         <div class="search-box"><input type="text" id="searchEmpleados" placeholder="Buscar por nombre o cédula..." onkeyup="buscarEmpleados()"></div>
         <div class="table-container">
           <table>
-            <thead><tr><th>Cédula</th><th>Nombre</th><th>Cargo</th><th>Región</th><th>Operación</th><th>Estado</th></tr></thead>
-            <tbody id="tablaEmpleadosBody"><tr><td colspan="6" style="text-align: center; padding: 30px; color: #718096;">Cargando...</td></tr></tbody>
+            <thead><tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th>Cédula</th><th>Nombre</th><th>Cargo</th><th>Región</th><th>Operación</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="tablaEmpleadosBody"><tr><td colspan="8" style="text-align: center; padding: 30px; color: #718096;">Cargando...</td></tr></tbody>
           </table>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+          <button class="btn btn-danger" onclick="eliminarEmpleadosSeleccionados()"><i class="ti ti-trash"></i> Eliminar Seleccionados</button>
         </div>
         <div class="pagination" id="paginationEmpleados"></div>
       </div>
@@ -395,7 +437,7 @@
     <!-- CRONOGRAMA -->
     <div id="cronograma" class="section-pane">
       <div class="card">
-        <div class="card-header"><div class="card-icon"><i class="ti ti-calendar-stats"></i></div><div class="card-title">Cronograma Mensual</div></div>
+        <div class="card-header"><div class="card-icon"><i class="ti ti-calendar-stats"></i></div><div><div class="card-title">Cronograma Mensual</div><div style="color: #718096; font-size: 13px;">Haz clic en un día para ver las capacitaciones programadas</div></div></div>
         <div id="valle-calendar-container" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;"></div>
       </div>
     </div>
@@ -431,6 +473,19 @@
             <tbody id="valle-tabla-top-pendientes"></tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VER CAPACITACIONES DEL DÍA -->
+  <div id="modalDiaCapacitaciones" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="ti ti-calendar"></i> Capacitaciones del Día</h3>
+        <button class="modal-close" onclick="cerrarModalDia()">&times;</button>
+      </div>
+      <div id="contenidoModalDia" style="padding: 10px 0;">
+        <!-- Contenido dinámico -->
       </div>
     </div>
   </div>
@@ -501,12 +556,43 @@
     </div>
   </div>
 
+  <!-- MODAL EDITAR EMPLEADO -->
+  <div id="modalEditarEmpleado" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="ti ti-edit"></i> Editar Empleado</h3>
+        <button class="modal-close" onclick="cerrarModalEditarEmpleado()">&times;</button>
+      </div>
+      <input type="hidden" id="editEmpId">
+      <div class="form-grid">
+        <div class="form-group"><label>Número de Cédula</label><input type="text" id="editEmpCedula" readonly></div>
+        <div class="form-group"><label>Nombre Completo</label><input type="text" id="editEmpNombre"></div>
+        <div class="form-group"><label>Cargo</label><input type="text" id="editEmpCargo"></div>
+        <div class="form-group"><label>Región / CD</label>
+          <select id="editEmpRegion">
+            <option value="Cali">Cali</option><option value="Yumbo">Yumbo</option><option value="Tuluá">Tuluá</option><option value="Popayán">Popayán</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Operación</label>
+          <select id="editEmpGrupo">
+            <option value="OL">OL (Operaciones Logística)</option><option value="UC">UC (Última Milla)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Fecha de Ingreso</label><input type="date" id="editEmpFechaIngreso"></div>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-primary" onclick="guardarEdicionEmpleado()"><i class="ti ti-device-floppy"></i> Guardar Cambios</button>
+        <button class="btn" style="background: #e2e8f0;" onclick="cerrarModalEditarEmpleado()"><i class="ti ti-x"></i> Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="config.js"></script>
 
-  <script>
+    <script>
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     
@@ -515,6 +601,7 @@
     const itemsPorPagina = 8;
     let empleadoSeleccionado = null;
     let idBeneficioEdicion = null;
+    let empleadosSeleccionados = [];
 
     window.addEventListener('DOMContentLoaded', () => {
       cargarDatos();
@@ -627,7 +714,7 @@
       const cargo = document.getElementById('benCargo').value.trim();
       const region = document.getElementById('benRegion').value.trim();
       const concepto = document.getElementById('benConcepto').value.trim();
-      const valor = Number(document.getElementById('benValor').value);
+      const valor = Number(document.getElementById('benValor').value.replace(/[^\d]/g, '')) || 0; // ✅ Corrección de formato
       const indicador = document.getElementById('benIndicador').value.trim();
 
       if (!cargo || !region || !concepto || !valor) return alert('Completa todos los campos');
@@ -674,6 +761,48 @@
     }
 
     // ==================== EMPLEADOS ====================
+    function toggleSelectAll() {
+      const checkboxes = document.querySelectorAll('.emp-checkbox');
+      const selectAll = document.getElementById('selectAll').checked;
+      checkboxes.forEach(cb => cb.checked = selectAll);
+      empleadosSeleccionados = selectAll ? Array.from(checkboxes).map(cb => cb.value) : [];
+    }
+
+    function toggleEmpleadoSelect(id) {
+      const checkbox = document.querySelector(`.emp-checkbox[value="${id}"]`);
+      if (checkbox.checked) {
+        empleadosSeleccionados.push(id);
+      } else {
+        empleadosSeleccionados = empleadosSeleccionados.filter(empId => empId !== id);
+      }
+      document.getElementById('selectAll').checked = empleadosSeleccionados.length === valleData.empleados.length;
+    }
+
+    async function eliminarEmpleadosSeleccionados() {
+      if (empleadosSeleccionados.length === 0) {
+        alert('No hay empleados seleccionados');
+        return;
+      }
+      
+      if (!confirm(`⚠️ ¿Estás seguro de eliminar ${empleadosSeleccionados.length} empleado(s)?\n\nEsta acción eliminará también todas sus asignaciones de capacitación y no se puede deshacer.`)) {
+        return;
+      }
+      
+      try {
+        const batch = db.batch();
+        const asignacionesAEliminar = valleData.asignaciones.filter(a => empleadosSeleccionados.includes(a.empleado_id));
+        asignacionesAEliminar.forEach(asig => batch.delete(db.collection('asignaciones_valle').doc(asig.id)));
+        empleadosSeleccionados.forEach(empId => batch.delete(db.collection('empleados').doc(empId)));
+        
+        await batch.commit();
+        alert(`✅ ${empleadosSeleccionados.length} empleado(s) eliminados correctamente`);
+        empleadosSeleccionados = [];
+        await cargarDatos();
+      } catch (error) {
+        alert('❌ Error al eliminar: ' + error.message);
+      }
+    }
+
     async function cargarExcel(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -733,17 +862,22 @@
       const tbody = document.getElementById('tablaEmpleadosBody');
       const pagina = lista.slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina);
       if (pagina.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">No hay empleados registrados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px;">No hay empleados registrados</td></tr>';
         return;
       }
       tbody.innerHTML = pagina.map(emp => `
         <tr>
+          <td><input type="checkbox" class="emp-checkbox" value="${emp.id}" onchange="toggleEmpleadoSelect('${emp.id}')"></td>
           <td>${emp.cedula || '-'}</td>
           <td><strong>${emp.nombre || 'Sin nombre'}</strong></td>
           <td>${emp.cargo || '-'}</td>
           <td>${emp.region || '-'}</td>
           <td><span class="badge badge-info">${emp.grupo || 'General'}</span></td>
           <td><span class="badge badge-success">Activo</span></td>
+          <td>
+            <button class="btn btn-info btn-sm" onclick="abrirModalEditarEmpleado('${emp.id}')" title="Editar"><i class="ti ti-edit"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarEmpleado('${emp.id}')" title="Eliminar"><i class="ti ti-trash"></i></button>
+          </td>
         </tr>
       `).join('');
       
@@ -753,6 +887,59 @@
         <span style="align-self: center;">Página ${paginaActual} de ${totalPaginas || 1}</span>
         <button class="page-btn" onclick="paginaActual=Math.min(${totalPaginas}, paginaActual+1); renderizarEmpleados(valleData.empleados)" ${paginaActual === totalPaginas ? 'disabled' : ''}>Siguiente</button>
       `;
+    }
+
+    function abrirModalEditarEmpleado(empId) {
+      const emp = valleData.empleados.find(e => e.id === empId);
+      if (!emp) return;
+      document.getElementById('editEmpId').value = empId;
+      document.getElementById('editEmpCedula').value = emp.cedula || '';
+      document.getElementById('editEmpNombre').value = emp.nombre || '';
+      document.getElementById('editEmpCargo').value = emp.cargo || '';
+      document.getElementById('editEmpRegion').value = emp.region || 'Cali';
+      document.getElementById('editEmpGrupo').value = emp.grupo || 'OL';
+      document.getElementById('editEmpFechaIngreso').value = emp.fecha_ingreso || '';
+      document.getElementById('modalEditarEmpleado').classList.add('active');
+    }
+
+    function cerrarModalEditarEmpleado() {
+      document.getElementById('modalEditarEmpleado').classList.remove('active');
+    }
+
+    async function guardarEdicionEmpleado() {
+      const empId = document.getElementById('editEmpId').value;
+      const cedula = document.getElementById('editEmpCedula').value.trim();
+      const nombre = document.getElementById('editEmpNombre').value.trim();
+      if (!cedula || !nombre) return alert('Cédula y nombre son obligatorios');
+      try {
+        await db.collection('empleados').doc(empId).update({
+          cedula, nombre,
+          cargo: document.getElementById('editEmpCargo').value.trim(),
+          region: document.getElementById('editEmpRegion').value,
+          grupo: document.getElementById('editEmpGrupo').value,
+          fecha_ingreso: document.getElementById('editEmpFechaIngreso').value
+        });
+        alert('✅ Empleado actualizado correctamente');
+        cerrarModalEditarEmpleado();
+        await cargarDatos();
+      } catch (error) {
+        alert('❌ Error al actualizar: ' + error.message);
+      }
+    }
+
+    async function eliminarEmpleado(empId) {
+      if (!confirm('⚠️ ¿Estás seguro de eliminar este empleado?\n\nEsta acción eliminará también todas sus asignaciones de capacitación y no se puede deshacer.')) return;
+      try {
+        const batch = db.batch();
+        const asignacionesAEliminar = valleData.asignaciones.filter(a => a.empleado_id === empId);
+        asignacionesAEliminar.forEach(asig => batch.delete(db.collection('asignaciones_valle').doc(asig.id)));
+        batch.delete(db.collection('empleados').doc(empId));
+        await batch.commit();
+        alert('✅ Empleado eliminado correctamente');
+        await cargarDatos();
+      } catch (error) {
+        alert('❌ Error al eliminar: ' + error.message);
+      }
     }
 
     function limpiarFormularioCRUD() {
@@ -773,28 +960,20 @@
       const cargos = document.getElementById('valle-cap-cargos').value;
       
       if (!nombre || !youtubeUrl) return alert('❌ Por favor completa el nombre y el link del video');
-      
       const videoId = extraerIdYouTube(youtubeUrl);
       if (!videoId) return alert('❌ Link de YouTube no válido');
       
       try {
-        const capData = {
+        await db.collection('capacitaciones_valle').add({
           nombre, pilar, tipo, cds, operacion, cargos,
-          youtube_video_id: videoId, 
-          youtube_url: youtubeUrl, 
-          link_evaluacion: linkEval,
+          youtube_video_id: videoId, youtube_url: youtubeUrl, link_evaluacion: linkEval,
           creado_en: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        await db.collection('capacitaciones_valle').add(capData);
+        });
         alert('✅ Capacitación creada');
-        
         document.getElementById('valle-cap-nombre').value = '';
         document.getElementById('valle-cap-youtube-url').value = '';
         document.getElementById('valle-cap-link-eval').value = '';
-        
         await cargarDatos();
-        
       } catch (error) {
         alert('❌ Error: ' + error.message);
       }
@@ -833,7 +1012,6 @@
     function abrirModalEditarCap(capId) {
       const cap = valleData.capacitaciones.find(c => c.id === capId);
       if (!cap) return;
-      
       document.getElementById('editCapId').value = capId;
       document.getElementById('editCapNombre').value = cap.nombre;
       document.getElementById('editCapPilar').value = cap.pilar;
@@ -843,7 +1021,6 @@
       document.getElementById('editCapCds').value = cap.cds || 'Todos';
       document.getElementById('editCapOp').value = cap.operacion || 'Todos';
       document.getElementById('editCapCargos').value = cap.cargos || 'Todos';
-      
       document.getElementById('modalEditarCap').classList.add('active');
     }
 
@@ -854,10 +1031,8 @@
     async function guardarEdicionCapacitacion() {
       const capId = document.getElementById('editCapId').value;
       const youtubeUrl = document.getElementById('editCapYoutubeUrl').value.trim();
-      
       const videoId = extraerIdYouTube(youtubeUrl);
       if (!videoId) return alert('Link de YouTube no válido');
-      
       try {
         await db.collection('capacitaciones_valle').doc(capId).update({
           nombre: document.getElementById('editCapNombre').value.trim(),
@@ -870,7 +1045,6 @@
           operacion: document.getElementById('editCapOp').value,
           cargos: document.getElementById('editCapCargos').value
         });
-        
         alert('✅ Capacitación actualizada');
         cerrarModalEditarCap();
         cargarDatos();
@@ -894,7 +1068,7 @@
       }
     }
 
-    // ==================== ASIGNACIÓN MASIVA ====================
+    // ==================== ASIGNACIÓN ====================
     function mostrarTipoAsignacion(tipo) {
       if (tipo === 'masiva') {
         document.getElementById('seccionMasiva').style.display = 'block';
@@ -919,16 +1093,10 @@
       const grupo = document.getElementById('masivaGrupo').value;
       const selectPilar = document.getElementById('masivaPilar');
       const selectCargo = document.getElementById('masivaCargo');
-      
       selectPilar.innerHTML = '<option value="">-- Seleccionar Pilar --</option>';
       selectCargo.innerHTML = '<option value="">-- Primero selecciona Pilar --</option>';
       selectCargo.disabled = true;
-      
-      if (!grupo) {
-        selectPilar.disabled = true;
-        return;
-      }
-      
+      if (!grupo) { selectPilar.disabled = true; return; }
       selectPilar.disabled = false;
       const pilaresUnicos = [...new Set(valleData.capacitaciones.map(c => c.pilar))];
       pilaresUnicos.forEach(pilar => {
@@ -943,28 +1111,16 @@
       const grupo = document.getElementById('masivaGrupo').value;
       const pilar = document.getElementById('masivaPilar').value;
       const selectCargo = document.getElementById('masivaCargo');
-      
       selectCargo.innerHTML = '<option value="">-- Seleccionar Cargo --</option>';
-      
-      if (!grupo || !pilar) {
-        selectCargo.disabled = true;
-        return;
-      }
-      
+      if (!grupo || !pilar) { selectCargo.disabled = true; return; }
       selectCargo.disabled = false;
-      const cargosUnicos = [...new Set(valleData.empleados
-        .filter(emp => emp.grupo === grupo)
-        .map(emp => emp.cargo)
-        .filter(c => c)
-      )];
-      
+      const cargosUnicos = [...new Set(valleData.empleados.filter(emp => emp.grupo === grupo).map(emp => emp.cargo).filter(c => c))];
       cargosUnicos.forEach(cargo => {
         const option = document.createElement('option');
         option.value = cargo;
         option.textContent = cargo;
         selectCargo.appendChild(option);
       });
-      
       cargarCapacitacionesEnSelect();
     }
 
@@ -973,54 +1129,35 @@
       const pilar = document.getElementById('masivaPilar').value;
       const cargo = document.getElementById('masivaCargo').value;
       const select = document.getElementById('masivaCapacitacion');
-      
       select.innerHTML = '<option value="">-- Seleccionar capacitación --</option>';
-      
       let capacitacionesFiltradas = valleData.capacitaciones;
-      if (pilar) {
-        capacitacionesFiltradas = capacitacionesFiltradas.filter(c => c.pilar === pilar);
-      }
-      
+      if (pilar) capacitacionesFiltradas = capacitacionesFiltradas.filter(c => c.pilar === pilar);
       capacitacionesFiltradas.forEach(cap => {
         const option = document.createElement('option');
         option.value = cap.id;
         option.textContent = `${cap.nombre} (${cap.pilar})`;
         select.appendChild(option);
       });
-      
-      if (grupo && pilar && cargo) {
-        mostrarPreviewMasivo(grupo, pilar, cargo);
-      }
+      if (grupo && pilar && cargo) mostrarPreviewMasivo(grupo, pilar, cargo);
     }
 
     function mostrarPreviewMasivo(grupo, pilar, cargo) {
-      const empleadosFiltrados = valleData.empleados.filter(emp => 
-        emp.grupo === grupo && emp.cargo === cargo
-      );
-      
+      const empleadosFiltrados = valleData.empleados.filter(emp => emp.grupo === grupo && emp.cargo === cargo);
       const preview = document.getElementById('previewMasiva');
       const content = document.getElementById('previewContent');
-      
       preview.style.display = 'block';
       content.innerHTML = `
         <div style="margin-top: 10px;">
-          <strong>Grupo:</strong> ${grupo}<br>
-          <strong>Pilar:</strong> ${pilar}<br>
-          <strong>Cargo:</strong> ${cargo}<br>
+          <strong>Grupo:</strong> ${grupo}<br><strong>Pilar:</strong> ${pilar}<br><strong>Cargo:</strong> ${cargo}<br>
           <strong>Empleados que recibirán la asignación:</strong> ${empleadosFiltrados.length}
         </div>
         ${empleadosFiltrados.length > 0 ? `
           <div style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
-            ${empleadosFiltrados.map(emp => `
-              <div style="padding: 5px; background: white; border-radius: 5px; margin: 3px 0;">
-                ${emp.nombre} - ${emp.cedula}
-              </div>
-            `).join('')}
-          </div>
-        ` : '<div style="color: #e53e3e; margin-top: 10px;">No hay empleados que coincidan con estos filtros</div>'}
-      `;
+            ${empleadosFiltrados.map(emp => `<div style="padding: 5px; background: white; border-radius: 5px; margin: 3px 0;">${emp.nombre} - ${emp.cedula}</div>`).join('')}
+          </div>` : '<div style="color: #e53e3e; margin-top: 10px;">No hay empleados que coincidan con estos filtros</div>'}`;
     }
 
+    // ✅ ASIGNACIÓN MASIVA SEGURA
     async function confirmarAsignacionMasiva() {
       const grupo = document.getElementById('masivaGrupo').value;
       const pilar = document.getElementById('masivaPilar').value;
@@ -1029,50 +1166,32 @@
       const fecha = document.getElementById('masivaFecha').value;
       const notaMinima = document.getElementById('masivaNota').value;
       
-      if (!grupo || !pilar || !cargo || !capId || !fecha) {
-        return alert('Por favor completa todos los campos');
-      }
-      
+      if (!grupo || !pilar || !cargo || !capId || !fecha) return alert('Por favor completa todos los campos');
       const cap = valleData.capacitaciones.find(c => c.id === capId);
       if (!cap) return alert('Capacitación no encontrada');
       
-      const empleadosFiltrados = valleData.empleados.filter(emp => 
-        emp.grupo === grupo && emp.cargo === cargo
-      );
-      
-      if (empleadosFiltrados.length === 0) {
-        return alert('No hay empleados que coincidan con los filtros seleccionados');
-      }
-      
+      const empleadosFiltrados = valleData.empleados.filter(emp => emp.grupo === grupo && emp.cargo === cargo);
+      if (empleadosFiltrados.length === 0) return alert('No hay empleados que coincidan con los filtros seleccionados');
       if (!confirm(`¿Asignar "${cap.nombre}" a ${empleadosFiltrados.length} empleados?`)) return;
       
       try {
         const batch = db.batch();
-        
         empleadosFiltrados.forEach(emp => {
           const asigRef = db.collection('asignaciones_valle').doc();
           batch.set(asigRef, {
-            capacitacion_id: capId,
-            empleado_id: emp.id,
-            empleado_nombre: emp.nombre,
-            empleado_documento: emp.cedula,
-            empleado_cargo: emp.cargo,
-            empleado_cd: emp.region,
-            empleado_operacion: emp.grupo,
-            estado: 'Programado',
-            video_visto: false,
-            video_url: cap.youtube_url,
-            link_evaluacion: cap.link_evaluacion,
-            nota: null,
-            fecha_limite: fecha,
-            nota_minima: Number(notaMinima),
+            capacitacion_id: capId, capacitacion_nombre: cap.nombre, pilar: cap.pilar,
+            empleado_id: emp.id, empleado_nombre: emp.nombre, empleado_documento: emp.cedula,
+            empleado_cargo: emp.cargo, empleado_cd: emp.region, empleado_operacion: emp.grupo,
+            estado: 'Programado', video_visto: false, youtube_video_id: cap.youtube_video_id,
+            video_url: cap.youtube_url, link_evaluacion: cap.link_evaluacion, nota: null,
+            fecha_limite: fecha, nota_minima: Number(notaMinima),
             creado_en: firebase.firestore.FieldValue.serverTimestamp()
           });
         });
-        
         await batch.commit();
         
-        alert(`✅ Asignación masiva exitosa!\n\n📚 ${cap.nombre}\n👥 Asignados: ${empleadosFiltrados.length} empleados\n Fecha límite: ${fecha}\n⭐ Nota mínima: ${notaMinima}%`);
+        const appLink = window.location.origin + '/index.html';
+        alert(`✅ Asignación masiva exitosa!\n\n📚 ${cap.nombre}\n👥 Asignados: ${empleadosFiltrados.length} empleados\n📅 Fecha límite: ${fecha}\n⭐ Nota mínima: ${notaMinima}%\n\n📲 Link de acceso a la app: ${appLink}\n\n💡 Los empleados deben iniciar sesión con su número de cédula.`);
         
         document.getElementById('masivaGrupo').value = '';
         document.getElementById('masivaPilar').value = '';
@@ -1080,40 +1199,29 @@
         document.getElementById('masivaCapacitacion').value = '';
         document.getElementById('masivaFecha').value = '';
         document.getElementById('previewMasiva').style.display = 'none';
-        
         await cargarDatos();
-        
       } catch (error) {
         alert('❌ Error: ' + error.message);
       }
     }
 
-    // ==================== ASIGNACIÓN INDIVIDUAL ====================
     function buscarEmpleadosAsignar() {
       const search = document.getElementById('searchAsignar').value.toLowerCase();
       const tipo = document.getElementById('searchTipoAsignar').value;
-      if (search.length < 2) {
-        document.getElementById('listaEmpleadosAsignar').innerHTML = '';
-        return;
-      }
+      if (search.length < 2) { document.getElementById('listaEmpleadosAsignar').innerHTML = ''; return; }
       const filtrados = valleData.empleados.filter(e => tipo === 'nombre' ? e.nombre.toLowerCase().includes(search) : (e.cedula && e.cedula.includes(search)));
       document.getElementById('listaEmpleadosAsignar').innerHTML = filtrados.slice(0, 8).map(emp => `
         <div class="employee-card" onclick="seleccionarEmpleado('${emp.id}')">
-          <strong>${emp.nombre}</strong><br>
-          <small style="color: #718096;">${emp.cedula || 'N/A'} · ${emp.cargo || 'N/A'} · ${emp.region || 'N/A'}</small>
-        </div>
-      `).join('');
+          <strong>${emp.nombre}</strong><br><small style="color: #718096;">${emp.cedula || 'N/A'} · ${emp.cargo || 'N/A'} · ${emp.region || 'N/A'}</small>
+        </div>`).join('');
     }
 
     function seleccionarEmpleado(empId) {
       empleadoSeleccionado = valleData.empleados.find(e => e.id === empId);
       document.getElementById('selectedEmpleadoNombre').textContent = empleadoSeleccionado.nombre;
       document.getElementById('formAsignacion').style.display = 'block';
-      
       const select = document.getElementById('asignarCapacitacion');
-      select.innerHTML = '<option value="">Seleccionar capacitación...</option>' +
-        valleData.capacitaciones.map(c => `<option value="${c.id}" data-pilar="${c.pilar}" data-tipo="${c.tipo || 'Tradicional'}">${c.nombre} (${c.pilar})</option>`).join('');
-      
+      select.innerHTML = '<option value="">Seleccionar capacitación...</option>' + valleData.capacitaciones.map(c => `<option value="${c.id}" data-pilar="${c.pilar}" data-tipo="${c.tipo || 'Tradicional'}">${c.nombre} (${c.pilar})</option>`).join('');
       document.getElementById('formAsignacion').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -1131,39 +1239,30 @@
       document.getElementById('asignarMinimo').value = '80';
     }
 
+    // ✅ ASIGNACIÓN INDIVIDUAL SEGURA
     async function confirmarAsignacion() {
       const capId = document.getElementById('asignarCapacitacion').value;
       const fecha = document.getElementById('asignarFecha').value;
       const minimo = document.getElementById('asignarMinimo').value;
-      
       if (!capId || !fecha) return alert('Por favor selecciona capacitación y fecha límite');
-      
       const cap = valleData.capacitaciones.find(c => c.id === capId);
       
       try {
-        const asigRef = await db.collection('asignaciones_valle').add({
-          capacitacion_id: capId,
-          empleado_id: empleadoSeleccionado.id,
-          empleado_nombre: empleadoSeleccionado.nombre,
-          empleado_documento: empleadoSeleccionado.cedula,
-          empleado_cargo: empleadoSeleccionado.cargo,
-          empleado_cd: empleadoSeleccionado.region,
-          empleado_operacion: empleadoSeleccionado.grupo,
-          estado: 'Programado',
-          video_visto: false,
-          video_url: cap.youtube_url,
-          link_evaluacion: cap.link_evaluacion,
-          nota: null,
-          fecha_limite: fecha,
-          nota_minima: minimo,
+        await db.collection('asignaciones_valle').add({
+          capacitacion_id: capId, capacitacion_nombre: cap.nombre, pilar: cap.pilar,
+          empleado_id: empleadoSeleccionado.id, empleado_nombre: empleadoSeleccionado.nombre,
+          empleado_documento: empleadoSeleccionado.cedula, empleado_cargo: empleadoSeleccionado.cargo,
+          empleado_cd: empleadoSeleccionado.region, empleado_operacion: empleadoSeleccionado.grupo,
+          estado: 'Programado', video_visto: false, youtube_video_id: cap.youtube_video_id,
+          video_url: cap.youtube_url, link_evaluacion: cap.link_evaluacion, nota: null,
+          fecha_limite: fecha, nota_minima: minimo,
           creado_en: firebase.firestore.FieldValue.serverTimestamp()
         });
         
-        const link = linkCapacitacion(capId, asigRef.id);
-        
+        const appLink = window.location.origin + '/index.html';
         const modalHTML = `
           <div id="modalAsignacion" class="modal active" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 10px;">
-            <div style="background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <div style="background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto;">
               <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
                 <i class="ti ti-check" style="font-size: 32px; color: #48bb78;"></i>
                 <h3 style="margin: 0; color: #2d3748; font-size: 18px;">Asignación creada</h3>
@@ -1174,22 +1273,33 @@
                 <div><strong style="color: #718096; font-size: 12px;">FECHA LÍMITE:</strong><div style="font-weight: 700;">${fecha}</div></div>
               </div>
               <div style="margin-bottom: 20px;">
-                <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;">🔗 LINK DE ACCESO:</strong>
-                <div style="background: #edf2f7; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; font-family: monospace; border: 1px solid #cbd5e0;">${link}</div>
+                <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;">🔗 LINK DE ACCESO A LA APP:</strong>
+                <div style="background: #edf2f7; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; font-family: monospace; border: 1px solid #cbd5e0;">${appLink}</div>
               </div>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button onclick="copiarLink('${link}')" class="btn btn-primary" style="flex: 1; font-size: 13px;"><i class="ti ti-copy"></i> Copiar Link</button>
-                <button onclick="enviarWhatsApp('${empleadoSeleccionado.nombre}', '${cap.nombre}', '${fecha}', '${link}')" class="btn btn-success" style="flex: 1; font-size: 13px;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
+                <button onclick="copiarLink('${appLink}')" class="btn btn-primary" style="flex: 1; font-size: 13px;"><i class="ti ti-copy"></i> Copiar Link</button>
+                <button onclick="enviarWhatsAppSeguro('${empleadoSeleccionado.nombre}', '${cap.nombre}', '${fecha}', '${appLink}')" class="btn btn-success" style="flex: 1; font-size: 13px;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
               </div>
               <button onclick="cerrarModalAsignacion()" style="width: 100%; margin-top: 10px; padding: 12px; background: #e2e8f0; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Cerrar</button>
             </div>
-          </div>
-        `;
+          </div>`;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         cargarDatos();
       } catch (error) {
         alert('❌ Error: ' + error.message);
       }
+    }
+
+    // ✅ FUNCIÓN DE WHATSAPP SEGURA (Sin mostrar la cédula)
+    function enviarWhatsAppSeguro(nombre, capacitacion, fecha, appLink) {
+      const mensaje = `📚 *Nueva Capacitación Asignada*\n\n` +
+        `👤 *Empleado:* ${nombre}\n` +
+        `📖 *Capacitación:* ${capacitacion}\n` +
+        `⏰ *Fecha límite:* ${fecha}\n\n` +
+        `📲 *Accede a tu portal aquí:* ${appLink}\n\n` +
+        `💡 *Recuerda:* Para ingresar, inicia sesión utilizando tu número de cédula.\n\n` +
+        `¡Saludos!`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
     function copiarLink(link) {
@@ -1201,11 +1311,6 @@
           setTimeout(() => btn.innerHTML = original, 2000);
         });
       }
-    }
-
-    function enviarWhatsApp(nombre, capacitacion, fecha, link) {
-      const mensaje = `Hola ${nombre}, tienes una nueva capacitación: *${capacitacion}*.\n\n ${link}\n\n⏰ Fecha límite: ${fecha}\n\n¡Saludos!`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
     function cerrarModalAsignacion() {
@@ -1222,28 +1327,16 @@
       empleadoSeleccionado = null;
     }
 
-    function linkCapacitacion(capId, asigId) {
-  const base = new URL('ver_capacitacion.html', window.location.href).href;
-  return `${base}?cap=${capId}&asig=${asigId}`;
-}
-
     // ==================== CAPACITACIONES ASIGNADAS ====================
     function renderizarAsignaciones(filtro = '', filterCD = '', filterEstado = '') {
       const tbody = document.getElementById('tablaAsignacionesBody');
-      
       let asignacionesFiltradas = valleData.asignaciones.filter(asig => {
         const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
         const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
-        
         if (!emp || !cap) return false;
-        
-        const matchSearch = filtro === '' || 
-          emp.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
-          cap.nombre.toLowerCase().includes(filtro.toLowerCase());
-        
+        const matchSearch = filtro === '' || emp.nombre.toLowerCase().includes(filtro.toLowerCase()) || cap.nombre.toLowerCase().includes(filtro.toLowerCase());
         const matchCD = filterCD === '' || emp.region === filterCD;
         const matchEstado = filterEstado === '' || asig.estado === filterEstado;
-        
         return matchSearch && matchCD && matchEstado;
       });
       
@@ -1255,10 +1348,10 @@
       tbody.innerHTML = asignacionesFiltradas.map(asig => {
         const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
         const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
-        
         if (!emp || !cap) return '';
         
-        const link = linkCapacitacion(cap.id, asig.id);
+        // ✅ Link seguro a la app principal
+        const appLink = window.location.origin + '/index.html';
         
         let estadoClass = 'badge-warning';
         if (asig.estado === 'Cumplió') estadoClass = 'badge-success';
@@ -1291,30 +1384,25 @@
             </td>
             <td>
               <button class="btn btn-info btn-sm" onclick="verDetalleAsignacion('${asig.id}')" title="Ver detalle"><i class="ti ti-eye"></i></button>
-              <button class="btn btn-warning btn-sm" onclick="copiarLinkAsignacion('${link}')" title="Copiar link"><i class="ti ti-copy"></i></button>
+              <button class="btn btn-warning btn-sm" onclick="copiarLinkAsignacion('${appLink}')" title="Copiar link"><i class="ti ti-copy"></i></button>
             </td>
-          </tr>
-        `;
+          </tr>`;
       }).join('');
     }
 
     function filtrarAsignaciones() {
-      const search = document.getElementById('searchAsignaciones').value;
-      const filterCD = document.getElementById('filterCD').value;
-      const filterEstado = document.getElementById('filterEstado').value;
-      renderizarAsignaciones(search, filterCD, filterEstado);
+      renderizarAsignaciones(document.getElementById('searchAsignaciones').value, document.getElementById('filterCD').value, document.getElementById('filterEstado').value);
     }
 
+    // ✅ VER DETALLE DE ASIGNACIÓN (Versión única y segura)
     function verDetalleAsignacion(asigId) {
       const asig = valleData.asignaciones.find(a => a.id === asigId);
       if (!asig) return;
-      
       const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
       const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
-      
       if (!emp || !cap) return;
       
-      const link = linkCapacitacion(cap.id, asigId);
+      const appLink = window.location.origin + '/index.html';
       
       const modalHTML = `
         <div id="modalDetalleAsignacion" class="modal active" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 10px;">
@@ -1323,26 +1411,21 @@
               <h3 style="font-size: 18px;"><i class="ti ti-info-circle"></i> Detalle de Asignación</h3>
               <button onclick="document.getElementById('modalDetalleAsignacion').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #718096;">&times;</button>
             </div>
-            
             <div style="background: #f7fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-              <div style="margin-bottom: 12px;"><strong style="color: #718096; font-size: 12px;">EMPLEADO:</strong><div style="font-weight: 700; font-size: 16px;">${emp.nombre}</div><div style="color: #718096; font-size: 13px;">${emp.cedula} - ${emp.cargo}</div></div>
+              <div style="margin-bottom: 12px;"><strong style="color: #718096; font-size: 12px;">EMPLEADO:</strong><div style="font-weight: 700; font-size: 16px;">${emp.nombre}</div><div style="color: #718096; font-size: 13px;">${emp.cargo} - ${emp.region}</div></div>
               <div style="margin-bottom: 12px;"><strong style="color: #718096; font-size: 12px;">CAPACITACIÓN:</strong><div style="font-weight: 700; font-size: 16px;">${cap.nombre}</div><div style="color: #718096; font-size: 13px;">${cap.pilar} - ${cap.tipo}</div></div>
               <div style="margin-bottom: 12px;"><strong style="color: #718096; font-size: 12px;">ESTADO:</strong><div>${asig.estado || 'Programado'}</div></div>
               <div style="margin-bottom: 12px;"><strong style="color: #718096; font-size: 12px;">FECHA LÍMITE:</strong><div>${asig.fecha_limite || 'No definida'}</div></div>
-              <div style="margin-bottom: 12px;"><strong style="color: #718096; font-size: 12px;">NOTA MÍNIMA:</strong><div>${asig.nota_minima || 80}%</div></div>
               <div><strong style="color: #718096; font-size: 12px;">PROGRESO:</strong><div>${asig.video_visto ? 'Video completado ✅' : 'Video pendiente ⏳'}</div></div>
             </div>
-            
             <div style="margin-bottom: 20px;">
-              <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;">🔗 LINK DE ACCESO:</strong>
-              <div style="background: #edf2f7; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; font-family: monospace; border: 1px solid #cbd5e0;">${link}</div>
+              <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;">🔗 LINK DE ACCESO A LA APP:</strong>
+              <div style="background: #edf2f7; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; font-family: monospace; border: 1px solid #cbd5e0;">${appLink}</div>
             </div>
-            
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-              <button onclick="copiarLinkAsignacion('${link}')" class="btn btn-primary" style="flex: 1; font-size: 13px;"><i class="ti ti-copy"></i> Copiar Link</button>
-              <button onclick="enviarWhatsAppAsignacion('${emp.nombre}', '${cap.nombre}', '${asig.fecha_limite || ''}', '${link}')" class="btn btn-success" style="flex: 1; font-size: 13px;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
+              <button onclick="copiarLinkAsignacion('${appLink}')" class="btn btn-primary" style="flex: 1; font-size: 13px;"><i class="ti ti-copy"></i> Copiar Link</button>
+              <button onclick="enviarWhatsAppSeguro('${emp.nombre}', '${cap.nombre}', '${asig.fecha_limite || ''}', '${appLink}')" class="btn btn-success" style="flex: 1; font-size: 13px;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
             </div>
-            
             <div style="border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
               <h4 style="margin-bottom: 15px; font-size: 15px;"><i class="ti ti-settings"></i> Gestión</h4>
               <div style="display: flex; gap: 10px;">
@@ -1351,8 +1434,7 @@
               </div>
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
       document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
 
@@ -1360,12 +1442,10 @@
       document.getElementById('modalDetalleAsignacion')?.remove();
       const asig = valleData.asignaciones.find(a => a.id === asigId);
       if (!asig) return;
-      
       document.getElementById('editAsigId').value = asigId;
       document.getElementById('editAsigFechaLimite').value = asig.fecha_limite || '';
       document.getElementById('editAsigNotaMinima').value = asig.nota_minima || 80;
       document.getElementById('editAsigEstado').value = asig.estado || 'Programado';
-      
       document.getElementById('modalEditarAsignacion').classList.add('active');
     }
 
@@ -1375,15 +1455,11 @@
 
     async function guardarEdicionAsignacion() {
       const asigId = document.getElementById('editAsigId').value;
-      const fechaLimite = document.getElementById('editAsigFechaLimite').value;
-      const notaMinima = Number(document.getElementById('editAsigNotaMinima').value);
-      const estado = document.getElementById('editAsigEstado').value;
-      
       try {
         await db.collection('asignaciones_valle').doc(asigId).update({
-          fecha_limite: fechaLimite,
-          nota_minima: notaMinima,
-          estado: estado
+          fecha_limite: document.getElementById('editAsigFechaLimite').value,
+          nota_minima: Number(document.getElementById('editAsigNotaMinima').value),
+          estado: document.getElementById('editAsigEstado').value
         });
         alert('✅ Asignación actualizada correctamente');
         cerrarModalEditarAsignacion();
@@ -1414,18 +1490,11 @@
 
     function copiarLinkAsignacion(link) {
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(link).then(() => {
-          alert('✅ Link copiado al portapapeles');
-        });
+        navigator.clipboard.writeText(link).then(() => alert('✅ Link copiado al portapapeles'));
       }
     }
 
-    function enviarWhatsAppAsignacion(nombre, capacitacion, fecha, link) {
-      const mensaje = `Hola ${nombre}, tienes asignada la capacitación: *${capacitacion}*\n\n📺 ${link}\n\n⏰ Fecha límite: ${fecha}\n\n¡Saludos!`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
-    }
-
-    // ==================== CRONOGRAMA Y REPORTES ====================
+    // ==================== CRONOGRAMA ====================
     function renderizarCalendario() {
       const hoy = new Date();
       const year = hoy.getFullYear();
@@ -1440,25 +1509,64 @@
       for (let i = 0; i < firstDay; i++) html += `<div style="padding: 10px;"></div>`;
       for (let d = 1; d <= daysInMonth; d++) {
         const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const capsDelDia = valleData.capacitaciones.filter(c => c.fecha === dateStr || (c.fecha_limite && c.fecha_limite.startsWith(dateStr)));
-        html += `<div style="background: white; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px; min-height: 80px;">
-          <div style="font-weight: 700; margin-bottom: 5px;">${d}</div>
-          ${capsDelDia.map(c => `<div style="background: #206987; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-bottom: 4px;">${c.nombre.substring(0, 20)}...</div>`).join('')}
-        </div>`;
+        const asignacionesDelDia = valleData.asignaciones.filter(asig => asig.fecha_limite === dateStr);
+        const tieneAsignaciones = asignacionesDelDia.length > 0;
+        const hayVencidos = asignacionesDelDia.some(a => {
+          const hoyStr = new Date().toISOString().split('T')[0];
+          return a.fecha_limite < hoyStr && a.estado !== 'Cumplió';
+        });
+        html += `
+          <div class="calendar-day ${tieneAsignaciones ? 'has-events' : ''}" onclick="${tieneAsignaciones ? `verCapacitacionesDia('${dateStr}')` : ''}">
+            <div class="calendar-day-number">${d}</div>
+            ${asignacionesDelDia.slice(0, 3).map(asig => {
+              const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+              const vencido = asig.fecha_limite < new Date().toISOString().split('T')[0] && asig.estado !== 'Cumplió';
+              return `<div class="calendar-event ${vencido ? 'vencido' : ''}">${cap ? cap.nombre.substring(0, 15) : 'Capacitación'}${cap && cap.nombre.length > 15 ? '...' : ''}</div>`;
+            }).join('')}
+            ${asignacionesDelDia.length > 3 ? `<div style="font-size: 9px; color: #718096; margin-top: 3px;">+${asignacionesDelDia.length - 3} más</div>` : ''}
+          </div>`;
       }
       container.innerHTML = html;
     }
 
+    function verCapacitacionesDia(fecha) {
+      const asignacionesDelDia = valleData.asignaciones.filter(asig => asig.fecha_limite === fecha);
+      let html = `<div style="margin-bottom: 15px;"><strong style="color: #206987; font-size: 16px;"> ${new Date(fecha + 'T00:00:00').toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong></div>`;
+      html += `<div style="margin-bottom: 15px; font-size: 14px; color: #718096;">${asignacionesDelDia.length} capacitaciones programadas para este día</div>`;
+      asignacionesDelDia.forEach(asig => {
+        const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+        const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
+        const hoyStr = new Date().toISOString().split('T')[0];
+        const vencido = asig.fecha_limite < hoyStr && asig.estado !== 'Cumplió';
+        let estadoClass = 'badge-warning';
+        if (asig.estado === 'Cumplió') estadoClass = 'badge-success';
+        if (asig.estado === 'No cumplió') estadoClass = 'badge-danger';
+        html += `
+          <div style="background: ${vencido ? '#fee2e2' : '#f0f9ff'}; border-left: 4px solid ${vencido ? '#ef4444' : '#206987'}; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+              <div style="flex: 1;">
+                <div style="font-weight: 700; color: #2d3748; margin-bottom: 4px;">${cap ? cap.nombre : 'Capacitación'}</div>
+                <div style="font-size: 13px; color: #718096;">👤 ${emp ? emp.nombre : 'Empleado'}</div>
+              </div>
+              <span class="badge ${estadoClass}">${asig.estado || 'Programado'}</span>
+            </div>
+            ${vencido ? '<div style="color: #dc2626; font-size: 12px; font-weight: 600; margin-top: 5px;">⚠️ Vencida</div>' : ''}
+          </div>`;
+      });
+      document.getElementById('contenidoModalDia').innerHTML = html;
+      document.getElementById('modalDiaCapacitaciones').classList.add('active');
+    }
+
+    function cerrarModalDia() {
+      document.getElementById('modalDiaCapacitaciones').classList.remove('active');
+    }
+
+    // ==================== REPORTES ====================
     function renderizarReportes() {
       const ctx = document.getElementById('valleChart').getContext('2d');
       if (window.valleChartInstance) window.valleChartInstance.destroy();
-      
-      const hoy = new Date().toISOString().split('T')[0];
-      
-      const empleadosConAsignaciones = valleData.empleados.filter(emp => {
-        return valleData.asignaciones.some(a => a.empleado_id === emp.id);
-      });
-      
+      const hoyStr = new Date().toISOString().split('T')[0];
+      const empleadosConAsignaciones = valleData.empleados.filter(emp => valleData.asignaciones.some(a => a.empleado_id === emp.id));
       const pilares = ['Safety', 'Management', 'People', 'Delivery', 'Warehouse', 'Fleet'];
       const data = pilares.map(pilar => {
         const capsPilar = valleData.capacitaciones.filter(c => c.pilar === pilar);
@@ -1466,13 +1574,9 @@
         return {
           cumplidas: asigsPilar.filter(a => a.estado === 'Cumplió').length,
           pendientes: asigsPilar.filter(a => a.estado === 'Programado' || a.estado === 'Pendiente evaluación').length,
-          vencidas: asigsPilar.filter(a => {
-            if (a.estado === 'Cumplió' || a.estado === 'No cumplió') return false;
-            return a.fecha_limite && a.fecha_limite < hoy;
-          }).length
+          vencidas: asigsPilar.filter(a => a.estado !== 'Cumplió' && a.estado !== 'No cumplió' && a.fecha_limite && a.fecha_limite < hoyStr).length
         };
       });
-      
       window.valleChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -1483,49 +1587,32 @@
             { label: 'Vencidas', data: data.map(d => d.vencidas), backgroundColor: '#ef4444' }
           ]
         },
-        options: { 
-          responsive: true, 
-          maintainAspectRatio: false, 
-          scales: { x: { stacked: true }, y: { stacked: true } } 
-        }
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
       });
-      
       const tbody = document.getElementById('valle-tabla-top-pendientes');
-      
       const reporteEmpleados = empleadosConAsignaciones.map(emp => {
         const asigs = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
         const total = asigs.length;
         const cumplidas = asigs.filter(a => a.estado === 'Cumplió').length;
-        const vencidas = asigs.filter(a => {
-          if (a.estado === 'Cumplió' || a.estado === 'No cumplió') return false;
-          return a.fecha_limite && a.fecha_limite < hoy;
-        }).length;
+        const vencidas = asigs.filter(a => a.estado !== 'Cumplió' && a.estado !== 'No cumplió' && a.fecha_limite && a.fecha_limite < hoyStr).length;
         const pendientes = total - cumplidas;
-        const porcentaje = total > 0 ? Math.round((cumplidas / total) * 100) : 0;
-        
-        return {
-          nombre: emp.nombre,
-          cargo: emp.cargo,
-          region: emp.region,
-          cedula: emp.cedula,
-          total,
-          cumplidas,
-          pendientes,
-          vencidas,
-          porcentaje
-        };
+        const progresoReal = asigs.reduce((acc, asig) => {
+          if (asig.estado === 'Cumplió') return acc + 100;
+          if (asig.video_visto) return acc + 50;
+          return acc;
+        }, 0);
+        const porcentaje = total > 0 ? Math.round(progresoReal / total) : 0;
+        return { nombre: emp.nombre, cargo: emp.cargo, region: emp.region, cedula: emp.cedula, total, cumplidas, pendientes, vencidas, porcentaje };
       }).sort((a, b) => b.vencidas - a.vencidas || a.porcentaje - b.porcentaje);
       
       if (reporteEmpleados.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: #718096;">No hay empleados con capacitaciones asignadas</td></tr>';
         return;
       }
-      
       tbody.innerHTML = reporteEmpleados.map(e => {
         const estadoVencido = e.vencidas > 0;
         const rowStyle = estadoVencido ? 'background: #fee2e2;' : '';
         const badgeVencido = estadoVencido ? '<span class="badge badge-danger" style="margin-left: 5px;">VENCIDO</span>' : '';
-        
         return `
           <tr style="${rowStyle}">
             <td><strong>${e.nombre}</strong><br><small style="color: #718096;">${e.cedula}</small></td>
@@ -1543,8 +1630,7 @@
             <td><span class="badge badge-warning">${e.pendientes}</span></td>
             <td><span class="badge ${estadoVencido ? 'badge-danger' : 'badge-info'}">${e.vencidas}${badgeVencido}</span></td>
             <td><span class="badge badge-info">${e.total}</span></td>
-          </tr>
-        `;
+          </tr>`;
       }).join('');
     }
 

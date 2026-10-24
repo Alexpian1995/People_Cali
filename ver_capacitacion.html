@@ -115,8 +115,10 @@
     const empParam = params.get('emp');
 
     let videoVisto = false;
+    let videoProgreso = 0;
     let capacitacionData = null;
     let asignacionData = null;
+    let player = null;
 
     if (!capId || (!asigId && !empParam)) {
       document.getElementById('loadingState').innerHTML = `
@@ -132,13 +134,10 @@
       try {
         let asigDoc = null;
 
-        // 1. Intentar buscar por ID de asignación directo (lo más común)
         if (asigId) {
           const snap = await db.collection('asignaciones_valle').doc(asigId).get();
           if (snap.exists) asigDoc = snap;
-        } 
-        // 2. Si no, buscar por empleado_id + capacitacion_id
-        else if (empParam) {
+        } else if (empParam) {
           const q = await db.collection('asignaciones_valle')
             .where('empleado_id', '==', empParam)
             .where('capacitacion_id', '==', capId)
@@ -156,7 +155,9 @@
         if (!capSnap.exists) throw new Error('Capacitación no encontrada');
         capacitacionData = { id: capSnap.id, ...capSnap.data() };
 
-        if (asignacionData.video_visto === true) videoVisto = true;
+        // ✅ IMPORTANTE: NO cargamos video_visto desde BD para forzar que lo vea de nuevo
+        // Solo lo usamos para mostrar el estado inicial, pero no desbloqueamos
+        // if (asignacionData.video_visto === true) videoVisto = true;
 
         renderizar();
         setupYouTubeTracking();
@@ -181,22 +182,23 @@
 
       const videoId = capacitacionData.youtube_video_id;
       if (videoId) {
+        // ✅ Agregamos enablejsapi=1 para poder trackear el progreso
         const youtubeUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1&playsinline=1`;
         document.getElementById('youtubePlayer').src = youtubeUrl;
       }
 
-      if (videoVisto) {
-        desbloquearEvaluacion();
-      }
+      // ✅ El botón SIEMPRE empieza bloqueado, sin importar si ya lo vio antes
+      actualizarUIProgreso(0);
     }
 
     function setupYouTubeTracking() {
+      // Cargar API de YouTube
       const tag = document.createElement('script');
       tag.src = "https://www.youtube.com/iframe_api";
       document.body.appendChild(tag);
 
       window.onYouTubeIframeAPIReady = function() {
-        const player = new YT.Player('youtubePlayer', {
+        player = new YT.Player('youtubePlayer', {
           events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange
@@ -207,23 +209,56 @@
 
     function onPlayerReady(event) {
       console.log('YouTube Player ready');
+      // Iniciar el tracking de progreso cada segundo
+      setInterval(trackProgress, 1000);
     }
 
     function onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.ENDED) {
+        // Video terminó completamente
         if (!videoVisto) {
           videoVisto = true;
-          document.getElementById('progressFill').style.width = '100%';
-          document.getElementById('progressText').textContent = '✅ 100% completado';
+          actualizarUIProgreso(100);
           desbloquearEvaluacion();
           guardarProgreso();
         }
       }
-      if (event.data === YT.PlayerState.PLAYING) {
-        document.getElementById('progressText').textContent = '▶️ Reproduciendo...';
+    }
+
+    function trackProgress() {
+      if (!player || typeof player.getCurrentTime !== 'function') return;
+      
+      const currentTime = player.getCurrentTime();
+      const duration = player.getDuration();
+      
+      if (duration > 0) {
+        const porcentaje = Math.round((currentTime / duration) * 100);
+        videoProgreso = porcentaje;
+        
+        actualizarUIProgreso(porcentaje);
+        
+        // ✅ Desbloquear al llegar al 95% o más
+        if (porcentaje >= 95 && !videoVisto) {
+          videoVisto = true;
+          desbloquearEvaluacion();
+          guardarProgreso();
+        }
       }
-      if (event.data === YT.PlayerState.PAUSED) {
-        document.getElementById('progressText').textContent = '⏸️ Video pausado';
+    }
+
+    function actualizarUIProgreso(porcentaje) {
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      
+      progressFill.style.width = porcentaje + '%';
+      
+      if (porcentaje >= 95) {
+        progressText.textContent = `✅ ${porcentaje}% completado - ¡Casi listo!`;
+        progressFill.style.background = 'linear-gradient(90deg, #48bb78 0%, #38a169 100%)';
+      } else if (porcentaje > 0) {
+        progressText.textContent = `▶️ ${porcentaje}% completado - Sigue así...`;
+      } else {
+        progressText.textContent = '0% completado - Mira el video para desbloquear la evaluación';
       }
     }
 
@@ -253,23 +288,28 @@
         await db.collection('asignaciones_valle').doc(asignacionData.id).update({
           video_visto: true,
           video_visto_fecha: firebase.firestore.FieldValue.serverTimestamp(),
-          estado: 'Pendiente evaluación'
+          estado: 'Pendiente evaluación',
+          video_progreso: videoProgreso
         });
+        console.log('Progreso guardado:', videoProgreso + '%');
       } catch (err) {
         console.error('Error guardando progreso:', err);
       }
     }
 
     function irAEvaluacion() {
-      if (!videoVisto) {
-        alert('Debes ver el video completo primero.');
+      // ✅ Doble verificación de seguridad
+      if (!videoVisto || videoProgreso < 95) {
+        alert('Debes ver al menos el 95% del video para acceder a la evaluación.');
         return;
       }
+      
       if (capacitacionData.link_evaluacion) {
         window.open(capacitacionData.link_evaluacion, '_blank');
         db.collection('asignaciones_valle').doc(asignacionData.id).update({
           form_abierto: true,
-          form_abierto_fecha: firebase.firestore.FieldValue.serverTimestamp()
+          form_abierto_fecha: firebase.firestore.FieldValue.serverTimestamp(),
+          estado: 'Pendiente evaluación'
         });
       } else {
         alert('No hay evaluación disponible para esta capacitación.');
