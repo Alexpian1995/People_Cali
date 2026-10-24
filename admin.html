@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding-bottom: 40px; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); min-height: 100vh; padding-bottom: 40px; }
     .admin-container { max-width: 1400px; margin: 0 auto; width: 100%; padding: 20px; }
     .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
     .header-left { display: flex; align-items: center; gap: 15px; }
@@ -17,30 +17,30 @@
     .header-subtitle { font-size: 13px; color: #718096; font-weight: 500; }
     .header-actions { display: flex; gap: 12px; align-items: center; }
     .btn-header { padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s; font-size: 13px; }
-    .btn-padrino { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-    .btn-padrino:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+    .btn-padrino { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; }
+    .btn-padrino:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(32,105,135,0.4); }
     .btn-logout { background: #fc8181; color: white; }
     .btn-logout:hover { background: #f56565; }
     .user-badge { background: #e2e8f0; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4a5568; }
     .main-nav { background: white; border-radius: 16px; padding: 15px 20px; margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .nav-btn { background: #f7fafc; border: 2px solid #e2e8f0; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; color: #4a5568; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
     .nav-btn:hover { background: #edf2f7; border-color: #cbd5e0; }
-    .nav-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(102,126,234,0.3); }
+    .nav-btn.active { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(32,105,135,0.3); }
     .section-pane { display: none; animation: fadeIn 0.4s ease; }
     .section-pane.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .card { background: white; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
     .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #e2e8f0; }
-    .card-icon { width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
+    .card-icon { width: 45px; height: 45px; background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
     .card-title { font-size: 18px; font-weight: 700; color: #2d3748; }
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group label { font-size: 12px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; }
     .form-group input, .form-group select, .form-group textarea { padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: all 0.3s; background: #f7fafc; }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; background: white; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #206987; background: white; box-shadow: 0 0 0 3px rgba(32,105,135,0.1); }
     .btn { padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
-    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+    .btn-primary { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(32,105,135,0.4); }
     .btn-success { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; }
     .btn-warning { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; }
     .btn-danger { background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); color: white; }
@@ -51,7 +51,7 @@
     .import-zone i { font-size: 64px; color: #48bb78; margin-bottom: 15px; }
     .table-container { overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px; }
     table { width: 100%; border-collapse: collapse; }
-    th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; text-align: left; font-weight: 600; font-size: 13px; text-transform: uppercase; }
+    th { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; padding: 15px; text-align: left; font-weight: 600; font-size: 13px; text-transform: uppercase; }
     td { padding: 15px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
     tr:hover { background: #f7fafc; }
     .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
@@ -69,23 +69,26 @@
     .stat-card { padding: 25px; border-radius: 12px; color: white; }
     .stat-card h3 { font-size: 13px; opacity: 0.9; margin-bottom: 8px; }
     .stat-card .value { font-size: 36px; font-weight: 700; }
-    .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
-    .search-box input { flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; }
+    .search-box { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-box input, .search-box select { flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; min-width: 200px; }
     .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
     .page-btn { padding: 8px 16px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; }
     .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .employee-card { padding: 15px; background: white; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer; transition: all 0.3s; margin-bottom: 10px; }
-    .employee-card:hover { border-color: #667eea; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .employee-card:hover { border-color: #206987; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
     .modal.active { display: flex; }
     .modal-content { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e2e8f0; }
     .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #718096; }
     .link-box { background: #f7fafc; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; margin: 10px 0; border: 1px solid #cbd5e0; font-family: monospace; }
+    .preview-box { background: #edf2f7; padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #206987; }
+    .preview-box strong { color: #206987; }
     @media (max-width: 768px) {
       .header { flex-direction: column; gap: 15px; text-align: center; }
       .header-actions { flex-wrap: wrap; justify-content: center; }
       .form-grid { grid-template-columns: 1fr; }
+      .search-box { flex-direction: column; }
     }
   </style>
 </head>
@@ -108,10 +111,11 @@
 
     <div class="main-nav">
       <button class="nav-btn active" onclick="cambiarSeccion('dashboard', this)"><i class="ti ti-layout-dashboard"></i> Dashboard</button>
+      <button class="nav-btn" onclick="cambiarSeccion('beneficios', this)"><i class="ti ti-gift"></i> Beneficios</button>
       <button class="nav-btn" onclick="cambiarSeccion('empleados', this)"><i class="ti ti-users"></i> Empleados</button>
       <button class="nav-btn" onclick="cambiarSeccion('capacitaciones', this)"><i class="ti ti-video"></i> Capacitaciones</button>
-      <button class="nav-btn" onclick="cambiarSeccion('asignaciones', this)"><i class="ti ti-list-check"></i> Capacitaciones Asignadas</button>
-      <button class="nav-btn" onclick="cambiarSeccion('asignar', this)"><i class="ti ti-user-plus"></i> Asignar Capacitación</button>
+      <button class="nav-btn" onclick="cambiarSeccion('asignar', this)"><i class="ti ti-user-plus"></i> Asignar</button>
+      <button class="nav-btn" onclick="cambiarSeccion('capacitaciones-asignadas', this)"><i class="ti ti-list-check"></i> Capacitaciones Asignadas</button>
       <button class="nav-btn" onclick="cambiarSeccion('cronograma', this)"><i class="ti ti-calendar"></i> Cronograma</button>
       <button class="nav-btn" onclick="cambiarSeccion('reportes', this)"><i class="ti ti-chart-bar"></i> Reportes</button>
     </div>
@@ -121,10 +125,37 @@
       <div class="card">
         <div class="card-header"><div class="card-icon"><i class="ti ti-chart-line"></i></div><div><div class="card-title">Resumen del Plan de Entrenamiento</div></div></div>
         <div class="stats-grid">
-          <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"><h3>Total Capacitaciones</h3><div class="value" id="totalCaps">0</div></div>
+          <div class="stat-card" style="background: linear-gradient(135deg, #206987 0%, #3cbcae 100%);"><h3>Total Capacitaciones</h3><div class="value" id="totalCaps">0</div></div>
           <div class="stat-card" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);"><h3>Empleados Activos</h3><div class="value" id="totalEmpleados">0</div></div>
           <div class="stat-card" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);"><h3>Pendientes</h3><div class="value" id="totalPendientes">0</div></div>
           <div class="stat-card" style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);"><h3>% Cumplimiento</h3><div class="value" id="pctCumplimiento">0%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BENEFICIOS -->
+    <div id="beneficios" class="section-pane">
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-gift"></i></div><div><div class="card-title">Gestión de Beneficios y Compensación</div><div style="color: #718096; font-size: 13px;">Configura paquetes de beneficios por cargo y región</div></div></div>
+        <div class="form-grid">
+          <div class="form-group"><label>Cargo Laboral</label><input type="text" id="benCargo" placeholder="Ej: Conductor"></div>
+          <div class="form-group"><label>Región / CD</label><input type="text" id="benRegion" placeholder="Ej: Cali"></div>
+          <div class="form-group"><label>Concepto / Beneficio</label><input type="text" id="benConcepto" placeholder="Ej: Bono"></div>
+          <div class="form-group"><label>Valor Económico ($)</label><input type="number" id="benValor" placeholder="400000"></div>
+          <div class="form-group"><label>Requisito / Indicador</label><input type="text" id="benIndicador" placeholder="Cero ausentismos"></div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="guardarBeneficio()"><i class="ti ti-device-floppy"></i> Guardar</button>
+          <button class="btn" style="background: #e2e8f0;" onclick="limpiarBeneficio()"><i class="ti ti-refresh"></i> Limpiar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-list"></i></div><div class="card-title">Beneficios Registrados</div></div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Cargo</th><th>Región</th><th>Concepto</th><th>Valor</th><th>Indicador</th><th>Acciones</th></tr></thead>
+            <tbody id="tablaBeneficios"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -141,7 +172,7 @@
           <button class="btn btn-success" style="margin-top: 20px;" onclick="document.getElementById('excelFile').click()"><i class="ti ti-upload"></i> Seleccionar Archivo</button>
         </div>
         <div style="margin-top: 30px; padding: 20px; background: #f7fafc; border-radius: 12px;">
-          <div class="card-title" style="margin-bottom: 15px; font-size: 16px;"><i class="ti ti-user-plus" style="color: #667eea;"></i> Registro Individual</div>
+          <div class="card-title" style="margin-bottom: 15px; font-size: 16px;"><i class="ti ti-user-plus" style="color: #206987;"></i> Registro Individual</div>
           <div class="form-grid">
             <div class="form-group"><label>Número de Cédula</label><input type="text" id="searchCedula" placeholder="Ingresa la cédula"></div>
             <div class="form-group"><label>Nombre Completo</label><input type="text" id="crudNombre" placeholder="Nombre del empleado"></div>
@@ -210,44 +241,61 @@
       </div>
     </div>
 
-    <!-- ASIGNACIONES (NUEVA SECCIÓN) -->
-    <div id="asignaciones" class="section-pane">
-      <div class="card">
-        <div class="card-header"><div class="card-icon"><i class="ti ti-list-check"></i></div><div><div class="card-title">Capacitaciones Asignadas</div><div style="color: #718096; font-size: 13px;">Visualiza, edita y comparte las capacitaciones asignadas a los empleados</div></div></div>
-        <div class="search-box">
-          <input type="text" id="searchAsignaciones" placeholder="Buscar por empleado o capacitación..." onkeyup="filtrarAsignaciones()">
-          <select id="filterCD" onchange="filtrarAsignaciones()" style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px;">
-            <option value="">Todos los CD</option>
-            <option value="Cali">Cali</option>
-            <option value="Yumbo">Yumbo</option>
-            <option value="Tuluá">Tuluá</option>
-            <option value="Popayán">Popayán</option>
-          </select>
-        </div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Empleado</th>
-                <th>Capacitación</th>
-                <th>Pilar</th>
-                <th>CD</th>
-                <th>Fecha Límite</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tablaAsignacionesBody">
-              <tr><td colspan="7" style="text-align: center; padding: 30px; color: #718096;">Cargando asignaciones...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ASIGNAR -->
+    <!-- ASIGNAR (MASIVA E INDIVIDUAL) -->
     <div id="asignar" class="section-pane">
-      <div class="card">
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; background: white; padding: 10px; border-radius: 12px;">
+        <button class="btn btn-primary" id="btnMasiva" onclick="mostrarTipoAsignacion('masiva')"><i class="ti ti-users"></i> Asignación Masiva</button>
+        <button class="btn" id="btnIndividual" style="background: #e2e8f0;" onclick="mostrarTipoAsignacion('individual')"><i class="ti ti-user"></i> Asignación Individual</button>
+      </div>
+
+      <div id="seccionMasiva" class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-users"></i></div><div><div class="card-title">Asignación Masiva de Capacitación</div><div style="color: #718096; font-size: 13px;">Selecciona Grupo → Pilar → Cargo para asignar automáticamente</div></div></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>1. Selecciona Grupo (OL/UC)</label>
+            <select id="masivaGrupo" onchange="actualizarPilaresMasivos()">
+              <option value="">-- Seleccionar --</option>
+              <option value="OL">OL (Operaciones Logística)</option>
+              <option value="UC">UC (Última Milla)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>2. Selecciona Pilar</label>
+            <select id="masivaPilar" onchange="actualizarCargosMasivos()" disabled>
+              <option value="">-- Primero selecciona Grupo --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>3. Selecciona Cargo</label>
+            <select id="masivaCargo" disabled>
+              <option value="">-- Primero selecciona Pilar --</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label>4. Selecciona Capacitación</label>
+            <select id="masivaCapacitacion">
+              <option value="">-- Seleccionar capacitación --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>5. Fecha Límite</label>
+            <input type="date" id="masivaFecha">
+          </div>
+          <div class="form-group">
+            <label>6. Nota Mínima (%)</label>
+            <input type="number" id="masivaNota" value="80" min="0" max="100">
+          </div>
+        </div>
+        <div id="previewMasiva" class="preview-box" style="display: none;">
+          <strong> Vista Previa:</strong>
+          <div id="previewContent"></div>
+        </div>
+        <button class="btn btn-success" style="width: 100%; justify-content: center; padding: 15px;" onclick="confirmarAsignacionMasiva()">
+          <i class="ti ti-check"></i> Asignar a Todos los Seleccionados
+        </button>
+      </div>
+
+      <div id="seccionIndividual" class="card" style="display: none;">
         <div class="card-header"><div class="card-icon"><i class="ti ti-user-plus"></i></div><div><div class="card-title">Asignar Capacitación Individual</div></div></div>
         <div class="search-box">
           <input type="text" id="searchAsignar" placeholder="Buscar por nombre o cédula..." onkeyup="buscarEmpleadosAsignar()">
@@ -267,11 +315,62 @@
           </div>
           <div class="form-group"><label>Pilar</label><input type="text" id="asignarPilar" readonly style="background: #edf2f7;"></div>
           <div class="form-group"><label>Tipo</label><input type="text" id="asignarTipo" readonly style="background: #edf2f7;"></div>
-          <div class="form-group"><label>Fecha Límite (Para esta asignación)</label><input type="date" id="asignarFecha"></div>
+          <div class="form-group"><label>Fecha Límite</label><input type="date" id="asignarFecha"></div>
           <div class="form-group"><label>Nota Mínima (%)</label><input type="number" id="asignarMinimo" value="80" min="0" max="100"></div>
         </div>
         <button class="btn btn-success" onclick="confirmarAsignacion()" style="margin-top: 10px;"><i class="ti ti-check"></i> Confirmar Asignación</button>
         <button class="btn" style="background: #e2e8f0; margin-top: 10px; margin-left: 10px;" onclick="cancelarAsignacion()"><i class="ti ti-x"></i> Cancelar</button>
+      </div>
+    </div>
+
+    <!-- CAPACITACIONES ASIGNADAS (NUEVA SECCIÓN) -->
+    <div id="capacitaciones-asignadas" class="section-pane">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ti ti-list-check"></i></div>
+          <div>
+            <div class="card-title">Capacitaciones Asignadas</div>
+            <div style="color: #718096; font-size: 13px;">Visualiza y gestiona todas las capacitaciones asignadas</div>
+          </div>
+        </div>
+        
+        <div class="search-box">
+          <input type="text" id="searchAsignaciones" placeholder="Buscar por empleado o capacitación..." onkeyup="filtrarAsignaciones()">
+          <select id="filterCD" onchange="filtrarAsignaciones()">
+            <option value="">Todos los CD</option>
+            <option value="Cali">Cali</option>
+            <option value="Yumbo">Yumbo</option>
+            <option value="Tuluá">Tuluá</option>
+            <option value="Popayán">Popayán</option>
+          </select>
+          <select id="filterEstado" onchange="filtrarAsignaciones()">
+            <option value="">Todos los estados</option>
+            <option value="Programado">Programado</option>
+            <option value="Pendiente evaluación">Pendiente evaluación</option>
+            <option value="Cumplió">Cumplió</option>
+            <option value="No cumplió">No cumplió</option>
+          </select>
+        </div>
+        
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Empleado</th>
+                <th>Capacitación</th>
+                <th>Pilar</th>
+                <th>CD</th>
+                <th>Fecha Límite</th>
+                <th>Estado</th>
+                <th>Progreso</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaAsignacionesBody">
+              <tr><td colspan="8" style="text-align: center; padding: 30px; color: #718096;">Cargando asignaciones...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -290,10 +389,27 @@
         <div style="height: 400px;"><canvas id="valleChart"></canvas></div>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-icon"><i class="ti ti-alert-triangle"></i></div><div class="card-title">Top Personas con Pendientes</div></div>
+        <div class="card-header">
+          <div class="card-icon"><i class="ti ti-alert-triangle"></i></div>
+          <div>
+            <div class="card-title">Progreso de Empleados con Capacitaciones Asignadas</div>
+            <div style="color: #718096; font-size: 13px;">Solo se muestran empleados con asignaciones activas</div>
+          </div>
+        </div>
         <div class="table-container">
           <table>
-            <thead><tr><th>Nombre</th><th>Cargo</th><th>CD</th><th>Pendientes</th><th>No Cumplió</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Empleado</th>
+                <th>Cargo</th>
+                <th>CD</th>
+                <th>Progreso</th>
+                <th>Cumplidas</th>
+                <th>Pendientes</th>
+                <th>Vencidas</th>
+                <th>Total</th>
+              </tr>
+            </thead>
             <tbody id="valle-tabla-top-pendientes"></tbody>
           </table>
         </div>
@@ -313,94 +429,29 @@
         <div class="form-group" style="grid-column: 1 / -1;"><label>Nombre</label><input type="text" id="editCapNombre"></div>
         <div class="form-group"><label>Pilar</label>
           <select id="editCapPilar">
-            <option value="Safety">Safety</option>
-            <option value="Management">Management</option>
-            <option value="People">People</option>
-            <option value="Delivery">Delivery</option>
-            <option value="Warehouse">Warehouse</option>
-            <option value="Fleet">Fleet</option>
+            <option value="Safety">Safety</option><option value="Management">Management</option><option value="People">People</option>
+            <option value="Delivery">Delivery</option><option value="Warehouse">Warehouse</option><option value="Fleet">Fleet</option>
           </select>
         </div>
         <div class="form-group"><label>Tipo</label>
-          <select id="editCapTipo">
-            <option value="Tradicional">Tradicional</option>
-            <option value="Kirkpatrick">Kirkpatrick</option>
-          </select>
+          <select id="editCapTipo"><option value="Tradicional">Tradicional</option><option value="Kirkpatrick">Kirkpatrick</option></select>
         </div>
         <div class="form-group" style="grid-column: 1 / -1;"><label>Link Video YouTube</label><input type="url" id="editCapYoutubeUrl"></div>
         <div class="form-group" style="grid-column: 1 / -1;"><label>Link Evaluación</label><input type="url" id="editCapLinkEval"></div>
         <div class="form-group"><label>CD</label>
           <select id="editCapCds">
-            <option value="Todos">Todos</option>
-            <option value="Cali">Cali</option>
-            <option value="Yumbo">Yumbo</option>
-            <option value="Tuluá">Tuluá</option>
-            <option value="Popayán">Popayán</option>
+            <option value="Todos">Todos</option><option value="Cali">Cali</option><option value="Yumbo">Yumbo</option>
+            <option value="Tuluá">Tuluá</option><option value="Popayán">Popayán</option>
           </select>
         </div>
         <div class="form-group"><label>Operación</label>
-          <select id="editCapOp">
-            <option value="Todos">Todos</option>
-            <option value="OL">OL</option>
-            <option value="UC">UC</option>
-          </select>
+          <select id="editCapOp"><option value="Todos">Todos</option><option value="OL">OL</option><option value="UC">UC</option></select>
         </div>
         <div class="form-group"><label>Cargos</label><input type="text" id="editCapCargos"></div>
       </div>
       <div style="display: flex; gap: 10px; margin-top: 20px;">
         <button class="btn btn-primary" onclick="guardarEdicionCapacitacion()"><i class="ti ti-device-floppy"></i> Guardar Cambios</button>
         <button class="btn" style="background: #e2e8f0;" onclick="cerrarModalEditarCap()"><i class="ti ti-x"></i> Cancelar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL VER/EDITAR ASIGNACIÓN -->
-  <div id="modalVerAsignacion" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3><i class="ti ti-info-circle"></i> Detalles de Asignación</h3>
-        <button class="modal-close" onclick="cerrarModalVerAsignacion()">&times;</button>
-      </div>
-      <input type="hidden" id="viewAsigId">
-      <div style="background: #f7fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">EMPLEADO:</strong><div style="font-weight: 700; font-size: 16px;" id="viewEmpleado"></div></div>
-        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">CAPACITACIÓN:</strong><div style="font-weight: 700; font-size: 16px;" id="viewCapacitacion"></div></div>
-        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">PILAR:</strong><div id="viewPilar"></div></div>
-        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">CD / OPERACIÓN:</strong><div id="viewCD"></div></div>
-        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">FECHA LÍMITE:</strong><div id="viewFecha"></div></div>
-        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">NOTA MÍNIMA:</strong><div id="viewNota"></div></div>
-        <div><strong style="color: #718096; font-size: 12px;">ESTADO:</strong><div id="viewEstado"></div></div>
-      </div>
-      
-      <div style="margin-bottom: 20px;">
-        <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;"> LINK DE ACCESO:</strong>
-        <div class="link-box" id="viewLink"></div>
-      </div>
-      
-      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-        <button onclick="copiarLinkAsignacion()" class="btn btn-info" style="flex: 1;"><i class="ti ti-copy"></i> Copiar Link</button>
-        <button onclick="enviarWhatsAppAsignacion()" class="btn btn-success" style="flex: 1;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
-      </div>
-      
-      <div style="border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
-        <h4 style="margin-bottom: 15px;"><i class="ti ti-edit"></i> Editar Asignación</h4>
-        <div class="form-grid">
-          <div class="form-group"><label>Nueva Fecha Límite</label><input type="date" id="editAsigFecha"></div>
-          <div class="form-group"><label>Nueva Nota Mínima</label><input type="number" id="editAsigNota" min="0" max="100"></div>
-          <div class="form-group"><label>Estado</label>
-            <select id="editAsigEstado">
-              <option value="Programado">Programado</option>
-              <option value="Pendiente evaluación">Pendiente evaluación</option>
-              <option value="Cumplió">Cumplió</option>
-              <option value="No cumplió">No cumplió</option>
-            </select>
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="guardarEdicionAsignacion()" style="width: 100%;"><i class="ti ti-device-floppy"></i> Actualizar Asignación</button>
-      </div>
-      
-      <div style="margin-top: 15px;">
-        <button class="btn btn-danger" onclick="eliminarAsignacion()" style="width: 100%;"><i class="ti ti-trash"></i> Eliminar Asignación</button>
       </div>
     </div>
   </div>
@@ -414,15 +465,16 @@
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     
-    let valleData = { capacitaciones: [], empleados: [], asignaciones: [], mesActual: new Date() };
+    let valleData = { capacitaciones: [], empleados: [], asignaciones: [], beneficios: [], mesActual: new Date() };
     let paginaActual = 1;
     const itemsPorPagina = 8;
     let empleadoSeleccionado = null;
-    let asignacionActual = null;
+    let idBeneficioEdicion = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       cargarDatos();
       cargarPerfilAdmin(localStorage.getItem('usuario_cedula'));
+      cargarBeneficios();
     });
 
     async function cargarDatos() {
@@ -439,7 +491,6 @@
       actualizarDashboard();
       renderizarEmpleados();
       renderizarCapacitaciones();
-      renderizarAsignaciones();
     }
 
     function actualizarSelectCargos() {
@@ -459,19 +510,131 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(seccionId).classList.add('active');
       btn.classList.add('active');
+      
       if (seccionId === 'cronograma') renderizarCalendario();
       if (seccionId === 'reportes') renderizarReportes();
-      if (seccionId === 'asignaciones') renderizarAsignaciones();
+      if (seccionId === 'asignar') {
+        cargarCapacitacionesEnSelect();
+        mostrarTipoAsignacion('masiva');
+      }
+      if (seccionId === 'capacitaciones-asignadas') {
+        renderizarAsignaciones();
+      }
     }
 
     function actualizarDashboard() {
       document.getElementById('totalCaps').textContent = valleData.capacitaciones.length;
       document.getElementById('totalEmpleados').textContent = valleData.empleados.length;
-      const pendientes = valleData.asignaciones.filter(a => a.estado === 'Pendiente' || a.estado === 'Programado').length;
+      
+      const hoy = new Date().toISOString().split('T')[0];
+      
+      const pendientes = valleData.asignaciones.filter(a => {
+        if (a.estado === 'Cumplió' || a.estado === 'No cumplió') return false;
+        return true;
+      }).length;
+      
+      const vencidos = valleData.asignaciones.filter(a => {
+        if (a.estado === 'Cumplió' || a.estado === 'No cumplió') return false;
+        return a.fecha_limite && a.fecha_limite < hoy;
+      }).length;
+      
       const cumplidas = valleData.asignaciones.filter(a => a.estado === 'Cumplió').length;
-      const pct = valleData.asignaciones.length > 0 ? Math.round((cumplidas / valleData.asignaciones.length) * 100) : 0;
+      const totalAsignaciones = valleData.asignaciones.length;
+      const pct = totalAsignaciones > 0 ? Math.round((cumplidas / totalAsignaciones) * 100) : 0;
+      
       document.getElementById('totalPendientes').textContent = pendientes;
       document.getElementById('pctCumplimiento').textContent = pct + '%';
+      
+      if (vencidos > 0) {
+        const alertHTML = `
+          <div class="vencidos-alert" style="background: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 8px; margin-top: 20px;">
+            <strong style="color: #991b1b;">⚠️ ${vencidos} asignaciones vencidas</strong>
+            <p style="color: #7f1d1d; font-size: 13px; margin-top: 5px;">Hay capacitaciones que superaron su fecha límite sin completar.</p>
+          </div>
+        `;
+        const dashboard = document.getElementById('dashboard');
+        const existingAlert = dashboard.querySelector('.vencidos-alert');
+        if (existingAlert) existingAlert.remove();
+        dashboard.insertAdjacentHTML('beforeend', alertHTML);
+      }
+    }
+
+    // ==================== BENEFICIOS ====================
+    async function cargarBeneficios() {
+      const snap = await db.collection('beneficios').get();
+      valleData.beneficios = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderizarBeneficios();
+    }
+
+    function renderizarBeneficios() {
+      const tbody = document.getElementById('tablaBeneficios');
+      if (valleData.beneficios.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">No hay beneficios registrados</td></tr>';
+        return;
+      }
+      tbody.innerHTML = valleData.beneficios.map(b => `
+        <tr>
+          <td>${b.cargo}</td>
+          <td>${b.region || 'General'}</td>
+          <td>${b.concepto}</td>
+          <td>$${Number(b.valor || 0).toLocaleString('es-CO')}</td>
+          <td>${b.indicador || '-'}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="editarBeneficio('${b.id}')"><i class="ti ti-edit"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarBeneficio('${b.id}')"><i class="ti ti-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function guardarBeneficio() {
+      const cargo = document.getElementById('benCargo').value.trim();
+      const region = document.getElementById('benRegion').value.trim();
+      const concepto = document.getElementById('benConcepto').value.trim();
+      const valor = Number(document.getElementById('benValor').value);
+      const indicador = document.getElementById('benIndicador').value.trim();
+
+      if (!cargo || !region || !concepto || !valor) return alert('Completa todos los campos');
+
+      try {
+        if (idBeneficioEdicion) {
+          await db.collection('beneficios').doc(idBeneficioEdicion).update({ cargo, region, concepto, valor, indicador });
+          alert('✅ Beneficio actualizado');
+        } else {
+          await db.collection('beneficios').add({ cargo, region, concepto, valor, indicador });
+          alert('✅ Beneficio creado');
+        }
+        limpiarBeneficio();
+        cargarBeneficios();
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+
+    function editarBeneficio(id) {
+      const b = valleData.beneficios.find(x => x.id === id);
+      if (!b) return;
+      idBeneficioEdicion = id;
+      document.getElementById('benCargo').value = b.cargo;
+      document.getElementById('benRegion').value = b.region || '';
+      document.getElementById('benConcepto').value = b.concepto;
+      document.getElementById('benValor').value = b.valor;
+      document.getElementById('benIndicador').value = b.indicador || '';
+    }
+
+    async function eliminarBeneficio(id) {
+      if (!confirm('¿Eliminar este beneficio?')) return;
+      try {
+        await db.collection('beneficios').doc(id).delete();
+        cargarBeneficios();
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+
+    function limpiarBeneficio() {
+      ['benCargo', 'benRegion', 'benConcepto', 'benValor', 'benIndicador'].forEach(id => document.getElementById(id).value = '');
+      idBeneficioEdicion = null;
     }
 
     // ==================== EMPLEADOS ====================
@@ -587,54 +750,8 @@
           creado_en: firebase.firestore.FieldValue.serverTimestamp()
         };
         
-        const capRef = await db.collection('capacitaciones_valle').add(capData);
-        const capId = capRef.id;
-        
-        let asignadosCount = 0;
-        const batch = db.batch();
-        
-        const filterCds = cds.toLowerCase().trim();
-        const filterOp = operacion.toLowerCase().trim();
-        const filterCargo = cargos.toLowerCase().trim();
-
-        valleData.empleados.forEach(emp => {
-          const empRegion = (emp.region || 'General').toLowerCase().trim();
-          const empGrupo = (emp.grupo || 'General').toLowerCase().trim();
-          const empCargo = (emp.cargo || '').toLowerCase().trim();
-          
-          const coincideCD = filterCds === 'todos' || empRegion === filterCds;
-          const coincideOp = filterOp === 'todos' || empGrupo === filterOp;
-          const coincideCargo = filterCargo === 'todos' || empCargo === filterCargo || empCargo.includes(filterCargo);
-
-          if (coincideCD && coincideOp && coincideCargo) {
-            const asigRef = db.collection('asignaciones_valle').doc();
-            batch.set(asigRef, {
-              capacitacion_id: capId,
-              empleado_id: emp.id,
-              empleado_nombre: emp.nombre,
-              empleado_documento: emp.cedula,
-              empleado_cargo: emp.cargo,
-              empleado_cd: emp.region,
-              empleado_operacion: emp.grupo,
-              estado: 'Programado',
-              video_visto: false,
-              video_url: youtubeUrl,
-              link_evaluacion: linkEval,
-              nota: null,
-              fecha_limite: null,
-              nota_minima: null,
-              creado_en: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            asignadosCount++;
-          }
-        });
-        
-        if (asignadosCount > 0) {
-          await batch.commit();
-          alert(`✅ Capacitación creada y asignada a ${asignadosCount} empleados`);
-        } else {
-          alert(`️ Capacitación creada pero sin asignaciones automáticas. Asigna manualmente en "Asignar Capacitación".`);
-        }
+        await db.collection('capacitaciones_valle').add(capData);
+        alert('✅ Capacitación creada');
         
         document.getElementById('valle-cap-nombre').value = '';
         document.getElementById('valle-cap-youtube-url').value = '';
@@ -741,155 +858,201 @@
       }
     }
 
-    // ==================== ASIGNACIONES ====================
-    function renderizarAsignaciones(filtro = '') {
-      const tbody = document.getElementById('tablaAsignacionesBody');
-      const filterCD = document.getElementById('filterCD').value;
+    // ==================== ASIGNACIÓN MASIVA ====================
+    function mostrarTipoAsignacion(tipo) {
+      if (tipo === 'masiva') {
+        document.getElementById('seccionMasiva').style.display = 'block';
+        document.getElementById('seccionIndividual').style.display = 'none';
+        document.getElementById('formAsignacion').style.display = 'none';
+        document.getElementById('btnMasiva').classList.add('btn-primary');
+        document.getElementById('btnMasiva').style.background = '';
+        document.getElementById('btnIndividual').classList.remove('btn-primary');
+        document.getElementById('btnIndividual').style.background = '#e2e8f0';
+      } else {
+        document.getElementById('seccionMasiva').style.display = 'none';
+        document.getElementById('seccionIndividual').style.display = 'block';
+        document.getElementById('formAsignacion').style.display = 'none';
+        document.getElementById('btnIndividual').classList.add('btn-primary');
+        document.getElementById('btnIndividual').style.background = '';
+        document.getElementById('btnMasiva').classList.remove('btn-primary');
+        document.getElementById('btnMasiva').style.background = '#e2e8f0';
+      }
+    }
+
+    function actualizarPilaresMasivos() {
+      const grupo = document.getElementById('masivaGrupo').value;
+      const selectPilar = document.getElementById('masivaPilar');
+      const selectCargo = document.getElementById('masivaCargo');
       
-      let asignacionesFiltradas = valleData.asignaciones.filter(asig => {
-        const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
-        const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
-        
-        if (!emp || !cap) return false;
-        
-        const matchSearch = filtro === '' || 
-          emp.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
-          cap.nombre.toLowerCase().includes(filtro.toLowerCase());
-        
-        const matchCD = filterCD === '' || emp.region === filterCD;
-        
-        return matchSearch && matchCD;
-      });
+      selectPilar.innerHTML = '<option value="">-- Seleccionar Pilar --</option>';
+      selectCargo.innerHTML = '<option value="">-- Primero selecciona Pilar --</option>';
+      selectCargo.disabled = true;
       
-      if (asignacionesFiltradas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #718096;">No hay asignaciones</td></tr>';
+      if (!grupo) {
+        selectPilar.disabled = true;
         return;
       }
       
-      tbody.innerHTML = asignacionesFiltradas.map(asig => {
-        const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
-        const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
-        
-        if (!emp || !cap) return '';
-        
-        const link = `${window.location.origin}/ver_capacitacion.html?cap=${cap.id}&asig=${asig.id}`;
-        const estadoClass = asig.estado === 'Cumplió' ? 'badge-success' : (asig.estado === 'No cumplió' ? 'badge-danger' : 'badge-warning');
-        
-        return `
-          <tr>
-            <td><strong>${emp.nombre}</strong><br><small style="color: #718096;">${emp.cedula}</small></td>
-            <td>${cap.nombre}</td>
-            <td><span class="badge badge-${cap.pilar.toLowerCase()}">${cap.pilar}</span></td>
-            <td>${emp.region} - ${emp.grupo}</td>
-            <td>${asig.fecha_limite || 'No definida'}</td>
-            <td><span class="badge ${estadoClass}">${asig.estado || 'Programado'}</span></td>
-            <td>
-              <button class="btn btn-info btn-sm" onclick="verAsignacion('${asig.id}')" style="margin-right: 5px;"><i class="ti ti-eye"></i> Ver</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+      selectPilar.disabled = false;
+      const pilaresUnicos = [...new Set(valleData.capacitaciones.map(c => c.pilar))];
+      pilaresUnicos.forEach(pilar => {
+        const option = document.createElement('option');
+        option.value = pilar;
+        option.textContent = pilar;
+        selectPilar.appendChild(option);
+      });
     }
 
-    function filtrarAsignaciones() {
-      const search = document.getElementById('searchAsignaciones').value;
-      renderizarAsignaciones(search);
+    function actualizarCargosMasivos() {
+      const grupo = document.getElementById('masivaGrupo').value;
+      const pilar = document.getElementById('masivaPilar').value;
+      const selectCargo = document.getElementById('masivaCargo');
+      
+      selectCargo.innerHTML = '<option value="">-- Seleccionar Cargo --</option>';
+      
+      if (!grupo || !pilar) {
+        selectCargo.disabled = true;
+        return;
+      }
+      
+      selectCargo.disabled = false;
+      const cargosUnicos = [...new Set(valleData.empleados
+        .filter(emp => emp.grupo === grupo)
+        .map(emp => emp.cargo)
+        .filter(c => c)
+      )];
+      
+      cargosUnicos.forEach(cargo => {
+        const option = document.createElement('option');
+        option.value = cargo;
+        option.textContent = cargo;
+        selectCargo.appendChild(option);
+      });
+      
+      cargarCapacitacionesEnSelect();
     }
 
-    function verAsignacion(asigId) {
-      const asig = valleData.asignaciones.find(a => a.id === asigId);
-      if (!asig) return;
+    function cargarCapacitacionesEnSelect() {
+      const grupo = document.getElementById('masivaGrupo').value;
+      const pilar = document.getElementById('masivaPilar').value;
+      const cargo = document.getElementById('masivaCargo').value;
+      const select = document.getElementById('masivaCapacitacion');
       
-      const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
-      const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+      select.innerHTML = '<option value="">-- Seleccionar capacitación --</option>';
       
-      if (!emp || !cap) return;
+      let capacitacionesFiltradas = valleData.capacitaciones;
+      if (pilar) {
+        capacitacionesFiltradas = capacitacionesFiltradas.filter(c => c.pilar === pilar);
+      }
       
-      asignacionActual = asig;
+      capacitacionesFiltradas.forEach(cap => {
+        const option = document.createElement('option');
+        option.value = cap.id;
+        option.textContent = `${cap.nombre} (${cap.pilar})`;
+        select.appendChild(option);
+      });
       
-      document.getElementById('viewAsigId').value = asigId;
-      document.getElementById('viewEmpleado').textContent = `${emp.nombre} (${emp.cedula})`;
-      document.getElementById('viewCapacitacion').textContent = cap.nombre;
-      document.getElementById('viewPilar').innerHTML = `<span class="badge badge-${cap.pilar.toLowerCase()}">${cap.pilar}</span>`;
-      document.getElementById('viewCD').textContent = `${emp.region} - ${emp.grupo} - ${emp.cargo}`;
-      document.getElementById('viewFecha').textContent = asig.fecha_limite || 'No definida';
-      document.getElementById('viewNota').textContent = asig.nota_minima || '80';
-      
-      const estadoClass = asig.estado === 'Cumplió' ? 'badge-success' : (asig.estado === 'No cumplió' ? 'badge-danger' : 'badge-warning');
-      document.getElementById('viewEstado').innerHTML = `<span class="badge ${estadoClass}">${asig.estado || 'Programado'}</span>`;
-      
-      const link = `${window.location.origin}/ver_capacitacion.html?cap=${cap.id}&asig=${asigId}`;
-      document.getElementById('viewLink').textContent = link;
-      
-      document.getElementById('editAsigFecha').value = asig.fecha_limite || '';
-      document.getElementById('editAsigNota').value = asig.nota_minima || 80;
-      document.getElementById('editAsigEstado').value = asig.estado || 'Programado';
-      
-      document.getElementById('modalVerAsignacion').classList.add('active');
-    }
-
-    function cerrarModalVerAsignacion() {
-      document.getElementById('modalVerAsignacion').classList.remove('active');
-      asignacionActual = null;
-    }
-
-    function copiarLinkAsignacion() {
-      const link = document.getElementById('viewLink').textContent;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(link).then(() => {
-          alert('✅ Link copiado al portapapeles');
-        });
+      if (grupo && pilar && cargo) {
+        mostrarPreviewMasivo(grupo, pilar, cargo);
       }
     }
 
-    function enviarWhatsAppAsignacion() {
-      if (!asignacionActual) return;
+    function mostrarPreviewMasivo(grupo, pilar, cargo) {
+      const empleadosFiltrados = valleData.empleados.filter(emp => 
+        emp.grupo === grupo && emp.cargo === cargo
+      );
       
-      const emp = valleData.empleados.find(e => e.id === asignacionActual.empleado_id);
-      const cap = valleData.capacitaciones.find(c => c.id === asignacionActual.capacitacion_id);
+      const preview = document.getElementById('previewMasiva');
+      const content = document.getElementById('previewContent');
       
-      if (!emp || !cap) return;
-      
-      const link = `${window.location.origin}/ver_capacitacion.html?cap=${cap.id}&asig=${asignacionActual.id}`;
-      const mensaje = `Hola ${emp.nombre}, tienes asignada la capacitación: *${cap.nombre}*\n\n📺 ${link}\n\n⏰ Fecha límite: ${asignacionActual.fecha_limite || 'Por definir'}\n\n¡Saludos!`;
-      
-      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+      preview.style.display = 'block';
+      content.innerHTML = `
+        <div style="margin-top: 10px;">
+          <strong>Grupo:</strong> ${grupo}<br>
+          <strong>Pilar:</strong> ${pilar}<br>
+          <strong>Cargo:</strong> ${cargo}<br>
+          <strong>Empleados que recibirán la asignación:</strong> ${empleadosFiltrados.length}
+        </div>
+        ${empleadosFiltrados.length > 0 ? `
+          <div style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
+            ${empleadosFiltrados.map(emp => `
+              <div style="padding: 5px; background: white; border-radius: 5px; margin: 3px 0;">
+                ${emp.nombre} - ${emp.cedula}
+              </div>
+            `).join('')}
+          </div>
+        ` : '<div style="color: #e53e3e; margin-top: 10px;">No hay empleados que coincidan con estos filtros</div>'}
+      `;
     }
 
-    async function guardarEdicionAsignacion() {
-      if (!asignacionActual) return;
+    async function confirmarAsignacionMasiva() {
+      const grupo = document.getElementById('masivaGrupo').value;
+      const pilar = document.getElementById('masivaPilar').value;
+      const cargo = document.getElementById('masivaCargo').value;
+      const capId = document.getElementById('masivaCapacitacion').value;
+      const fecha = document.getElementById('masivaFecha').value;
+      const notaMinima = document.getElementById('masivaNota').value;
+      
+      if (!grupo || !pilar || !cargo || !capId || !fecha) {
+        return alert('Por favor completa todos los campos');
+      }
+      
+      const cap = valleData.capacitaciones.find(c => c.id === capId);
+      if (!cap) return alert('Capacitación no encontrada');
+      
+      const empleadosFiltrados = valleData.empleados.filter(emp => 
+        emp.grupo === grupo && emp.cargo === cargo
+      );
+      
+      if (empleadosFiltrados.length === 0) {
+        return alert('No hay empleados que coincidan con los filtros seleccionados');
+      }
+      
+      if (!confirm(`¿Asignar "${cap.nombre}" a ${empleadosFiltrados.length} empleados?`)) return;
       
       try {
-        await db.collection('asignaciones_valle').doc(asignacionActual.id).update({
-          fecha_limite: document.getElementById('editAsigFecha').value,
-          nota_minima: Number(document.getElementById('editAsigNota').value),
-          estado: document.getElementById('editAsigEstado').value
+        const batch = db.batch();
+        
+        empleadosFiltrados.forEach(emp => {
+          const asigRef = db.collection('asignaciones_valle').doc();
+          batch.set(asigRef, {
+            capacitacion_id: capId,
+            empleado_id: emp.id,
+            empleado_nombre: emp.nombre,
+            empleado_documento: emp.cedula,
+            empleado_cargo: emp.cargo,
+            empleado_cd: emp.region,
+            empleado_operacion: emp.grupo,
+            estado: 'Programado',
+            video_visto: false,
+            video_url: cap.youtube_url,
+            link_evaluacion: cap.link_evaluacion,
+            nota: null,
+            fecha_limite: fecha,
+            nota_minima: Number(notaMinima),
+            creado_en: firebase.firestore.FieldValue.serverTimestamp()
+          });
         });
         
-        alert('✅ Asignación actualizada');
-        cerrarModalVerAsignacion();
-        cargarDatos();
-      } catch (error) {
-        alert(' Error: ' + error.message);
-      }
-    }
-
-    async function eliminarAsignacion() {
-      if (!asignacionActual) return;
-      
-      if (!confirm('¿Eliminar esta asignación?')) return;
-      
-      try {
-        await db.collection('asignaciones_valle').doc(asignacionActual.id).delete();
-        alert('✅ Asignación eliminada');
-        cerrarModalVerAsignacion();
-        cargarDatos();
+        await batch.commit();
+        
+        alert(`✅ Asignación masiva exitosa!\n\n📚 ${cap.nombre}\n👥 Asignados: ${empleadosFiltrados.length} empleados\n Fecha límite: ${fecha}\n⭐ Nota mínima: ${notaMinima}%`);
+        
+        document.getElementById('masivaGrupo').value = '';
+        document.getElementById('masivaPilar').value = '';
+        document.getElementById('masivaCargo').value = '';
+        document.getElementById('masivaCapacitacion').value = '';
+        document.getElementById('masivaFecha').value = '';
+        document.getElementById('previewMasiva').style.display = 'none';
+        
+        await cargarDatos();
+        
       } catch (error) {
         alert('❌ Error: ' + error.message);
       }
     }
 
-    // ==================== ASIGNAR INDIVIDUAL ====================
+    // ==================== ASIGNACIÓN INDIVIDUAL ====================
     function buscarEmpleadosAsignar() {
       const search = document.getElementById('searchAsignar').value.toLowerCase();
       const tipo = document.getElementById('searchTipoAsignar').value;
@@ -979,7 +1142,7 @@
                 <div style="background: #edf2f7; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; font-family: monospace; border: 1px solid #cbd5e0;">${link}</div>
               </div>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button onclick="copiarLink('${link}')" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="ti ti-copy"></i> Copiar Link</button>
+                <button onclick="copiarLink('${link}')" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="ti ti-copy"></i> Copiar Link</button>
                 <button onclick="enviarWhatsApp('${empleadoSeleccionado.nombre}', '${cap.nombre}', '${fecha}', '${link}')" style="flex: 1; padding: 12px; background: #25D366; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
               </div>
               <button onclick="cerrarModalAsignacion()" style="width: 100%; margin-top: 10px; padding: 12px; background: #e2e8f0; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Cerrar</button>
@@ -1005,7 +1168,7 @@
     }
 
     function enviarWhatsApp(nombre, capacitacion, fecha, link) {
-      const mensaje = `Hola ${nombre}, tienes una nueva capacitación: *${capacitacion}*.\n\n📺 ${link}\n\n⏰ Fecha límite: ${fecha}\n\n¡Saludos!`;
+      const mensaje = `Hola ${nombre}, tienes una nueva capacitación: *${capacitacion}*.\n\n ${link}\n\n⏰ Fecha límite: ${fecha}\n\n¡Saludos!`;
       window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
@@ -1023,6 +1186,141 @@
       empleadoSeleccionado = null;
     }
 
+    // ==================== CAPACITACIONES ASIGNADAS ====================
+    function renderizarAsignaciones(filtro = '', filterCD = '', filterEstado = '') {
+      const tbody = document.getElementById('tablaAsignacionesBody');
+      
+      let asignacionesFiltradas = valleData.asignaciones.filter(asig => {
+        const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
+        const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+        
+        if (!emp || !cap) return false;
+        
+        const matchSearch = filtro === '' || 
+          emp.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+          cap.nombre.toLowerCase().includes(filtro.toLowerCase());
+        
+        const matchCD = filterCD === '' || emp.region === filterCD;
+        const matchEstado = filterEstado === '' || asig.estado === filterEstado;
+        
+        return matchSearch && matchCD && matchEstado;
+      });
+      
+      if (asignacionesFiltradas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: #718096;">No hay asignaciones que coincidan con los filtros</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = asignacionesFiltradas.map(asig => {
+        const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
+        const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+        
+        if (!emp || !cap) return '';
+        
+        const link = `${window.location.origin}/ver_capacitacion.html?cap=${cap.id}&asig=${asig.id}`;
+        
+        let estadoClass = 'badge-warning';
+        if (asig.estado === 'Cumplió') estadoClass = 'badge-success';
+        if (asig.estado === 'No cumplió') estadoClass = 'badge-danger';
+        if (asig.estado === 'Pendiente evaluación') estadoClass = 'badge-info';
+        
+        const hoy = new Date().toISOString().split('T')[0];
+        const vencido = asig.fecha_limite && asig.fecha_limite < hoy && asig.estado !== 'Cumplió';
+        const rowStyle = vencido ? 'background: #fee2e2;' : '';
+        const badgeVencido = vencido ? '<span class="badge badge-danger" style="margin-left: 5px;">VENCIDO</span>' : '';
+        
+        const progreso = asig.video_visto ? '100%' : '0%';
+        const progresoColor = asig.video_visto ? '#48bb78' : '#ed8936';
+        
+        return `
+          <tr style="${rowStyle}">
+            <td><strong>${emp.nombre}</strong><br><small style="color: #718096;">${emp.cedula}</small></td>
+            <td>${cap.nombre}</td>
+            <td><span class="badge badge-${cap.pilar.toLowerCase()}">${cap.pilar}</span></td>
+            <td>${emp.region}</td>
+            <td>${asig.fecha_limite || 'No definida'} ${badgeVencido}</td>
+            <td><span class="badge ${estadoClass}">${asig.estado || 'Programado'}</span></td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="flex: 1; background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                  <div style="width: ${progreso}; background: ${progresoColor}; height: 100%;"></div>
+                </div>
+                <span style="font-size: 12px; font-weight: 700;">${progreso}</span>
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-info btn-sm" onclick="verDetalleAsignacion('${asig.id}')" title="Ver detalle"><i class="ti ti-eye"></i></button>
+              <button class="btn btn-warning btn-sm" onclick="copiarLinkAsignacion('${link}')" title="Copiar link"><i class="ti ti-copy"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filtrarAsignaciones() {
+      const search = document.getElementById('searchAsignaciones').value;
+      const filterCD = document.getElementById('filterCD').value;
+      const filterEstado = document.getElementById('filterEstado').value;
+      renderizarAsignaciones(search, filterCD, filterEstado);
+    }
+
+    function verDetalleAsignacion(asigId) {
+      const asig = valleData.asignaciones.find(a => a.id === asigId);
+      if (!asig) return;
+      
+      const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
+      const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+      
+      if (!emp || !cap) return;
+      
+      const link = `${window.location.origin}/ver_capacitacion.html?cap=${cap.id}&asig=${asigId}`;
+      
+      const modalHTML = `
+        <div id="modalDetalleAsignacion" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+          <div style="background: white; padding: 30px; border-radius: 16px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h3><i class="ti ti-info-circle"></i> Detalle de Asignación</h3>
+              <button onclick="document.getElementById('modalDetalleAsignacion').remove()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #718096;">&times;</button>
+            </div>
+            
+            <div style="background: #f7fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+              <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">EMPLEADO:</strong><div style="font-weight: 700; font-size: 16px;">${emp.nombre}</div><div style="color: #718096; font-size: 13px;">${emp.cedula} - ${emp.cargo}</div></div>
+              <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">CAPACITACIÓN:</strong><div style="font-weight: 700; font-size: 16px;">${cap.nombre}</div><div style="color: #718096; font-size: 13px;">${cap.pilar} - ${cap.tipo}</div></div>
+              <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">ESTADO:</strong><div>${asig.estado || 'Programado'}</div></div>
+              <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">FECHA LÍMITE:</strong><div>${asig.fecha_limite || 'No definida'}</div></div>
+              <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">NOTA MÍNIMA:</strong><div>${asig.nota_minima || 80}%</div></div>
+              <div><strong style="color: #718096; font-size: 12px;">PROGRESO:</strong><div>${asig.video_visto ? 'Video completado ✅' : 'Video pendiente ⏳'}</div></div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;">🔗 LINK DE ACCESO:</strong>
+              <div style="background: #edf2f7; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; font-family: monospace; border: 1px solid #cbd5e0;">${link}</div>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+              <button onclick="copiarLinkAsignacion('${link}')" class="btn btn-primary" style="flex: 1;"><i class="ti ti-copy"></i> Copiar Link</button>
+              <button onclick="enviarWhatsAppAsignacion('${emp.nombre}', '${cap.nombre}', '${asig.fecha_limite || ''}', '${link}')" class="btn btn-success" style="flex: 1;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    function copiarLinkAsignacion(link) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(link).then(() => {
+          alert('✅ Link copiado al portapapeles');
+        });
+      }
+    }
+
+    function enviarWhatsAppAsignacion(nombre, capacitacion, fecha, link) {
+      const mensaje = `Hola ${nombre}, tienes asignada la capacitación: *${capacitacion}*\n\n📺 ${link}\n\n⏰ Fecha límite: ${fecha}\n\n¡Saludos!`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+    }
+
     // ==================== CRONOGRAMA Y REPORTES ====================
     function renderizarCalendario() {
       const hoy = new Date();
@@ -1033,7 +1331,7 @@
       const container = document.getElementById('valle-calendar-container');
       let html = '';
       ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].forEach(d => {
-        html += `<div style="text-align: center; font-weight: 700; padding: 10px; background: #667eea; color: white; border-radius: 8px;">${d}</div>`;
+        html += `<div style="text-align: center; font-weight: 700; padding: 10px; background: #206987; color: white; border-radius: 8px;">${d}</div>`;
       });
       for (let i = 0; i < firstDay; i++) html += `<div style="padding: 10px;"></div>`;
       for (let d = 1; d <= daysInMonth; d++) {
@@ -1041,7 +1339,7 @@
         const capsDelDia = valleData.capacitaciones.filter(c => c.fecha === dateStr || (c.fecha_limite && c.fecha_limite.startsWith(dateStr)));
         html += `<div style="background: white; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px; min-height: 80px;">
           <div style="font-weight: 700; margin-bottom: 5px;">${d}</div>
-          ${capsDelDia.map(c => `<div style="background: #667eea; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-bottom: 4px;">${c.nombre.substring(0, 20)}...</div>`).join('')}
+          ${capsDelDia.map(c => `<div style="background: #206987; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-bottom: 4px;">${c.nombre.substring(0, 20)}...</div>`).join('')}
         </div>`;
       }
       container.innerHTML = html;
@@ -1050,45 +1348,100 @@
     function renderizarReportes() {
       const ctx = document.getElementById('valleChart').getContext('2d');
       if (window.valleChartInstance) window.valleChartInstance.destroy();
+      
+      const hoy = new Date().toISOString().split('T')[0];
+      
+      const empleadosConAsignaciones = valleData.empleados.filter(emp => {
+        return valleData.asignaciones.some(a => a.empleado_id === emp.id);
+      });
+      
       const pilares = ['Safety', 'Management', 'People', 'Delivery', 'Warehouse', 'Fleet'];
       const data = pilares.map(pilar => {
         const capsPilar = valleData.capacitaciones.filter(c => c.pilar === pilar);
         const asigsPilar = valleData.asignaciones.filter(a => capsPilar.some(c => c.id === a.capacitacion_id));
         return {
           cumplidas: asigsPilar.filter(a => a.estado === 'Cumplió').length,
-          pendientes: asigsPilar.filter(a => a.estado === 'Pendiente' || a.estado === 'Programado').length
+          pendientes: asigsPilar.filter(a => a.estado === 'Programado' || a.estado === 'Pendiente evaluación').length,
+          vencidas: asigsPilar.filter(a => {
+            if (a.estado === 'Cumplió' || a.estado === 'No cumplió') return false;
+            return a.fecha_limite && a.fecha_limite < hoy;
+          }).length
         };
       });
+      
       window.valleChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: pilares,
           datasets: [
             { label: 'Cumplidas', data: data.map(d => d.cumplidas), backgroundColor: '#48bb78' },
-            { label: 'Pendientes', data: data.map(d => d.pendientes), backgroundColor: '#ed8936' }
+            { label: 'Pendientes', data: data.map(d => d.pendientes), backgroundColor: '#ed8936' },
+            { label: 'Vencidas', data: data.map(d => d.vencidas), backgroundColor: '#ef4444' }
           ]
         },
-        options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false, 
+          scales: { x: { stacked: true }, y: { stacked: true } } 
+        }
       });
       
-      const topPendientes = valleData.empleados.map(emp => {
-        const asigs = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
-        return {
-          nombre: emp.nombre, cargo: emp.cargo, region: emp.region,
-          pendientes: asigs.filter(a => a.estado === 'Pendiente' || a.estado === 'Programado').length,
-          noCumplio: asigs.filter(a => a.estado === 'No cumplió').length
-        };
-      }).sort((a, b) => b.pendientes - a.pendientes).slice(0, 10);
+      const tbody = document.getElementById('valle-tabla-top-pendientes');
       
-      document.getElementById('valle-tabla-top-pendientes').innerHTML = topPendientes.map(e => `
-        <tr>
-          <td><strong>${e.nombre}</strong></td>
-          <td>${e.cargo}</td>
-          <td>${e.region}</td>
-          <td><span class="badge badge-warning">${e.pendientes}</span></td>
-          <td><span class="badge badge-danger">${e.noCumplio}</span></td>
-        </tr>
-      `).join('');
+      const reporteEmpleados = empleadosConAsignaciones.map(emp => {
+        const asigs = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
+        const total = asigs.length;
+        const cumplidas = asigs.filter(a => a.estado === 'Cumplió').length;
+        const vencidas = asigs.filter(a => {
+          if (a.estado === 'Cumplió' || a.estado === 'No cumplió') return false;
+          return a.fecha_limite && a.fecha_limite < hoy;
+        }).length;
+        const pendientes = total - cumplidas;
+        const porcentaje = total > 0 ? Math.round((cumplidas / total) * 100) : 0;
+        
+        return {
+          nombre: emp.nombre,
+          cargo: emp.cargo,
+          region: emp.region,
+          cedula: emp.cedula,
+          total,
+          cumplidas,
+          pendientes,
+          vencidas,
+          porcentaje
+        };
+      }).sort((a, b) => b.vencidas - a.vencidas || a.porcentaje - b.porcentaje);
+      
+      if (reporteEmpleados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: #718096;">No hay empleados con capacitaciones asignadas</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = reporteEmpleados.map(e => {
+        const estadoVencido = e.vencidas > 0;
+        const rowStyle = estadoVencido ? 'background: #fee2e2;' : '';
+        const badgeVencido = estadoVencido ? '<span class="badge badge-danger" style="margin-left: 5px;">VENCIDO</span>' : '';
+        
+        return `
+          <tr style="${rowStyle}">
+            <td><strong>${e.nombre}</strong><br><small style="color: #718096;">${e.cedula}</small></td>
+            <td>${e.cargo}</td>
+            <td>${e.region}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="flex: 1; background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                  <div style="width: ${e.porcentaje}%; background: ${e.porcentaje === 100 ? '#48bb78' : '#667eea'}; height: 100%;"></div>
+                </div>
+                <span style="font-size: 12px; font-weight: 700; min-width: 40px;">${e.porcentaje}%</span>
+              </div>
+            </td>
+            <td><span class="badge badge-success">${e.cumplidas}</span></td>
+            <td><span class="badge badge-warning">${e.pendientes}</span></td>
+            <td><span class="badge ${estadoVencido ? 'badge-danger' : 'badge-info'}">${e.vencidas}${badgeVencido}</span></td>
+            <td><span class="badge badge-info">${e.total}</span></td>
+          </tr>
+        `;
+      }).join('');
     }
 
     async function cargarPerfilAdmin(cedula) {
