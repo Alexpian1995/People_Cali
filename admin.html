@@ -3,470 +3,405 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal People - Panel de Administración</title>
+  <title>Plan de Entrenamiento Valle - Admin</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #edf1f4; color: #1c2430; padding-bottom: 40px; }
-    .admin-container { max-width: 1400px; margin: 0 auto; width: 100%; padding: 0 20px; }
-    .header { background: #206987; color: #fff; padding: 15px 22px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; border-bottom: 4px solid #3cbcae; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    .header-left-block { display: flex; align-items: center; gap: 15px; }
-    .logo-admin-img { height: 42px; width: auto; object-fit: contain; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 8px; }
-    .header h1 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; letter-spacing: 0.02em; }
-    .navbar-menu { display: flex; gap: 10px; background: white; padding: 10px 15px; border-radius: 12px; border: 1.5px solid #dde3e7; margin-bottom: 20px; flex-wrap: wrap; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-    .nav-tab-btn { background: #f8fafb; border: 1.5px solid #dde3e7; padding: 10px 16px; border-radius: 8px; font-size: 12.5px; font-weight: 700; color: #206987; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
-    .nav-tab-btn:hover { background: #eef5f8; border-color: #206987; }
-    .nav-tab-btn.active-tab { background: #206987; color: white; border-color: #206987; box-shadow: 0 4px 10px rgba(32,105,135,0.2); }
-    .btn-logout { background: #ffc404; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; color: #1c2430; cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.03em; }
-    .btn-logout:hover { background: #e0ab00; transform: translateY(-1px); }
-    .admin-section-pane { display: none; width: 100%; }
-    .admin-section-pane.pane-active { display: block; }
-    .welcome-background-box { background: white; border-radius: 16px; border: 1.5px solid #cdd5db; padding: 50px 30px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; }
-    .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media(min-width: 992px) { .grid-layout { grid-template-columns: 1fr 1fr; } .full-width { grid-column: 1 / -1; } }
-    .card { background: #fff; border-radius: 12px; padding: 20px; border: 1.5px solid #cdd5db; box-shadow: 0 6px 16px rgba(0,0,0,0.03); margin-bottom: 20px; }
-    .card-title { font-size: 15px; font-weight: 700; color: #206987; margin-bottom: 15px; border-bottom: 2px solid #3cbcae; padding-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.03em; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; font-size: 11px; font-weight: 700; color: #206987; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.03em; }
-    input, select, textarea { width: 100%; padding: 11px; border: 1.5px solid #dde3e7; border-radius: 8px; font-size: 14px; background: #f8fafb; outline: none; color: #1c2430; transition: all 0.2s ease; }
-    input:focus, select:focus, textarea:focus { border-color: #3cbcae; background: #fff; box-shadow: 0 0 0 3px rgba(60,188,174,0.12); }
-    .btn { padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; transition: all 0.2s ease; }
-    .btn-primary { background: #206987; color: #fff; }
-    .btn-primary:hover { background: #164f67; }
-    .btn-danger { background: #a32d2d; color: #fff; }
-    .btn-danger:hover { background: #822323; }
-    .btn-success { background: #0f6e56; color: #fff; }
-    .btn-warning { background: #ffc404; color: #1c2430; }
-    .table-container { width: 100%; overflow-x: auto; margin-top: 15px; border-radius: 8px; border: 1px solid #eef1f3; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
-    th, td { padding: 12px 14px; border-bottom: 1px solid #eef1f3; }
-    th { background: #f8fafb; color: #206987; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; }
-    td { color: #2e3a4e; }
-    .tag { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 12px; display: inline-block; }
-    .tag-green { background: #e1f5ee; color: #0f6e56; }
-    .tag-red { background: #fdecea; color: #a32d2d; }
-    .reprobado-row-item { display: flex; justify-content: space-between; align-items: center; background: #fdf2f2; border: 1px solid #f5c2c2; padding: 10px; border-radius: 8px; }
-
-    /* ESTILOS PLAN VALLE */
-    .valle-header { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .valle-header h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
-    .valle-header p { font-size: 14px; opacity: 0.95; }
-    .nav-valle-interna { background: white; padding: 10px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
-    .filter-bar-valle { background: white; padding: 20px; border-radius: 12px; border: 1.5px solid #cdd5db; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-    .kpi-card { background: white; border-radius: 12px; padding: 20px; text-align: center; border-left: 4px solid #206987; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .kpi-value { font-size: 32px; font-weight: 800; color: #206987; margin: 10px 0; }
-    .kpi-label { font-size: 12px; color: #7a8f99; font-weight: 700; }
-    .pilar-safety { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
-    .pilar-management { background: #dbeafe; color: #1e40af; border-left: 4px solid #3b82f6; }
-    .pilar-people { background: #f3e8ff; color: #6b21a8; border-left: 4px solid #a855f7; }
-    .pilar-delivery { background: #ffedd5; color: #9a3412; border-left: 4px solid #f97316; }
-    .pilar-warehouse { background: #dcfce7; color: #166534; border-left: 4px solid #22c55e; }
-    .pilar-fleet { background: #f3f4f6; color: #374151; border-left: 4px solid #6b7280; }
-    .semaforo { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: bold; }
-    .semaforo-verde { background: #22c55e; }
-    .semaforo-naranja { background: #f97316; }
-    .semaforo-rojo { background: #ef4444; }
-    .semaforo-violeta { background: #a855f7; }
-    .tag-cumplio { background: #dcfce7; color: #166534; }
-    .tag-pendiente { background: #ffedd5; color: #9a3412; }
-    .tag-no-cumplio { background: #fee2e2; color: #991b1b; }
-    .tag-programado { background: #f3e8ff; color: #6b21a8; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
-    .calendar-header { text-align: center; font-weight: 700; font-size: 12px; color: #206987; padding: 8px; background: #f8fafb; border-radius: 6px; }
-    .calendar-day { min-height: 100px; background: white; border: 1px solid #eef1f3; border-radius: 8px; padding: 6px; }
-    .day-number { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
-    .session-chip { font-size: 10px; padding: 3px 6px; border-radius: 4px; margin-bottom: 3px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .valle-pestaña { display: none; }
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
-    .import-zone { background: #f4fbf9; border: 2px dashed #3cbcae; border-radius: 12px; padding: 25px; text-align: center; margin: 15px 0; }
-    .import-zone.dragover { background: #e0f7f4; border-color: #206987; }
-    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
-    @media (max-width: 768px) { .calendar-grid { display: none; } .filter-bar-valle { grid-template-columns: 1fr 1fr; } }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding-bottom: 40px; }
+    .admin-container { max-width: 1400px; margin: 0 auto; width: 100%; padding: 20px; }
+    .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 16px; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .logo-admin-img { height: 50px; width: auto; border-radius: 12px; }
+    .header h1 { font-size: 24px; font-weight: 700; color: #2d3748; }
+    .header-subtitle { font-size: 13px; color: #718096; font-weight: 500; }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+    .btn-header { padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s; font-size: 13px; }
+    .btn-padrino { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-padrino:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+    .btn-logout { background: #fc8181; color: white; }
+    .btn-logout:hover { background: #f56565; }
+    .user-badge { background: #e2e8f0; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4a5568; }
+    .main-nav { background: white; border-radius: 16px; padding: 15px 20px; margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .nav-btn { background: #f7fafc; border: 2px solid #e2e8f0; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; color: #4a5568; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+    .nav-btn:hover { background: #edf2f7; border-color: #cbd5e0; }
+    .nav-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(102,126,234,0.3); }
+    .section-pane { display: none; animation: fadeIn 0.4s ease; }
+    .section-pane.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .card { background: white; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #e2e8f0; }
+    .card-icon { width: 45px; height: 45px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
+    .card-title { font-size: 18px; font-weight: 700; color: #2d3748; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 12px; font-weight: 700; color: #4a5568; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group select, .form-group textarea { padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: all 0.3s; background: #f7fafc; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #667eea; background: white; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+    .btn { padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+    .btn-success { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; }
+    .btn-warning { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; }
+    .btn-danger { background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); color: white; }
+    .btn-info { background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); color: white; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .import-zone { background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%); border: 3px dashed #48bb78; border-radius: 16px; padding: 40px; text-align: center; transition: all 0.3s; cursor: pointer; }
+    .import-zone:hover { background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%); transform: scale(1.02); }
+    .import-zone i { font-size: 64px; color: #48bb78; margin-bottom: 15px; }
+    .table-container { overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; text-align: left; font-weight: 600; font-size: 13px; text-transform: uppercase; }
+    td { padding: 15px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+    tr:hover { background: #f7fafc; }
+    .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+    .badge-success { background: #c6f6d5; color: #22543d; }
+    .badge-warning { background: #feebc8; color: #744210; }
+    .badge-danger { background: #fed7d7; color: #742a2a; }
+    .badge-info { background: #bee3f8; color: #2a4365; }
+    .badge-safety { background: #fee2e2; color: #991b1b; }
+    .badge-management { background: #dbeafe; color: #1e40af; }
+    .badge-people { background: #f3e8ff; color: #6b21a8; }
+    .badge-delivery { background: #ffedd5; color: #9a3412; }
+    .badge-warehouse { background: #dcfce7; color: #166534; }
+    .badge-fleet { background: #f3f4f6; color: #374151; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+    .stat-card { padding: 25px; border-radius: 12px; color: white; }
+    .stat-card h3 { font-size: 13px; opacity: 0.9; margin-bottom: 8px; }
+    .stat-card .value { font-size: 36px; font-weight: 700; }
+    .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+    .search-box input { flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; }
+    .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+    .page-btn { padding: 8px 16px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .employee-card { padding: 15px; background: white; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer; transition: all 0.3s; margin-bottom: 10px; }
+    .employee-card:hover { border-color: #667eea; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e2e8f0; }
+    .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #718096; }
+    .link-box { background: #f7fafc; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; margin: 10px 0; border: 1px solid #cbd5e0; font-family: monospace; }
+    @media (max-width: 768px) {
+      .header { flex-direction: column; gap: 15px; text-align: center; }
+      .header-actions { flex-wrap: wrap; justify-content: center; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <div class="admin-container">
     <div class="header">
-      <div class="header-left-block">
-        <img src="logo.png" alt="Logística Logo" class="logo-admin-img">
-        <h1>Panel Administrativo</h1>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <button id="btn-header-padrino" onclick="window.location.href='admin_padrino.html'" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 9px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px;">
-           Módulo Plan Padrino
-        </button>
-        <div style="font-size: 13px; font-weight: 600; color: #fff; background: rgba(255,255,255,0.12); padding: 7px 14px; border-radius: 8px;">
-          Bienvenido, <span id="adminName" style="color: #ffc404; font-weight: 700;">Cargando...</span>
+      <div class="header-left">
+        <img src="logo.png" alt="Logo" class="logo-admin-img">
+        <div>
+          <h1>Plan de Entrenamiento Valle</h1>
+          <div class="header-subtitle">Cali · Yumbo · Tuluá · Popayán — Operaciones OL y UC</div>
         </div>
-        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+      </div>
+      <div class="header-actions">
+        <button class="btn-header btn-padrino" onclick="window.location.href='admin_padrino.html'"><i class="ti ti-users"></i> Módulo Plan Padrino</button>
+        <div class="user-badge">👤 <span id="adminName">Cargando...</span></div>
+        <button class="btn-header btn-logout" onclick="logout()"><i class="ti ti-logout"></i> Cerrar Sesión</button>
       </div>
     </div>
 
-    <div class="navbar-menu">
-      <button class="nav-tab-btn active-tab" onclick="cambiarSeccionAdmin('inicio', this)"><i class="ti ti-home"></i> Inicio</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('beneficios', this)"><i class="ti ti-gift"></i> Beneficios</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('empleados', this)"><i class="ti ti-users"></i> Empleados</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('onboarding', this)"><i class="ti ti-shield-check"></i> Importar Onboarding</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('capacitaciones', this)"><i class="ti ti-calendar-plus"></i> Capacitaciones & Auditoría</button>
-      <button class="nav-tab-btn" onclick="cambiarSeccionAdmin('valle', this)" style="background: #f0f9ff; border-color: #0ea5e9;">
-        <i class="ti ti-chart-bar"></i> Plan Entrenamiento Valle
-      </button>
+    <div class="main-nav">
+      <button class="nav-btn active" onclick="cambiarSeccion('dashboard', this)"><i class="ti ti-layout-dashboard"></i> Dashboard</button>
+      <button class="nav-btn" onclick="cambiarSeccion('empleados', this)"><i class="ti ti-users"></i> Empleados</button>
+      <button class="nav-btn" onclick="cambiarSeccion('capacitaciones', this)"><i class="ti ti-video"></i> Capacitaciones</button>
+      <button class="nav-btn" onclick="cambiarSeccion('asignaciones', this)"><i class="ti ti-list-check"></i> Capacitaciones Asignadas</button>
+      <button class="nav-btn" onclick="cambiarSeccion('asignar', this)"><i class="ti ti-user-plus"></i> Asignar Capacitación</button>
+      <button class="nav-btn" onclick="cambiarSeccion('cronograma', this)"><i class="ti ti-calendar"></i> Cronograma</button>
+      <button class="nav-btn" onclick="cambiarSeccion('reportes', this)"><i class="ti ti-chart-bar"></i> Reportes</button>
     </div>
 
-    <!-- PESTAÑA A: INICIO -->
-    <div id="section-inicio" class="admin-section-pane pane-active">
-      <div class="welcome-background-box">
-        <i class="ti ti-building-warehouse" style="font-size: 64px; color: #206987; margin-bottom: 15px;"></i>
-        <h2 style="font-size: 22px; font-weight: 800; color: #1c2430; margin-bottom: 8px;">Consola de Mando Central</h2>
-        <p style="font-size: 13px; color: #7a8f99; max-width: 500px; line-height: 1.5; margin-bottom: 25px;">
-          Selecciona una de las opciones del menú superior para empezar a configurar el sistema.
-        </p>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <span style="font-size: 11px; font-weight: 700; background: #eef1f3; padding: 6px 12px; border-radius: 20px; color: #206987;">v2.7 Estable</span>
-          <span style="font-size: 11px; font-weight: 700; background: #eef1f3; padding: 6px 12px; border-radius: 20px; color: #0f6e56;">Firebase Conectado</span>
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="section-pane active">
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-chart-line"></i></div><div><div class="card-title">Resumen del Plan de Entrenamiento</div></div></div>
+        <div class="stats-grid">
+          <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"><h3>Total Capacitaciones</h3><div class="value" id="totalCaps">0</div></div>
+          <div class="stat-card" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);"><h3>Empleados Activos</h3><div class="value" id="totalEmpleados">0</div></div>
+          <div class="stat-card" style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);"><h3>Pendientes</h3><div class="value" id="totalPendientes">0</div></div>
+          <div class="stat-card" style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);"><h3>% Cumplimiento</h3><div class="value" id="pctCumplimiento">0%</div></div>
         </div>
       </div>
     </div>
 
-    <!-- PESTAÑA B: GESTIÓN DE BENEFICIOS -->
-    <div id="section-beneficios" class="admin-section-pane">
-      <div style="background: #fff; border-radius: 14px; padding: 20px; border: 0.5px solid #dde3e7; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <div style="font-weight: bold; color: #1e6e7e; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 18px;"></span> GESTIÓN DE BENEFICIOS Y COMPENSACIÓN POR CARGO
+    <!-- EMPLEADOS -->
+    <div id="empleados" class="section-pane">
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-upload"></i></div><div><div class="card-title">Carga Masiva de Empleados</div></div></div>
+        <div class="import-zone" onclick="document.getElementById('excelFile').click()">
+          <i class="ti ti-file-spreadsheet"></i>
+          <h3>Arrastra tu archivo Excel aquí</h3>
+          <p>o haz clic para seleccionar (formato: cedula, nombre, cargo, region, rol, fecha_ingreso, grupo)</p>
+          <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" style="display: none;" onchange="cargarExcel(event)">
+          <button class="btn btn-success" style="margin-top: 20px;" onclick="document.getElementById('excelFile').click()"><i class="ti ti-upload"></i> Seleccionar Archivo</button>
         </div>
-        <div id="seccionFormBeneficios">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px;">
-            <div><label>CARGO LABORAL</label><input type="text" id="benCargo" placeholder="Ej: Conductor"></div>
-            <div><label>REGIÓN / CD</label><input type="text" id="benRegion" placeholder="Ej: DC Cali"></div>
-            <div><label>CONCEPTO / BENEFICIO</label><input type="text" id="benConcepto" placeholder="Ej: Bono"></div>
-            <div><label>VALOR ECONÓMICO ($)</label><input type="number" id="benValor" placeholder="400000"></div>
-            <div><label>REQUISITO / INDICADOR</label><input type="text" id="benIndicador" placeholder="Cero ausentismos"></div>
+        <div style="margin-top: 30px; padding: 20px; background: #f7fafc; border-radius: 12px;">
+          <div class="card-title" style="margin-bottom: 15px; font-size: 16px;"><i class="ti ti-user-plus" style="color: #667eea;"></i> Registro Individual</div>
+          <div class="form-grid">
+            <div class="form-group"><label>Número de Cédula</label><input type="text" id="searchCedula" placeholder="Ingresa la cédula"></div>
+            <div class="form-group"><label>Nombre Completo</label><input type="text" id="crudNombre" placeholder="Nombre del empleado"></div>
+            <div class="form-group"><label>Cargo</label><input type="text" id="crudCargo" placeholder="Ej: Conductor, Auxiliar"></div>
+            <div class="form-group"><label>Región / CD</label>
+              <select id="crudRegion"><option value="">Seleccionar...</option><option value="Cali">Cali</option><option value="Yumbo">Yumbo</option><option value="Tuluá">Tuluá</option><option value="Popayán">Popayán</option></select>
+            </div>
+            <div class="form-group"><label>Operación</label>
+              <select id="regEmpleadoGrupo"><option value="OL">OL (Operaciones Logística)</option><option value="UC">UC (Última Milla)</option></select>
+            </div>
+            <div class="form-group"><label>Fecha de Ingreso</label><input type="date" id="crudFechaIngreso"></div>
           </div>
-          <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <button onclick="guardarBeneficio()" style="background:#1e6e7e; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">💾 Guardar / Actualizar Beneficio</button>
-            <button onclick="limpiarFormularioBeneficio()" style="background:#7a8f99; color:#fff; border:none; padding:8px 16px; border-radius:8px; font-weight:600; font-size:12px; cursor:pointer;">🔄 Limpiar Campos</button>
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-primary" onclick="guardarEmpleado()"><i class="ti ti-device-floppy"></i> Guardar Empleado</button>
+            <button class="btn" style="background: #e2e8f0;" onclick="limpiarFormularioCRUD()"><i class="ti ti-refresh"></i> Limpiar</button>
           </div>
         </div>
-        <div style="border: 1px solid #dde3e7; border-radius: 10px; overflow: hidden;">
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-list"></i></div><div class="card-title">Listado de Empleados</div></div>
+        <div class="search-box"><input type="text" id="searchEmpleados" placeholder="Buscar por nombre o cédula..." onkeyup="buscarEmpleados()"></div>
+        <div class="table-container">
           <table>
-            <thead style="background: #f7fafb; color: #1e6e7e;">
-              <tr><th style="padding: 10px;">Cargo</th><th style="padding: 10px;">Región / CD</th><th style="padding: 10px;">Concepto</th><th style="padding: 10px;">Valor</th><th style="padding: 10px;">Indicador Metas</th><th id="thAccionesBeneficios" style="padding: 10px; text-align: center;">Acciones</th></tr>
+            <thead><tr><th>Cédula</th><th>Nombre</th><th>Cargo</th><th>Región</th><th>Operación</th><th>Estado</th></tr></thead>
+            <tbody id="tablaEmpleadosBody"><tr><td colspan="6" style="text-align: center; padding: 30px; color: #718096;">Cargando empleados...</td></tr></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="paginationEmpleados"></div>
+      </div>
+    </div>
+
+    <!-- CAPACITACIONES -->
+    <div id="capacitaciones" class="section-pane">
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-video-plus"></i></div><div><div class="card-title">Nueva Capacitación con Video</div><div style="color: #718096; font-size: 13px;">Define el contenido. La fecha y nota se definen al asignar.</div></div></div>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1 / -1;"><label>Nombre de la Capacitación</label><input type="text" id="valle-cap-nombre" placeholder="Ej: Políticas ABI - Safety"></div>
+          <div class="form-group"><label>Pilar</label>
+            <select id="valle-cap-pilar"><option value="Safety">Safety</option><option value="Management">Management</option><option value="People">People</option><option value="Delivery">Delivery</option><option value="Warehouse">Warehouse</option><option value="Fleet">Fleet</option></select>
+          </div>
+          <div class="form-group"><label>Tipo</label>
+            <select id="valle-cap-tipo"><option value="Tradicional">Tradicional</option><option value="Kirkpatrick">Kirkpatrick</option></select>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;"><label>Link del Video (YouTube)</label><input type="url" id="valle-cap-youtube-url" placeholder="https://www.youtube.com/watch?v=..."></div>
+          <div class="form-group" style="grid-column: 1 / -1;"><label>Link de Evaluación (Forms)</label><input type="url" id="valle-cap-link-eval" placeholder="https://forms.gle/..."></div>
+          <div class="form-group"><label>Centros de Distribución</label>
+            <select id="valle-cap-cds"><option value="Todos">Todos los CD</option><option value="Cali">Cali</option><option value="Yumbo">Yumbo</option><option value="Tuluá">Tuluá</option><option value="Popayán">Popayán</option></select>
+          </div>
+          <div class="form-group"><label>Operación</label>
+            <select id="valle-cap-op"><option value="Todos">Todas</option><option value="OL">OL</option><option value="UC">UC</option></select>
+          </div>
+          <div class="form-group"><label>Cargos</label>
+            <select id="valle-cap-cargos"><option value="Todos">Todos los cargos</option></select>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 15px;" onclick="guardarCapacitacionConVideo()"><i class="ti ti-device-floppy"></i> Crear Capacitación</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-list"></i></div><div class="card-title">Capacitaciones Programadas (<span id="valle-count-caps">0</span>)</div></div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Nombre</th><th>Pilar</th><th>Aplicabilidad</th><th>Asignados</th><th>Acciones</th></tr></thead>
+            <tbody id="valle-lista-capacitaciones-config"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASIGNACIONES (NUEVA SECCIÓN) -->
+    <div id="asignaciones" class="section-pane">
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-list-check"></i></div><div><div class="card-title">Capacitaciones Asignadas</div><div style="color: #718096; font-size: 13px;">Visualiza, edita y comparte las capacitaciones asignadas a los empleados</div></div></div>
+        <div class="search-box">
+          <input type="text" id="searchAsignaciones" placeholder="Buscar por empleado o capacitación..." onkeyup="filtrarAsignaciones()">
+          <select id="filterCD" onchange="filtrarAsignaciones()" style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px;">
+            <option value="">Todos los CD</option>
+            <option value="Cali">Cali</option>
+            <option value="Yumbo">Yumbo</option>
+            <option value="Tuluá">Tuluá</option>
+            <option value="Popayán">Popayán</option>
+          </select>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Empleado</th>
+                <th>Capacitación</th>
+                <th>Pilar</th>
+                <th>CD</th>
+                <th>Fecha Límite</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
             </thead>
-            <tbody id="tablaBeneficiosBody">
-              <tr><td colspan="6" style="padding: 15px; text-align: center; color: #7a8f99;">Cargando lista de beneficios...</td></tr>
+            <tbody id="tablaAsignacionesBody">
+              <tr><td colspan="7" style="text-align: center; padding: 30px; color: #718096;">Cargando asignaciones...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- PESTAÑA C: GESTIÓN DE EMPLEADOS -->
-    <div id="section-empleados" class="admin-section-pane">
-      <div class="card full-width">
-        <div class="card-title"><i class="ti ti-users"></i> Gestión y Carga Masiva de Empleados</div>
-        <div id="bloqueCargaMasiva" style="background: #f7fafb; padding: 15px; border-radius: 8px; border: 1px dashed #1e6e7e; margin-bottom: 20px;">
-          <label style="color:#1e6e7e;"><strong>Carga Masiva de Personal (.xlsx / .xls / .csv)</strong></label>
-          <p style="font-size: 11px; color:#7a8f99; margin-bottom: 10px;">Columnas requeridas: <strong>cedula, nombre, cargo, region, rol, fecha_ingreso, grupo</strong></p>
-          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
-            <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" style="flex: 1; min-width: 200px; background:transparent; border:none; padding:0;">
-            <button class="btn btn-primary" onclick="event.preventDefault(); cargarExcel(); return false;"><i class="ti ti-upload"></i> Importar Archivo</button>
-          </div>
+    <!-- ASIGNAR -->
+    <div id="asignar" class="section-pane">
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-user-plus"></i></div><div><div class="card-title">Asignar Capacitación Individual</div></div></div>
+        <div class="search-box">
+          <input type="text" id="searchAsignar" placeholder="Buscar por nombre o cédula..." onkeyup="buscarEmpleadosAsignar()">
+          <select id="searchTipoAsignar" style="width: 150px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px;">
+            <option value="nombre">Nombre</option>
+            <option value="cedula">Cédula</option>
+          </select>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: flex-end; margin-bottom: 15px;">
-          <div class="form-group" style="margin:0;"><label>Buscar o Registrar por Número de Cédula</label><input type="text" id="searchCedula" placeholder="Ingresa la cédula del empleado"></div>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-primary" onclick="buscarEmpleado()"><i class="ti ti-search"></i> Buscar</button>
-            <button class="btn" style="background:#7a8f99; color:white;" onclick="limpiarFormularioCRUD()"><i class="ti ti-refresh"></i> Limpiar</button>
+        <div id="listaEmpleadosAsignar" style="max-height: 300px; overflow-y: auto;"></div>
+      </div>
+
+      <div id="formAsignacion" class="card" style="display: none;">
+        <h3 style="margin-bottom: 15px;"><i class="ti ti-user-check" style="color: #48bb78;"></i> <span id="selectedEmpleadoNombre"></span></h3>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column: 1 / -1;"><label>Capacitación</label>
+            <select id="asignarCapacitacion" onchange="autoCompletarDatos()"><option value="">Seleccionar capacitación...</option></select>
           </div>
+          <div class="form-group"><label>Pilar</label><input type="text" id="asignarPilar" readonly style="background: #edf2f7;"></div>
+          <div class="form-group"><label>Tipo</label><input type="text" id="asignarTipo" readonly style="background: #edf2f7;"></div>
+          <div class="form-group"><label>Fecha Límite (Para esta asignación)</label><input type="date" id="asignarFecha"></div>
+          <div class="form-group"><label>Nota Mínima (%)</label><input type="number" id="asignarMinimo" value="80" min="0" max="100"></div>
         </div>
-        <div id="crudForm" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #f7fafb; padding: 15px; border-radius: 8px;">
-          <div class="form-group"><label>Nombre del Empleado</label><input type="text" id="crudNombre" placeholder="Nombre completo"></div>
-          <div class="form-group"><label>Cargo Laboral</label><input type="text" id="crudCargo" placeholder="Ej: Conductor"></div>
-          <div class="form-group"><label>Grupo / Turno</label><input type="text" id="regEmpleadoGrupo" placeholder="Ej: ABI, OL, UC"></div>
-          <div class="form-group"><label>Región Geográfica</label><input type="text" id="crudRegion" placeholder="Ej: Cali"></div>
-          <div class="form-group"><label>Fecha de Contratación</label><input type="date" id="crudFechaIngreso"></div>
-          <div class="form-group">
-            <label>Rol del Sistema</label>
-            <select id="empleadoRol">
-              <option value="empleado">Empleado (Apadrinado)</option>
-              <option value="padrino">Padrino Certificado (Tutor)</option>
-              <option value="lider">Líder Directo (Jefe de Área)</option>
-              <option value="people">People (Auditoría Corporativa)</option>
-              <option value="admin">Administrador del Sistema</option>
+        <button class="btn btn-success" onclick="confirmarAsignacion()" style="margin-top: 10px;"><i class="ti ti-check"></i> Confirmar Asignación</button>
+        <button class="btn" style="background: #e2e8f0; margin-top: 10px; margin-left: 10px;" onclick="cancelarAsignacion()"><i class="ti ti-x"></i> Cancelar</button>
+      </div>
+    </div>
+
+    <!-- CRONOGRAMA -->
+    <div id="cronograma" class="section-pane">
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-calendar-stats"></i></div><div class="card-title">Cronograma Mensual</div></div>
+        <div id="valle-calendar-container" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;"></div>
+      </div>
+    </div>
+
+    <!-- REPORTES -->
+    <div id="reportes" class="section-pane">
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-chart-pie"></i></div><div class="card-title">Avance por Pilares</div></div>
+        <div style="height: 400px;"><canvas id="valleChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon"><i class="ti ti-alert-triangle"></i></div><div class="card-title">Top Personas con Pendientes</div></div>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Nombre</th><th>Cargo</th><th>CD</th><th>Pendientes</th><th>No Cumplió</th></tr></thead>
+            <tbody id="valle-tabla-top-pendientes"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR CAPACITACIÓN -->
+  <div id="modalEditarCap" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="ti ti-edit"></i> Editar Capacitación</h3>
+        <button class="modal-close" onclick="cerrarModalEditarCap()">&times;</button>
+      </div>
+      <input type="hidden" id="editCapId">
+      <div class="form-grid">
+        <div class="form-group" style="grid-column: 1 / -1;"><label>Nombre</label><input type="text" id="editCapNombre"></div>
+        <div class="form-group"><label>Pilar</label>
+          <select id="editCapPilar">
+            <option value="Safety">Safety</option>
+            <option value="Management">Management</option>
+            <option value="People">People</option>
+            <option value="Delivery">Delivery</option>
+            <option value="Warehouse">Warehouse</option>
+            <option value="Fleet">Fleet</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Tipo</label>
+          <select id="editCapTipo">
+            <option value="Tradicional">Tradicional</option>
+            <option value="Kirkpatrick">Kirkpatrick</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;"><label>Link Video YouTube</label><input type="url" id="editCapYoutubeUrl"></div>
+        <div class="form-group" style="grid-column: 1 / -1;"><label>Link Evaluación</label><input type="url" id="editCapLinkEval"></div>
+        <div class="form-group"><label>CD</label>
+          <select id="editCapCds">
+            <option value="Todos">Todos</option>
+            <option value="Cali">Cali</option>
+            <option value="Yumbo">Yumbo</option>
+            <option value="Tuluá">Tuluá</option>
+            <option value="Popayán">Popayán</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Operación</label>
+          <select id="editCapOp">
+            <option value="Todos">Todos</option>
+            <option value="OL">OL</option>
+            <option value="UC">UC</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Cargos</label><input type="text" id="editCapCargos"></div>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-primary" onclick="guardarEdicionCapacitacion()"><i class="ti ti-device-floppy"></i> Guardar Cambios</button>
+        <button class="btn" style="background: #e2e8f0;" onclick="cerrarModalEditarCap()"><i class="ti ti-x"></i> Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VER/EDITAR ASIGNACIÓN -->
+  <div id="modalVerAsignacion" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="ti ti-info-circle"></i> Detalles de Asignación</h3>
+        <button class="modal-close" onclick="cerrarModalVerAsignacion()">&times;</button>
+      </div>
+      <input type="hidden" id="viewAsigId">
+      <div style="background: #f7fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">EMPLEADO:</strong><div style="font-weight: 700; font-size: 16px;" id="viewEmpleado"></div></div>
+        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">CAPACITACIÓN:</strong><div style="font-weight: 700; font-size: 16px;" id="viewCapacitacion"></div></div>
+        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">PILAR:</strong><div id="viewPilar"></div></div>
+        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">CD / OPERACIÓN:</strong><div id="viewCD"></div></div>
+        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">FECHA LÍMITE:</strong><div id="viewFecha"></div></div>
+        <div style="margin-bottom: 15px;"><strong style="color: #718096; font-size: 12px;">NOTA MÍNIMA:</strong><div id="viewNota"></div></div>
+        <div><strong style="color: #718096; font-size: 12px;">ESTADO:</strong><div id="viewEstado"></div></div>
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;"> LINK DE ACCESO:</strong>
+        <div class="link-box" id="viewLink"></div>
+      </div>
+      
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+        <button onclick="copiarLinkAsignacion()" class="btn btn-info" style="flex: 1;"><i class="ti ti-copy"></i> Copiar Link</button>
+        <button onclick="enviarWhatsAppAsignacion()" class="btn btn-success" style="flex: 1;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
+      </div>
+      
+      <div style="border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
+        <h4 style="margin-bottom: 15px;"><i class="ti ti-edit"></i> Editar Asignación</h4>
+        <div class="form-grid">
+          <div class="form-group"><label>Nueva Fecha Límite</label><input type="date" id="editAsigFecha"></div>
+          <div class="form-group"><label>Nueva Nota Mínima</label><input type="number" id="editAsigNota" min="0" max="100"></div>
+          <div class="form-group"><label>Estado</label>
+            <select id="editAsigEstado">
+              <option value="Programado">Programado</option>
+              <option value="Pendiente evaluación">Pendiente evaluación</option>
+              <option value="Cumplió">Cumplió</option>
+              <option value="No cumplió">No cumplió</option>
             </select>
           </div>
-          <div style="grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 5px;">
-            <button id="btnGuardarEmpleado" class="btn btn-primary" style="background:#0f6e56;" onclick="guardarEmpleado()"><i class="ti ti-device-floppy"></i> Guardar / Actualizar Datos</button>
-            <button id="btnEliminarEmpleado" class="btn btn-danger" onclick="eliminarEmpleado()"><i class="ti ti-user-x"></i> Eliminar Registro</button>
-          </div>
         </div>
+        <button class="btn btn-primary" onclick="guardarEdicionAsignacion()" style="width: 100%;"><i class="ti ti-device-floppy"></i> Actualizar Asignación</button>
       </div>
-    </div>
-
-    <!-- PESTAÑA D: IMPORTAR ONBOARDING -->
-    <div id="section-onboarding" class="admin-section-pane">
-      <div class="card full-width" id="bloqueCargaEvaluaciones" style="border-left: 5px solid #ffc404;">
-        <div class="card-title" style="color: #206987; border-bottom: 2px solid #ffc404;"><i class="ti ti-database-import"></i> Importador Central de Notas (Onboarding & Pilares QR)</div>
-        <p style="font-size: 12px; color: #7a8f99; margin-bottom: 15px;">Carga los Excel de Microsoft Forms para registrar automáticamente las notas de cada etapa.</p>
-        <div style="background:#f4fbf9; border:1.5px solid #3cbcae; border-radius:10px; padding:18px;">
-          <div style="font-size:11px; font-weight:700; color:#0f6e56; text-transform:uppercase; margin-bottom:12px;"><i class="ti ti-shield-check"></i> Onboarding de Inducción (Días 1 y 2)</div>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:14px;">
-            <div style="background:white; border:1px solid #dde3e7; border-radius:8px; padding:14px;">
-              <div style="font-size:12px; font-weight:700; color:#206987; margin-bottom:4px;">📋 Onboarding Safety — Día 1</div>
-              <div style="font-size:11px; color:#7a8f99; margin-bottom:10px;">Aprobación mínima: <strong>100%</strong>.</div>
-              <input type="file" id="excel-onboarding-safety" accept=".xlsx,.xls,.csv" style="display:none;" onchange="procesarOnboardingExcel(event, 'safety')">
-              <button type="button" class="btn btn-primary" style="background:#206987; width:100%; justify-content:center;" onclick="event.preventDefault(); document.getElementById('excel-onboarding-safety').click(); return false;"><i class="ti ti-upload"></i> Cargar Excel Safety</button>
-            </div>
-            <div style="background:white; border:1px solid #dde3e7; border-radius:8px; padding:14px;">
-              <div style="font-size:12px; font-weight:700; color:#3cbcae; margin-bottom:4px;">🤝 Onboarding People — Día 2</div>
-              <div style="font-size:11px; color:#7a8f99; margin-bottom:10px;">Aprobación mínima: <strong>80%</strong>.</div>
-              <input type="file" id="excel-onboarding-people" accept=".xlsx,.xls,.csv" style="display:none;" onchange="procesarOnboardingExcel(event, 'people')">
-              <button type="button" class="btn btn-primary" style="background:#3cbcae; width:100%; justify-content:center;" onclick="event.preventDefault(); document.getElementById('excel-onboarding-people').click(); return false;"><i class="ti ti-upload"></i> Cargar Excel People</button>
-            </div>
-          </div>
-        </div>
+      
+      <div style="margin-top: 15px;">
+        <button class="btn btn-danger" onclick="eliminarAsignacion()" style="width: 100%;"><i class="ti ti-trash"></i> Eliminar Asignación</button>
       </div>
-    </div>
-
-    <!-- PESTAÑA E: CAPACITACIONES & AUDITORÍA -->
-    <div id="section-capacitaciones" class="admin-section-pane">
-      <div class="grid-layout">
-        <div class="card" id="seccionFormCapacitaciones">
-          <div class="card-title"><i class="ti ti-calendar-plus"></i> Programar Tarea de Capacitación</div>
-          <div class="form-group"><label>Cédula del Trabajador Asignado</label><input type="text" id="targetCedula" placeholder="Asigna la cédula"></div>
-          <div class="form-group"><label>Título de la Capacitación</label><input type="text" id="capTitulo" placeholder="Ej: Safety 360°"></div>
-          <div class="form-group"><label>Enlace Completo de la Presentación</label><input type="url" id="capDriveId" placeholder="Pega el enlace web" required></div>
-          <div class="form-group"><label>Enlace Web de la Evaluación</label><input type="url" id="capQrUrl" placeholder="Pega el enlace del formulario"></div>
-          <div class="form-group"><label>Fecha Límite de Ejecución</label><input type="date" id="capFechaLimite"></div>
-          <button class="btn btn-primary" onclick="publicarCapacitacion()"><i class="ti ti-cloud-upload"></i> Publicar en Cronograma</button>
-        </div>
-        <div class="card">
-          <div class="card-title"><i class="ti ti-chart-bar"></i> Auditoría Detallada de Avance Real</div>
-          <div class="form-group"><label>Consultar Avance de Cédula</label><input type="text" id="auditCedula" placeholder="Digita el documento"></div>
-          <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom: 15px;">
-            <div><label>Desde (Fecha límite)</label><input type="date" id="auditDesde" value="2026-01-01"></div>
-            <div><label>Hasta (Fecha límite)</label><input type="date" id="auditHasta" value="2026-12-31"></div>
-          </div>
-          <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="auditarAvanceReal()"><i class="ti ti-eye"></i> Consultar Historial</button>
-          <div id="auditResultPanel" style="margin-top: 20px; display: none;">
-            <div style="display: flex; gap: 15px; margin-bottom: 15px; background: #f7fafb; padding: 12px; border-radius: 8px;">
-              <div style="flex: 1; text-align: center;">
-                <div style="font-size: 11px; color: #7a8f99; font-weight: 600;">PORCENTAJE REAL</div>
-                <div id="auditPctText" style="font-size: 24px; font-weight: 700; color: #1e6e7e;">0%</div>
-              </div>
-              <div style="flex: 1; text-align: center; border-left: 1px solid #dde3e7;">
-                <div style="font-size: 11px; color: #7a8f99; font-weight: 600;">EVALUACIONES</div>
-                <div id="auditCountText" style="font-size: 24px; font-weight: 700; color: #1a3540;">0 / 0</div>
-              </div>
-            </div>
-            <label><strong>Listado de capacitaciones asignadas:</strong></label>
-            <div class="table-container">
-              <table><thead><tr><th>Capacitación</th><th>Límite</th><th>¿Abrió PPT?</th><th>Evaluación</th></tr></thead><tbody id="auditTableBody"></tbody></table>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card" style="margin-top: 20px; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background: #fff;">
-        <div style="font-weight: bold; font-size: 16px; margin-bottom: 15px; color: #206987; display: flex; align-items: center; gap: 8px;">
-          <i class="ti ti-users-group" style="font-size: 20px;"></i> Control de Padrinos, Alumnos y Evaluaciones
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
-          <div style="border-right: 1px solid #edf2f7; padding-right: 15px;">
-            <label style="font-weight: 700; font-size: 11px; color: #206987; text-transform: uppercase;">1. Selecciona el Padrino</label>
-            <div id="listaPadrinosClick" style="margin-top: 10px; max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
-              <div style="text-align: center; color: #7a8f99; padding: 20px; font-size: 13px;">Cargando tutores...</div>
-            </div>
-          </div>
-          <div>
-            <label style="font-weight: 700; font-size: 11px; color: #206987; text-transform: uppercase;">2. Alumnos a Cargo</label>
-            <div id="contenedorDetalleAlumnos" style="margin-top: 10px; padding: 15px; background: #f7fafb; border-radius: 6px; min-height: 200px; border: 1px solid #dde3e7;">
-              <div style="text-align: center; color: #7a8f99; padding: 40px; font-size: 13px;">
-                <i class="ti ti-arrow-bar-left" style="font-size: 24px; display: block; margin-bottom: 8px; color: #206987;"></i>
-                Haz clic en un padrino de la izquierda
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== PESTAÑA F: PLAN ENTRENAMIENTO VALLE ==================== -->
-    <div id="section-valle" class="admin-section-pane">
-      <div class="valle-header">
-        <h2><i class="ti ti-chart-bar"></i> Plan de Entrenamiento Valle</h2>
-        <p>Cali · Yumbo · Tuluá · Popayán — Operaciones OL y UC</p>
-      </div>
-
-      <div class="nav-valle-interna">
-        <button class="nav-tab-btn active-tab" onclick="cambiarPestañaValle('resumen', this)"><i class="ti ti-chart-bar"></i> Resumen</button>
-        <button class="nav-tab-btn" onclick="cambiarPestañaValle('cronograma', this)"><i class="ti ti-calendar"></i> Cronograma</button>
-        <button class="nav-tab-btn" onclick="cambiarPestañaValle('personas', this)"><i class="ti ti-users"></i> Personas</button>
-        <button class="nav-tab-btn" onclick="cambiarPestañaValle('notas', this)"><i class="ti ti-edit"></i> Registrar notas</button>
-        <button class="nav-tab-btn" onclick="cambiarPestañaValle('config', this)"><i class="ti ti-settings"></i> Capacitaciones y personal</button>
-      </div>
-
-      <div class="filter-bar-valle">
-        <div class="form-group"><label>CD</label><select id="valle-filtro-cd" onchange="aplicarFiltrosValle()"><option value="Todos">Todos</option><option>Cali</option><option>Yumbo</option><option>Tuluá</option><option>Popayán</option></select></div>
-        <div class="form-group"><label>Operación</label><select id="valle-filtro-op" onchange="aplicarFiltrosValle()"><option value="Todos">Todos</option><option>OL</option><option>UC</option></select></div>
-        <div class="form-group"><label>Pilar</label><select id="valle-filtro-pilar" onchange="aplicarFiltrosValle()"><option value="Todos">Todos</option><option>Safety</option><option>Management</option><option>People</option><option>Delivery</option><option>Warehouse</option><option>Fleet</option></select></div>
-        <div class="form-group"><label>Tipo Entrenamiento</label><select id="valle-filtro-tipo" onchange="aplicarFiltrosValle()"><option value="Todos">Todos</option><option>Tradicional</option><option>Kirkpatrick</option></select></div>
-        <div class="form-group"><label>Mes</label><input type="month" id="valle-filtro-mes" value="2026-10" onchange="aplicarFiltrosValle()"></div>
-        <div class="form-group"><label>Buscar Persona</label><input type="text" id="valle-filtro-busqueda" placeholder="Nombre, documento o cargo" onkeyup="aplicarFiltrosValle()"></div>
-      </div>
-
-      <!-- PESTAÑA 1: RESUMEN -->
-      <div id="valle-resumen" class="valle-pestaña" style="display: block;">
-        <div class="kpi-grid">
-          <div class="kpi-card" style="border-left-color: #206987;"><div class="kpi-label">% CUMPLIMIENTO GLOBAL</div><div class="kpi-value" id="valle-kpi-cumplimiento">0%</div><div style="font-size: 11px; color: #7a8f99;">Cumplidas ÷ Vencidas</div></div>
-          <div class="kpi-card" style="border-left-color: #22c55e;"><div class="kpi-label">COLABORADORES AL DÍA</div><div class="kpi-value" id="valle-kpi-al-dia" style="color: #22c55e;">0</div></div>
-          <div class="kpi-card" style="border-left-color: #f97316;"><div class="kpi-label">PENDIENTES</div><div class="kpi-value" id="valle-kpi-pendiente" style="color: #f97316;">0</div></div>
-          <div class="kpi-card" style="border-left-color: #a855f7;"><div class="kpi-label">PROGRAMADOS</div><div class="kpi-value" id="valle-kpi-programado" style="color: #a855f7;">0</div></div>
-        </div>
-        <div class="card"><div class="card-title"><i class="ti ti-chart-bar"></i> Avance por Dimensiones</div><div style="height: 350px;"><canvas id="valleChart"></canvas></div></div>
-        <div class="card"><div class="card-title"><i class="ti ti-alert-triangle"></i> Top 8 Personas con más Pendientes</div><div class="table-container"><table><thead><tr><th>Nombre</th><th>Cargo</th><th>CD</th><th>Pendientes</th><th>No Cumplió</th></tr></thead><tbody id="valle-tabla-top-pendientes"></tbody></table></div></div>
-      </div>
-
-      <!-- PESTAÑA 2: CRONOGRAMA -->
-      <div id="valle-cronograma" class="valle-pestaña">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div class="card-title" style="margin: 0; border: none;"><i class="ti ti-calendar-month"></i> Calendario Mensual</div>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn btn-primary" onclick="cambiarMesValle(-1)"><i class="ti ti-chevron-left"></i></button>
-              <button class="btn" style="background: #edf1f4;" onclick="irAHoyValle()">Hoy</button>
-              <button class="btn btn-primary" onclick="cambiarMesValle(1)"><i class="ti ti-chevron-right"></i></button>
-            </div>
-          </div>
-          <div id="valle-calendar-container" class="calendar-grid"></div>
-          <div id="valle-lista-sesiones" style="margin-top: 30px;"></div>
-        </div>
-      </div>
-
-      <!-- PESTAÑA 3: PERSONAS -->
-      <div id="valle-personas" class="valle-pestaña">
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div class="card-title" style="margin: 0; border: none;"><i class="ti ti-users"></i> Avance Individual</div>
-            <button class="btn btn-success" onclick="exportarCSVValle()"><i class="ti ti-file-download"></i> Exportar CSV</button>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead><tr><th>Nombre / Documento</th><th>CD / Op</th><th>Cargo</th><th>Avance</th><th>Safety</th><th>Management</th><th>People</th><th>Delivery</th><th>Warehouse</th><th>Fleet</th><th>Acción</th></tr></thead>
-              <tbody id="valle-tabla-personas"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- PESTAÑA 4: REGISTRAR NOTAS -->
-      <div id="valle-notas" class="valle-pestaña">
-        <div class="card">
-          <div class="card-title"><i class="ti ti-edit"></i> Registro de Calificaciones</div>
-          <div class="form-group"><label>Seleccionar Capacitación</label><select id="valle-select-cap-notas" onchange="cargarListaParaNotasValle()"><option value="">-- Seleccione --</option></select></div>
-          <div id="valle-contenedor-notas" style="margin-top: 20px;"></div>
-        </div>
-      </div>
-
-      <!-- PESTAÑA 5: CAPACITACIONES Y PERSONAL -->
-      <div id="valle-config" class="valle-pestaña">
-        <div class="grid-layout">
-          <!-- Crear Capacitación -->
-          <div class="card">
-            <div class="card-title"><i class="ti ti-calendar-plus"></i> Nueva Capacitación</div>
-            <div class="form-group"><label>Nombre</label><input type="text" id="valle-cap-nombre"></div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <div class="form-group"><label>Pilar</label><select id="valle-cap-pilar"><option>Safety</option><option>Management</option><option>People</option><option>Delivery</option><option>Warehouse</option><option>Fleet</option></select></div>
-              <div class="form-group"><label>Tipo</label><select id="valle-cap-tipo"><option>Tradicional</option><option>Kirkpatrick</option></select></div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              <div class="form-group"><label>Fecha</label><input type="date" id="valle-cap-fecha"></div>
-              <div class="form-group"><label>Mínimo Aprobación (%)</label><input type="number" id="valle-cap-minimo" value="80"></div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-              <div class="form-group"><label>CDs</label><input type="text" id="valle-cap-cds" value="Todos" placeholder="Cali,Yumbo o Todos"></div>
-              <div class="form-group"><label>Operación</label><input type="text" id="valle-cap-op" value="Todos" placeholder="OL,UC o Todos"></div>
-              <div class="form-group"><label>Cargos</label><input type="text" id="valle-cap-cargos" value="Todos" placeholder="Cargo1,Cargo2 o Todos"></div>
-            </div>
-            <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;" onclick="guardarCapacitacionValle()"><i class="ti ti-device-floppy"></i> Guardar y Asignar Automáticamente</button>
-          </div>
-
-          <!-- Importar desde Excel (Carga Masiva Real) -->
-          <div class="card">
-            <div class="card-title"><i class="ti ti-file-upload"></i> Carga Masiva desde Excel (Plan Maestro)</div>
-            <div class="import-zone" id="importZone">
-              <i class="ti ti-file-spreadsheet" style="font-size: 48px; color: #3cbcae;"></i>
-              <p style="margin: 10px 0; font-weight: 700; color: #206987;">Arrastra tu archivo Excel aquí o haz clic para seleccionar</p>
-              <p style="font-size: 11px; color: #7a8f99;">Formato: Columnas Pilar | TEMAS | MES | APLICABILIDAD</p>
-              <input type="file" id="valleExcelFile" accept=".xlsx,.xls" style="display: none;" onchange="procesarExcelValle(event)">
-              <button class="btn btn-primary" onclick="document.getElementById('valleExcelFile').click()" style="margin-top: 10px;"><i class="ti ti-upload"></i> Seleccionar Archivo</button>
-            </div>
-            <div id="valle-import-status" style="margin-top: 15px;"></div>
-          </div>
-
-          <!-- Importar por Pegado -->
-          <div class="card">
-            <div class="card-title"><i class="ti ti-clipboard-text"></i> Importación Rápida (Pegar desde Excel)</div>
-            <div class="form-group">
-              <label>Formato esperado (columnas separadas por Tab)</label>
-              <div style="background: #f8fafb; padding: 10px; border-radius: 6px; font-size: 11px; font-family: monospace; color: #7a8f99;">
-                Pilar | TEMAS | MES | APLICABILIDAD (Front Line/Líderes)
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Pega aquí las filas copiadas desde Excel (Ctrl+V)</label>
-              <textarea id="valle-area-pegado" rows="8" style="font-family: monospace; font-size: 12px;" placeholder="Safety&#9;Políticas ABI&#9;Enero&#9;Front Line&#9;Líderes&#9;1&#9;1&#9;1&#9;1"></textarea>
-            </div>
-            <button class="btn btn-success" style="width: 100%; justify-content: center;" onclick="procesarPegadoExcelValle()"><i class="ti ti-upload"></i> Procesar e Importar</button>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top: 20px;">
-          <div class="card-title"><i class="ti ti-list"></i> Listado de Capacitaciones Programadas (<span id="valle-count-caps">0</span>)</div>
-          <div class="table-container">
-            <table>
-              <thead><tr><th>Nombre</th><th>Pilar</th><th>Tipo</th><th>Fecha</th><th>Mes</th><th>Aplicabilidad</th><th>Asignados</th><th>Acciones</th></tr></thead>
-              <tbody id="valle-lista-capacitaciones-config"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="modalAsignarLinks" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; font-family: sans-serif;">
-      <div style="background: white; padding: 22px; border-radius: 12px; width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid #dde3e7;">
-        <h4 style="margin-top: 0; color: #206987; font-size: 16px; font-weight: 700; border-bottom: 1px solid #eef1f3; padding-bottom: 10px;" id="modalTituloAlumno">Asignar Enlaces de Evaluación</h4>
-        <input type="hidden" id="modalCedulaAlumno">
-        <div style="margin-top: 14px;">
-          <label style="font-size: 12px; font-weight: bold; color: #1c2430;">Link de Evaluación para el APADRINADO (Alumno)</label>
-          <input type="text" id="modalInputLinkApadrinado" style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;" placeholder="Pega el Forms del alumno">
-        </div>
-        <div style="margin-top: 14px;">
-          <label style="font-size: 12px; font-weight: bold; color: #1c2430;">Link de Evaluación para el PADRINO (Tutor)</label>
-          <input type="text" id="modalInputLinkPadrino" style="width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;" placeholder="Pega el Forms del padrino">
-        </div>
-        <div style="margin-top: 22px; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eef1f3; padding-top: 14px;">
-          <button onclick="cerrarModalLinks()" style="background: #edf1f4; color: #206987; border: 1px solid #cdd5db; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700;">Cancelar</button>
-          <button onclick="procesarGuardadoLinksConTrazabilidad()" style="background: #206987; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700;">💾 Guardar Cambios</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="valle-modal-persona" class="modal-overlay" onclick="if(event.target===this) cerrarModalValle()">
-      <div class="modal-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eef1f3; padding-bottom: 15px;">
-          <h3 id="valle-modal-nombre" style="color: #206987;"></h3>
-          <button class="btn" style="background: #edf1f4;" onclick="cerrarModalValle()"><i class="ti ti-x"></i></button>
-        </div>
-        <div id="valle-modal-detalle-contenido"></div>
-      </div>
-    </div>
-
-    <div style="text-align: center; padding: 25px 15px 40px 15px; margin-top: 30px; width: 100%;">
-      <div style="font-size: 11px; font-weight: 600; color: #7a8f99; letter-spacing: 0.03em;">© 2026 Todos los derechos reservados</div>
-      <div style="font-size: 10px; font-weight: 700; color: #1e6e7e; letter-spacing: 0.05em; margin-top: 2px; text-transform: uppercase;">Anderson Alexander Devs</div>
     </div>
   </div>
 
@@ -476,983 +411,700 @@
   <script src="config.js"></script>
 
   <script>
-    let idBeneficioEdicion = null;
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const rolLogueado = localStorage.getItem('usuario_rol');
+    
+    let valleData = { capacitaciones: [], empleados: [], asignaciones: [], mesActual: new Date() };
+    let paginaActual = 1;
+    const itemsPorPagina = 8;
+    let empleadoSeleccionado = null;
+    let asignacionActual = null;
 
-    if (rolLogueado !== 'admin' && rolLogueado !== 'people' && rolLogueado !== 'lider') {
-      window.location.href = 'login.html';
-    } else {
-      const cedulaAdminLogueado = localStorage.getItem('usuario_cedula');
-      cargarPerfilAdmin(cedulaAdminLogueado);
-    }
-
-    // ==================== DATOS REALES DEL PLAN MAESTRO ====================
-    let valleData = {
-      capacitaciones: [],
-      empleados: [
-        { id: '1', nombre: 'Juan Pérez', documento: '12345678', cargo: 'Auxiliar Bodega', cd: 'Cali', operacion: 'OL', activo: true },
-        { id: '2', nombre: 'Maria Lopez', documento: '87654321', cargo: 'Conductor', cd: 'Yumbo', operacion: 'UC', activo: true },
-        { id: '3', nombre: 'Carlos Ruiz', documento: '11223344', cargo: 'Coordinador', cd: 'Cali', operacion: 'OL', activo: true },
-        { id: '4', nombre: 'Ana Gómez', documento: '55667788', cargo: 'Auxiliar Bodega', cd: 'Tuluá', operacion: 'OL', activo: true },
-        { id: '5', nombre: 'Luis Martínez', documento: '99887766', cargo: 'Conductor', cd: 'Popayán', operacion: 'UC', activo: true }
-      ],
-      asignaciones: [],
-      mesActual: new Date()
-    };
-
-    // Capacitaciones reales extraídas del Plan Maestro
-    const capacitacionesReales = [
-      // SAFETY
-      { nombre: 'Políticas ABI', pilar: 'Safety', tipo: 'Tradicional', mes: 'Enero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Reporte e investigación de accidentes', pilar: 'Safety', tipo: 'Tradicional', mes: 'Enero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Conducción Segura de Vehículos', pilar: 'Safety', tipo: 'Tradicional', mes: 'Enero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Trimestral' } },
-      { nombre: 'Manipulación de cargas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Enero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Trimestral' } },
-      { nombre: 'Safety Champions', pilar: 'Safety', tipo: 'Tradicional', mes: 'Febrero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Prevención contra caídas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Febrero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Trimestral' } },
-      { nombre: 'Regreso Seguro a Casa', pilar: 'Safety', tipo: 'Tradicional', mes: 'Febrero', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Trimestral' } },
-      { nombre: 'Gestión de Contratistas - Espacios Confinados', pilar: 'Safety', tipo: 'Tradicional', mes: 'Marzo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
-      { nombre: 'EPP', pilar: 'Safety', tipo: 'Tradicional', mes: 'Marzo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'SAM/LOTO', pilar: 'Safety', tipo: 'Tradicional', mes: 'Marzo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
-      { nombre: 'Riesgo Sicosocial', pilar: 'Safety', tipo: 'Kirkpatrick', mes: 'Abril', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'COPASST', pilar: 'Safety', tipo: 'Tradicional', mes: 'Abril', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
-      { nombre: 'Operación Segura de Montacargas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Abril', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Trimestral' } },
-      { nombre: 'WTS', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mayo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Check list preoperacional', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mayo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Safe Together', pilar: 'Safety', tipo: 'Kirkpatrick', mes: 'Junio', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
-      { nombre: 'Seguridad en el Conductor', pilar: 'Safety', tipo: 'Tradicional', mes: 'Junio', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
-      { nombre: 'Sustancias químicas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Junio', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Prevención de explosiones', pilar: 'Safety', tipo: 'Tradicional', mes: 'Julio', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Todos', frecuencia: 'Anual' } },
-      { nombre: 'Herramientas Safety', pilar: 'Safety', tipo: 'Tradicional', mes: 'Octubre', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
-      { nombre: 'Rutogramas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mensual', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Mensual' } },
-      { nombre: 'Seguridad en el reparto', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mensual', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Mensual' } },
-      { nombre: 'Prevención de la violencia', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mensual', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Mensual' } },
-      { nombre: 'Trabajo en alturas', pilar: 'Safety', tipo: 'Tradicional', mes: 'Mayo', minimo: 100, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
-      // MANAGEMENT
-      { nombre: 'Compliance', pilar: 'Management', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Sueño', pilar: 'Management', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Descripción del negocio', pilar: 'Management', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Mapa de procesos', pilar: 'Management', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Semestral' } },
-      { nombre: 'Conexión de Pi con Kpis', pilar: 'Management', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Semestral' } },
-      { nombre: '5s', pilar: 'Management', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Estandar y capacitaciones (SOP)', pilar: 'Management', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Diagnóstico de trabajo operativo (OWD)', pilar: 'Management', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Workstation', pilar: 'Management', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Solución de problemas', pilar: 'Management', tipo: 'Kirkpatrick', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Semestral' } },
-      { nombre: 'Buenas prácticas', pilar: 'Management', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'GOPS', pilar: 'Management', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Semestral' } },
-      // PEOPLE
-      { nombre: 'Bias breaking', pilar: 'People', tipo: 'Kirkpatrick', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
-      { nombre: 'Principios ABI', pilar: 'People', tipo: 'Tradicional', mes: 'Febrero', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
-      { nombre: 'Rol y responsabilidades', pilar: 'People', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
-      { nombre: 'Reconocimiento y recompensa', pilar: 'People', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
-      { nombre: 'Aprendizaje y desarrollo', pilar: 'People', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Anual' } },
-      { nombre: 'Ambiente de trabajo seguro e inclusivo', pilar: 'People', tipo: 'Kirkpatrick', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Semestral' } },
-      { nombre: 'Equipos Autónomos', pilar: 'People', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Líder', frecuencia: 'Anual' } },
-      // DELIVERY
-      { nombre: 'Proceso de pre ruta', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Proceso en ruta', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Proceso post ruta', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Entrega de productos de Calidad', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Gestión del cliente', pilar: 'Delivery', tipo: 'Kirkpatrick', mes: 'Coronitas', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Coronitas' } },
-      { nombre: 'NPS', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'Todos', cargos: 'Todos', frecuencia: 'Trimestral' } },
-      { nombre: 'Nivel de servicio SERVIR + RMD', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Trimestral' } },
-      { nombre: 'Rechazos + Modulación', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Coronitas', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Coronitas' } },
-      { nombre: 'Ruteo + Distancia + Conexión Planning', pilar: 'Delivery', tipo: 'Tradicional', mes: 'Coronitas', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Coronitas' } },
-      { nombre: 'Gestión y mejora productividad Entrega', pilar: 'Delivery', tipo: 'Kirkpatrick', mes: 'Coronitas', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Coronitas' } },
-      // WAREHOUSE
-      { nombre: 'Layout & ABC', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
-      { nombre: 'Calidad', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
-      { nombre: 'Gestión de inventarios', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Semestral' } },
-      { nombre: 'Picking', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      { nombre: 'Reabastecimiento del picking', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      { nombre: 'Precisión del picking', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      { nombre: 'Clasificación de envase (Sorting)', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Octubre', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      { nombre: 'Eficiencia de cargue y descargue', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      { nombre: 'Tiempos de atención de vehículos T1 y MKP', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      { nombre: 'Mejoras de productividad', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      { nombre: 'NPS Warehouse', pilar: 'Warehouse', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      // FLEET
-      { nombre: 'Documentos', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Estandar de Flota', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Marzo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Check list', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Mantenimiento Preventivo', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Abril', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Combustible', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Neumáticos', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Mayo', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'ATO', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Mejoras', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Sostenibilidad', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Junio', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Semestral' } },
-      { nombre: 'Flota eléctrica - Auteco / Distoyota', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Agosto', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
-      { nombre: 'Conducción efectiva - Distoyota', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Agosto', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } },
-      { nombre: 'Neumáticos - Automundial', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Noviembre', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
-      { nombre: 'Combustible - Terpel', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Noviembre', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
-      { nombre: 'Amarre de carga - PVX', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Noviembre', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'UC', cargos: 'Conductor', frecuencia: 'Anual' } },
-      { nombre: 'Cilindros de gas - Unigas', pilar: 'Fleet', tipo: 'Tradicional', mes: 'Agosto', minimo: 80, aplicabilidad: { cds: 'Todos', operaciones: 'OL', cargos: 'Auxiliar Bodega', frecuencia: 'Anual' } }
-    ];
-
-    // Función para convertir mes a fecha
-    function mesAFecha(mes, anio = 2026) {
-      const meses = { 'Enero': 0, 'Febrero': 1, 'Marzo': 2, 'Abril': 3, 'Mayo': 4, 'Junio': 5, 'Julio': 6, 'Agosto': 7, 'Septiembre': 8, 'Octubre': 9, 'Noviembre': 10, 'Diciembre': 11 };
-      if (meses[mes] !== undefined) {
-        return `${anio}-${String(meses[mes]+1).padStart(2,'0')}-15`;
-      }
-      return `${anio}-10-15`; // Default
-    }
-
-    // Cargar capacitaciones reales
-    capacitacionesReales.forEach((cap, idx) => {
-      valleData.capacitaciones.push({
-        id: 'c' + (idx + 1),
-        nombre: cap.nombre,
-        pilar: cap.pilar,
-        tipo: cap.tipo,
-        mes: cap.mes,
-        fecha: mesAFecha(cap.mes),
-        minimo: cap.minimo,
-        cds: cap.aplicabilidad.cds,
-        operacion: cap.aplicabilidad.operaciones,
-        cargos: cap.aplicabilidad.cargos,
-        frecuencia: cap.aplicabilidad.frecuencia
-      });
+    window.addEventListener('DOMContentLoaded', () => {
+      cargarDatos();
+      cargarPerfilAdmin(localStorage.getItem('usuario_cedula'));
     });
 
-    // ==================== NAVEGACIÓN ====================
-    function cambiarSeccionAdmin(targetPaneId, botonPresionado) {
-      document.querySelectorAll('.admin-section-pane').forEach(pane => pane.classList.remove('pane-active'));
-      document.querySelectorAll('.navbar-menu .nav-tab-btn').forEach(btn => btn.classList.remove('active-tab'));
-      const seccionObjetivo = document.getElementById('section-' + targetPaneId);
-      if (seccionObjetivo) seccionObjetivo.classList.add('pane-active');
-      if (botonPresionado) botonPresionado.classList.add('active-tab');
-      if (targetPaneId === 'valle') {
-        setTimeout(() => {
-          cambiarPestañaValle('resumen', document.querySelector('.nav-valle-interna .nav-tab-btn'));
-        }, 100);
+    async function cargarDatos() {
+      const empSnap = await db.collection('empleados').get();
+      valleData.empleados = empSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      const capSnap = await db.collection('capacitaciones_valle').get();
+      valleData.capacitaciones = capSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      const asigSnap = await db.collection('asignaciones_valle').get();
+      valleData.asignaciones = asigSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      actualizarSelectCargos();
+      actualizarDashboard();
+      renderizarEmpleados();
+      renderizarCapacitaciones();
+      renderizarAsignaciones();
+    }
+
+    function actualizarSelectCargos() {
+      const cargosUnicos = [...new Set(valleData.empleados.map(emp => emp.cargo).filter(c => c))];
+      const select = document.getElementById('valle-cap-cargos');
+      select.innerHTML = '<option value="Todos">Todos los cargos</option>';
+      cargosUnicos.forEach(cargo => {
+        const option = document.createElement('option');
+        option.value = cargo;
+        option.textContent = cargo;
+        select.appendChild(option);
+      });
+    }
+
+    function cambiarSeccion(seccionId, btn) {
+      document.querySelectorAll('.section-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(seccionId).classList.add('active');
+      btn.classList.add('active');
+      if (seccionId === 'cronograma') renderizarCalendario();
+      if (seccionId === 'reportes') renderizarReportes();
+      if (seccionId === 'asignaciones') renderizarAsignaciones();
+    }
+
+    function actualizarDashboard() {
+      document.getElementById('totalCaps').textContent = valleData.capacitaciones.length;
+      document.getElementById('totalEmpleados').textContent = valleData.empleados.length;
+      const pendientes = valleData.asignaciones.filter(a => a.estado === 'Pendiente' || a.estado === 'Programado').length;
+      const cumplidas = valleData.asignaciones.filter(a => a.estado === 'Cumplió').length;
+      const pct = valleData.asignaciones.length > 0 ? Math.round((cumplidas / valleData.asignaciones.length) * 100) : 0;
+      document.getElementById('totalPendientes').textContent = pendientes;
+      document.getElementById('pctCumplimiento').textContent = pct + '%';
+    }
+
+    // ==================== EMPLEADOS ====================
+    async function cargarExcel(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const data = new Uint8Array(await file.arrayBuffer());
+        const workbook = XLSX.read(data, { type: 'array' });
+        const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+        let creados = 0;
+        const batch = db.batch();
+        for (const emp of jsonData) {
+          const cedula = String(emp.cedula || '').trim();
+          if (!cedula) continue;
+          const docRef = db.collection('empleados').doc();
+          batch.set(docRef, {
+            cedula, nombre: emp.nombre || '', cargo: emp.cargo || '', region: emp.region || '',
+            grupo: emp.grupo || 'General', rol: 'empleado', fecha_ingreso: emp.fecha_ingreso || new Date().toISOString().split('T')[0]
+          });
+          creados++;
+        }
+        await batch.commit();
+        alert(`✅ ${creados} empleados importados`);
+        cargarDatos();
+      } catch (error) {
+        alert('❌ Error al importar: ' + error.message);
       }
     }
 
-    function cambiarPestañaValle(pestaña, btn) {
-      document.querySelectorAll('.valle-pestaña').forEach(p => p.style.display = 'none');
-      document.querySelectorAll('.nav-valle-interna .nav-tab-btn').forEach(b => b.classList.remove('active-tab'));
-      document.getElementById('valle-' + pestaña).style.display = 'block';
-      if (btn) btn.classList.add('active-tab');
-      if (pestaña === 'resumen') renderizarResumenValle();
-      if (pestaña === 'cronograma') renderizarCalendarioValle();
-      if (pestaña === 'personas') renderizarPersonasValle();
-      if (pestaña === 'notas') cargarSelectNotasValle();
-      if (pestaña === 'config') renderizarListaConfigValle();
+    async function guardarEmpleado() {
+      const cedula = document.getElementById('searchCedula').value.trim();
+      const nombre = document.getElementById('crudNombre').value.trim();
+      if (!cedula || !nombre) return alert('Por favor ingresa cédula y nombre');
+      
+      try {
+        await db.collection('empleados').add({
+          cedula, nombre,
+          cargo: document.getElementById('crudCargo').value.trim(),
+          region: document.getElementById('crudRegion').value,
+          grupo: document.getElementById('regEmpleadoGrupo').value,
+          fecha_ingreso: document.getElementById('crudFechaIngreso').value || new Date().toISOString().split('T')[0],
+          rol: 'empleado'
+        });
+        alert('✅ Empleado guardado');
+        limpiarFormularioCRUD();
+        cargarDatos();
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
     }
 
-    // ==================== FUNCIONES PLAN VALLE ====================
-    function obtenerEstadoAsignacionValle(asig, cap) {
-      const hoy = new Date().toISOString().split('T')[0];
-      if (asig.estado === 'Cumplió' || asig.estado === 'No cumplió') return asig.estado;
-      if (cap.fecha < hoy && !asig.nota) return 'Pendiente';
-      if (cap.fecha >= hoy) return 'Programado';
-      return 'Pendiente';
+    function buscarEmpleados() {
+      const search = document.getElementById('searchEmpleados').value.toLowerCase();
+      const filtrados = valleData.empleados.filter(e => e.nombre.toLowerCase().includes(search) || (e.cedula && e.cedula.includes(search)));
+      renderizarEmpleados(filtrados);
     }
 
-    function aplicarFiltrosValle() { renderizarResumenValle(); }
+    function renderizarEmpleados(lista = valleData.empleados) {
+      const tbody = document.getElementById('tablaEmpleadosBody');
+      const pagina = lista.slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina);
+      if (pagina.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px;">No hay empleados registrados</td></tr>';
+        return;
+      }
+      tbody.innerHTML = pagina.map(emp => `
+        <tr>
+          <td>${emp.cedula || '-'}</td>
+          <td><strong>${emp.nombre || 'Sin nombre'}</strong></td>
+          <td>${emp.cargo || '-'}</td>
+          <td>${emp.region || '-'}</td>
+          <td><span class="badge badge-info">${emp.grupo || 'General'}</span></td>
+          <td><span class="badge badge-success">Activo</span></td>
+        </tr>
+      `).join('');
+      
+      const totalPaginas = Math.ceil(lista.length / itemsPorPagina);
+      document.getElementById('paginationEmpleados').innerHTML = `
+        <button class="page-btn" onclick="paginaActual=Math.max(1, paginaActual-1); renderizarEmpleados(valleData.empleados)" ${paginaActual === 1 ? 'disabled' : ''}>Anterior</button>
+        <span style="align-self: center;">Página ${paginaActual} de ${totalPaginas || 1}</span>
+        <button class="page-btn" onclick="paginaActual=Math.min(${totalPaginas}, paginaActual+1); renderizarEmpleados(valleData.empleados)" ${paginaActual === totalPaginas ? 'disabled' : ''}>Siguiente</button>
+      `;
+    }
 
-    function renderizarResumenValle() {
-      let cumplidas = 0, vencidas = 0, programadas = 0, pendientes = 0, noCumplio = 0;
-      let empAlDia = 0;
+    function limpiarFormularioCRUD() {
+      ['searchCedula', 'crudNombre', 'crudCargo', 'crudFechaIngreso'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('crudRegion').value = '';
+      document.getElementById('regEmpleadoGrupo').value = 'OL';
+    }
 
-      valleData.empleados.forEach(emp => {
-        let asigsEmp = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
-        let empPendiente = false, empNoCumplio = false;
-        asigsEmp.forEach(a => {
-          const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
-          const estado = obtenerEstadoAsignacionValle(a, cap);
-          if (estado === 'Programado') programadas++;
-          else {
-            vencidas++;
-            if (estado === 'Cumplió') cumplidas++;
-            else if (estado === 'Pendiente') { pendientes++; empPendiente = true; }
-            else if (estado === 'No cumplió') { noCumplio++; empNoCumplio = true; }
+    // ==================== CAPACITACIONES ====================
+    async function guardarCapacitacionConVideo() {
+      const nombre = document.getElementById('valle-cap-nombre').value.trim();
+      const pilar = document.getElementById('valle-cap-pilar').value;
+      const tipo = document.getElementById('valle-cap-tipo').value;
+      const youtubeUrl = document.getElementById('valle-cap-youtube-url').value.trim();
+      const linkEval = document.getElementById('valle-cap-link-eval').value.trim();
+      const cds = document.getElementById('valle-cap-cds').value;
+      const operacion = document.getElementById('valle-cap-op').value;
+      const cargos = document.getElementById('valle-cap-cargos').value;
+      
+      if (!nombre || !youtubeUrl) return alert('❌ Por favor completa el nombre y el link del video');
+      
+      const videoId = extraerIdYouTube(youtubeUrl);
+      if (!videoId) return alert('❌ Link de YouTube no válido');
+      
+      try {
+        const capData = {
+          nombre, pilar, tipo, cds, operacion, cargos,
+          youtube_video_id: videoId, 
+          youtube_url: youtubeUrl, 
+          link_evaluacion: linkEval,
+          creado_en: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        const capRef = await db.collection('capacitaciones_valle').add(capData);
+        const capId = capRef.id;
+        
+        let asignadosCount = 0;
+        const batch = db.batch();
+        
+        const filterCds = cds.toLowerCase().trim();
+        const filterOp = operacion.toLowerCase().trim();
+        const filterCargo = cargos.toLowerCase().trim();
+
+        valleData.empleados.forEach(emp => {
+          const empRegion = (emp.region || 'General').toLowerCase().trim();
+          const empGrupo = (emp.grupo || 'General').toLowerCase().trim();
+          const empCargo = (emp.cargo || '').toLowerCase().trim();
+          
+          const coincideCD = filterCds === 'todos' || empRegion === filterCds;
+          const coincideOp = filterOp === 'todos' || empGrupo === filterOp;
+          const coincideCargo = filterCargo === 'todos' || empCargo === filterCargo || empCargo.includes(filterCargo);
+
+          if (coincideCD && coincideOp && coincideCargo) {
+            const asigRef = db.collection('asignaciones_valle').doc();
+            batch.set(asigRef, {
+              capacitacion_id: capId,
+              empleado_id: emp.id,
+              empleado_nombre: emp.nombre,
+              empleado_documento: emp.cedula,
+              empleado_cargo: emp.cargo,
+              empleado_cd: emp.region,
+              empleado_operacion: emp.grupo,
+              estado: 'Programado',
+              video_visto: false,
+              video_url: youtubeUrl,
+              link_evaluacion: linkEval,
+              nota: null,
+              fecha_limite: null,
+              nota_minima: null,
+              creado_en: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            asignadosCount++;
           }
         });
-        if (!empPendiente && !empNoCumplio && asigsEmp.length > 0) empAlDia++;
+        
+        if (asignadosCount > 0) {
+          await batch.commit();
+          alert(`✅ Capacitación creada y asignada a ${asignadosCount} empleados`);
+        } else {
+          alert(`️ Capacitación creada pero sin asignaciones automáticas. Asigna manualmente en "Asignar Capacitación".`);
+        }
+        
+        document.getElementById('valle-cap-nombre').value = '';
+        document.getElementById('valle-cap-youtube-url').value = '';
+        document.getElementById('valle-cap-link-eval').value = '';
+        
+        await cargarDatos();
+        
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+
+    function extraerIdYouTube(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    function renderizarCapacitaciones() {
+      document.getElementById('valle-count-caps').textContent = valleData.capacitaciones.length;
+      const tbody = document.getElementById('valle-lista-capacitaciones-config');
+      if (valleData.capacitaciones.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px;">No hay capacitaciones</td></tr>';
+        return;
+      }
+      tbody.innerHTML = valleData.capacitaciones.map(cap => {
+        const count = valleData.asignaciones.filter(a => a.capacitacion_id === cap.id).length;
+        return `
+          <tr>
+            <td><strong>${cap.nombre}</strong></td>
+            <td><span class="badge badge-${cap.pilar.toLowerCase()}">${cap.pilar}</span></td>
+            <td>${cap.cds || 'Todos'} - ${cap.operacion || 'Todas'} - ${cap.cargos || 'Todos'}</td>
+            <td>${count}</td>
+            <td>
+              <button class="btn btn-warning btn-sm" onclick="abrirModalEditarCap('${cap.id}')" style="margin-right: 5px;"><i class="ti ti-edit"></i></button>
+              <button class="btn btn-danger btn-sm" onclick="eliminarCapacitacion('${cap.id}')"><i class="ti ti-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function abrirModalEditarCap(capId) {
+      const cap = valleData.capacitaciones.find(c => c.id === capId);
+      if (!cap) return;
+      
+      document.getElementById('editCapId').value = capId;
+      document.getElementById('editCapNombre').value = cap.nombre;
+      document.getElementById('editCapPilar').value = cap.pilar;
+      document.getElementById('editCapTipo').value = cap.tipo || 'Tradicional';
+      document.getElementById('editCapYoutubeUrl').value = cap.youtube_url || '';
+      document.getElementById('editCapLinkEval').value = cap.link_evaluacion || '';
+      document.getElementById('editCapCds').value = cap.cds || 'Todos';
+      document.getElementById('editCapOp').value = cap.operacion || 'Todos';
+      document.getElementById('editCapCargos').value = cap.cargos || 'Todos';
+      
+      document.getElementById('modalEditarCap').classList.add('active');
+    }
+
+    function cerrarModalEditarCap() {
+      document.getElementById('modalEditarCap').classList.remove('active');
+    }
+
+    async function guardarEdicionCapacitacion() {
+      const capId = document.getElementById('editCapId').value;
+      const youtubeUrl = document.getElementById('editCapYoutubeUrl').value.trim();
+      
+      const videoId = extraerIdYouTube(youtubeUrl);
+      if (!videoId) return alert('Link de YouTube no válido');
+      
+      try {
+        await db.collection('capacitaciones_valle').doc(capId).update({
+          nombre: document.getElementById('editCapNombre').value.trim(),
+          pilar: document.getElementById('editCapPilar').value,
+          tipo: document.getElementById('editCapTipo').value,
+          youtube_url: youtubeUrl,
+          youtube_video_id: videoId,
+          link_evaluacion: document.getElementById('editCapLinkEval').value.trim(),
+          cds: document.getElementById('editCapCds').value,
+          operacion: document.getElementById('editCapOp').value,
+          cargos: document.getElementById('editCapCargos').value
+        });
+        
+        alert('✅ Capacitación actualizada');
+        cerrarModalEditarCap();
+        cargarDatos();
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+
+    async function eliminarCapacitacion(id) {
+      if (!confirm('¿Eliminar esta capacitación y todas sus asignaciones?')) return;
+      try {
+        await db.collection('capacitaciones_valle').doc(id).delete();
+        const asignaciones = valleData.asignaciones.filter(a => a.capacitacion_id === id);
+        const batch = db.batch();
+        asignaciones.forEach(asig => batch.delete(db.collection('asignaciones_valle').doc(asig.id)));
+        await batch.commit();
+        alert('✅ Capacitación eliminada');
+        cargarDatos();
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+
+    // ==================== ASIGNACIONES ====================
+    function renderizarAsignaciones(filtro = '') {
+      const tbody = document.getElementById('tablaAsignacionesBody');
+      const filterCD = document.getElementById('filterCD').value;
+      
+      let asignacionesFiltradas = valleData.asignaciones.filter(asig => {
+        const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
+        const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+        
+        if (!emp || !cap) return false;
+        
+        const matchSearch = filtro === '' || 
+          emp.nombre.toLowerCase().includes(filtro.toLowerCase()) ||
+          cap.nombre.toLowerCase().includes(filtro.toLowerCase());
+        
+        const matchCD = filterCD === '' || emp.region === filterCD;
+        
+        return matchSearch && matchCD;
       });
+      
+      if (asignacionesFiltradas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #718096;">No hay asignaciones</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = asignacionesFiltradas.map(asig => {
+        const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
+        const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+        
+        if (!emp || !cap) return '';
+        
+        const link = `${window.location.origin}/ver_capacitacion.html?cap=${cap.id}&asig=${asig.id}`;
+        const estadoClass = asig.estado === 'Cumplió' ? 'badge-success' : (asig.estado === 'No cumplió' ? 'badge-danger' : 'badge-warning');
+        
+        return `
+          <tr>
+            <td><strong>${emp.nombre}</strong><br><small style="color: #718096;">${emp.cedula}</small></td>
+            <td>${cap.nombre}</td>
+            <td><span class="badge badge-${cap.pilar.toLowerCase()}">${cap.pilar}</span></td>
+            <td>${emp.region} - ${emp.grupo}</td>
+            <td>${asig.fecha_limite || 'No definida'}</td>
+            <td><span class="badge ${estadoClass}">${asig.estado || 'Programado'}</span></td>
+            <td>
+              <button class="btn btn-info btn-sm" onclick="verAsignacion('${asig.id}')" style="margin-right: 5px;"><i class="ti ti-eye"></i> Ver</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
 
-      const pct = vencidas > 0 ? Math.round((cumplidas / vencidas) * 100) : 0;
-      document.getElementById('valle-kpi-cumplimiento').textContent = pct + '%';
-      document.getElementById('valle-kpi-al-dia').textContent = empAlDia;
-      document.getElementById('valle-kpi-pendiente').textContent = pendientes;
-      document.getElementById('valle-kpi-programado').textContent = programadas;
+    function filtrarAsignaciones() {
+      const search = document.getElementById('searchAsignaciones').value;
+      renderizarAsignaciones(search);
+    }
 
+    function verAsignacion(asigId) {
+      const asig = valleData.asignaciones.find(a => a.id === asigId);
+      if (!asig) return;
+      
+      const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
+      const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+      
+      if (!emp || !cap) return;
+      
+      asignacionActual = asig;
+      
+      document.getElementById('viewAsigId').value = asigId;
+      document.getElementById('viewEmpleado').textContent = `${emp.nombre} (${emp.cedula})`;
+      document.getElementById('viewCapacitacion').textContent = cap.nombre;
+      document.getElementById('viewPilar').innerHTML = `<span class="badge badge-${cap.pilar.toLowerCase()}">${cap.pilar}</span>`;
+      document.getElementById('viewCD').textContent = `${emp.region} - ${emp.grupo} - ${emp.cargo}`;
+      document.getElementById('viewFecha').textContent = asig.fecha_limite || 'No definida';
+      document.getElementById('viewNota').textContent = asig.nota_minima || '80';
+      
+      const estadoClass = asig.estado === 'Cumplió' ? 'badge-success' : (asig.estado === 'No cumplió' ? 'badge-danger' : 'badge-warning');
+      document.getElementById('viewEstado').innerHTML = `<span class="badge ${estadoClass}">${asig.estado || 'Programado'}</span>`;
+      
+      const link = `${window.location.origin}/ver_capacitacion.html?cap=${cap.id}&asig=${asigId}`;
+      document.getElementById('viewLink').textContent = link;
+      
+      document.getElementById('editAsigFecha').value = asig.fecha_limite || '';
+      document.getElementById('editAsigNota').value = asig.nota_minima || 80;
+      document.getElementById('editAsigEstado').value = asig.estado || 'Programado';
+      
+      document.getElementById('modalVerAsignacion').classList.add('active');
+    }
+
+    function cerrarModalVerAsignacion() {
+      document.getElementById('modalVerAsignacion').classList.remove('active');
+      asignacionActual = null;
+    }
+
+    function copiarLinkAsignacion() {
+      const link = document.getElementById('viewLink').textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(link).then(() => {
+          alert('✅ Link copiado al portapapeles');
+        });
+      }
+    }
+
+    function enviarWhatsAppAsignacion() {
+      if (!asignacionActual) return;
+      
+      const emp = valleData.empleados.find(e => e.id === asignacionActual.empleado_id);
+      const cap = valleData.capacitaciones.find(c => c.id === asignacionActual.capacitacion_id);
+      
+      if (!emp || !cap) return;
+      
+      const link = `${window.location.origin}/ver_capacitacion.html?cap=${cap.id}&asig=${asignacionActual.id}`;
+      const mensaje = `Hola ${emp.nombre}, tienes asignada la capacitación: *${cap.nombre}*\n\n📺 ${link}\n\n⏰ Fecha límite: ${asignacionActual.fecha_limite || 'Por definir'}\n\n¡Saludos!`;
+      
+      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+    }
+
+    async function guardarEdicionAsignacion() {
+      if (!asignacionActual) return;
+      
+      try {
+        await db.collection('asignaciones_valle').doc(asignacionActual.id).update({
+          fecha_limite: document.getElementById('editAsigFecha').value,
+          nota_minima: Number(document.getElementById('editAsigNota').value),
+          estado: document.getElementById('editAsigEstado').value
+        });
+        
+        alert('✅ Asignación actualizada');
+        cerrarModalVerAsignacion();
+        cargarDatos();
+      } catch (error) {
+        alert(' Error: ' + error.message);
+      }
+    }
+
+    async function eliminarAsignacion() {
+      if (!asignacionActual) return;
+      
+      if (!confirm('¿Eliminar esta asignación?')) return;
+      
+      try {
+        await db.collection('asignaciones_valle').doc(asignacionActual.id).delete();
+        alert('✅ Asignación eliminada');
+        cerrarModalVerAsignacion();
+        cargarDatos();
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+
+    // ==================== ASIGNAR INDIVIDUAL ====================
+    function buscarEmpleadosAsignar() {
+      const search = document.getElementById('searchAsignar').value.toLowerCase();
+      const tipo = document.getElementById('searchTipoAsignar').value;
+      if (search.length < 2) {
+        document.getElementById('listaEmpleadosAsignar').innerHTML = '';
+        return;
+      }
+      const filtrados = valleData.empleados.filter(e => tipo === 'nombre' ? e.nombre.toLowerCase().includes(search) : (e.cedula && e.cedula.includes(search)));
+      document.getElementById('listaEmpleadosAsignar').innerHTML = filtrados.slice(0, 8).map(emp => `
+        <div class="employee-card" onclick="seleccionarEmpleado('${emp.id}')">
+          <strong>${emp.nombre}</strong><br>
+          <small style="color: #718096;">${emp.cedula || 'N/A'} · ${emp.cargo || 'N/A'} · ${emp.region || 'N/A'}</small>
+        </div>
+      `).join('');
+    }
+
+    function seleccionarEmpleado(empId) {
+      empleadoSeleccionado = valleData.empleados.find(e => e.id === empId);
+      document.getElementById('selectedEmpleadoNombre').textContent = empleadoSeleccionado.nombre;
+      document.getElementById('formAsignacion').style.display = 'block';
+      
+      const select = document.getElementById('asignarCapacitacion');
+      select.innerHTML = '<option value="">Seleccionar capacitación...</option>' +
+        valleData.capacitaciones.map(c => `<option value="${c.id}" data-pilar="${c.pilar}" data-tipo="${c.tipo || 'Tradicional'}">${c.nombre} (${c.pilar})</option>`).join('');
+      
+      document.getElementById('formAsignacion').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function autoCompletarDatos() {
+      const select = document.getElementById('asignarCapacitacion');
+      const option = select.options[select.selectedIndex];
+      if (!option.value) {
+        document.getElementById('asignarPilar').value = '';
+        document.getElementById('asignarTipo').value = '';
+        document.getElementById('asignarMinimo').value = '80';
+        return;
+      }
+      document.getElementById('asignarPilar').value = option.dataset.pilar;
+      document.getElementById('asignarTipo').value = option.dataset.tipo;
+      document.getElementById('asignarMinimo').value = '80';
+    }
+
+    async function confirmarAsignacion() {
+      const capId = document.getElementById('asignarCapacitacion').value;
+      const fecha = document.getElementById('asignarFecha').value;
+      const minimo = document.getElementById('asignarMinimo').value;
+      
+      if (!capId || !fecha) return alert('Por favor selecciona capacitación y fecha límite');
+      
+      const cap = valleData.capacitaciones.find(c => c.id === capId);
+      
+      try {
+        const asigRef = await db.collection('asignaciones_valle').add({
+          capacitacion_id: capId,
+          empleado_id: empleadoSeleccionado.id,
+          empleado_nombre: empleadoSeleccionado.nombre,
+          empleado_documento: empleadoSeleccionado.cedula,
+          empleado_cargo: empleadoSeleccionado.cargo,
+          empleado_cd: empleadoSeleccionado.region,
+          empleado_operacion: empleadoSeleccionado.grupo,
+          estado: 'Programado',
+          video_visto: false,
+          video_url: cap.youtube_url,
+          link_evaluacion: cap.link_evaluacion,
+          nota: null,
+          fecha_limite: fecha,
+          nota_minima: minimo,
+          creado_en: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        const link = `${window.location.origin}/ver_capacitacion.html?cap=${capId}&asig=${asigRef.id}`;
+        
+        const modalHTML = `
+          <div id="modalAsignacion" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 30px; border-radius: 16px; max-width: 500px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <i class="ti ti-check" style="font-size: 32px; color: #48bb78;"></i>
+                <h3 style="margin: 0; color: #2d3748;">Asignación creada</h3>
+              </div>
+              <div style="background: #f7fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <div style="margin-bottom: 10px;"><strong style="color: #718096; font-size: 12px;">EMPLEADO:</strong><div style="font-weight: 700;">${empleadoSeleccionado.nombre}</div></div>
+                <div style="margin-bottom: 10px;"><strong style="color: #718096; font-size: 12px;">CAPACITACIÓN:</strong><div style="font-weight: 700;">${cap.nombre}</div></div>
+                <div><strong style="color: #718096; font-size: 12px;">FECHA LÍMITE:</strong><div style="font-weight: 700;">${fecha}</div></div>
+              </div>
+              <div style="margin-bottom: 20px;">
+                <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;">🔗 LINK DE ACCESO:</strong>
+                <div style="background: #edf2f7; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; font-family: monospace; border: 1px solid #cbd5e0;">${link}</div>
+              </div>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="copiarLink('${link}')" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="ti ti-copy"></i> Copiar Link</button>
+                <button onclick="enviarWhatsApp('${empleadoSeleccionado.nombre}', '${cap.nombre}', '${fecha}', '${link}')" style="flex: 1; padding: 12px; background: #25D366; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
+              </div>
+              <button onclick="cerrarModalAsignacion()" style="width: 100%; margin-top: 10px; padding: 12px; background: #e2e8f0; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Cerrar</button>
+            </div>
+          </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        cargarDatos();
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    }
+
+    function copiarLink(link) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(link).then(() => {
+          const btn = event.target.closest('button');
+          const original = btn.innerHTML;
+          btn.innerHTML = '<i class="ti ti-check"></i> ¡Copiado!';
+          setTimeout(() => btn.innerHTML = original, 2000);
+        });
+      }
+    }
+
+    function enviarWhatsApp(nombre, capacitacion, fecha, link) {
+      const mensaje = `Hola ${nombre}, tienes una nueva capacitación: *${capacitacion}*.\n\n📺 ${link}\n\n⏰ Fecha límite: ${fecha}\n\n¡Saludos!`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+    }
+
+    function cerrarModalAsignacion() {
+      const modal = document.getElementById('modalAsignacion');
+      if (modal) modal.remove();
+      cancelarAsignacion();
+    }
+
+    function cancelarAsignacion() {
+      document.getElementById('formAsignacion').style.display = 'none';
+      document.getElementById('searchAsignar').value = '';
+      document.getElementById('asignarCapacitacion').value = '';
+      document.getElementById('listaEmpleadosAsignar').innerHTML = '';
+      empleadoSeleccionado = null;
+    }
+
+    // ==================== CRONOGRAMA Y REPORTES ====================
+    function renderizarCalendario() {
+      const hoy = new Date();
+      const year = hoy.getFullYear();
+      const month = hoy.getMonth();
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const container = document.getElementById('valle-calendar-container');
+      let html = '';
+      ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].forEach(d => {
+        html += `<div style="text-align: center; font-weight: 700; padding: 10px; background: #667eea; color: white; border-radius: 8px;">${d}</div>`;
+      });
+      for (let i = 0; i < firstDay; i++) html += `<div style="padding: 10px;"></div>`;
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const capsDelDia = valleData.capacitaciones.filter(c => c.fecha === dateStr || (c.fecha_limite && c.fecha_limite.startsWith(dateStr)));
+        html += `<div style="background: white; border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px; min-height: 80px;">
+          <div style="font-weight: 700; margin-bottom: 5px;">${d}</div>
+          ${capsDelDia.map(c => `<div style="background: #667eea; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-bottom: 4px;">${c.nombre.substring(0, 20)}...</div>`).join('')}
+        </div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function renderizarReportes() {
       const ctx = document.getElementById('valleChart').getContext('2d');
       if (window.valleChartInstance) window.valleChartInstance.destroy();
+      const pilares = ['Safety', 'Management', 'People', 'Delivery', 'Warehouse', 'Fleet'];
+      const data = pilares.map(pilar => {
+        const capsPilar = valleData.capacitaciones.filter(c => c.pilar === pilar);
+        const asigsPilar = valleData.asignaciones.filter(a => capsPilar.some(c => c.id === a.capacitacion_id));
+        return {
+          cumplidas: asigsPilar.filter(a => a.estado === 'Cumplió').length,
+          pendientes: asigsPilar.filter(a => a.estado === 'Pendiente' || a.estado === 'Programado').length
+        };
+      });
       window.valleChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Safety', 'Management', 'People', 'Delivery', 'Warehouse', 'Fleet'],
+          labels: pilares,
           datasets: [
-            { label: 'Cumplió', data: [12, 19, 8, 15, 10, 5], backgroundColor: '#22c55e' },
-            { label: 'Pendiente', data: [2, 3, 5, 2, 4, 1], backgroundColor: '#f97316' },
-            { label: 'No Cumplió', data: [0, 1, 2, 0, 1, 0], backgroundColor: '#ef4444' }
+            { label: 'Cumplidas', data: data.map(d => d.cumplidas), backgroundColor: '#48bb78' },
+            { label: 'Pendientes', data: data.map(d => d.pendientes), backgroundColor: '#ed8936' }
           ]
         },
         options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
       });
-
-      const topPendientes = valleData.empleados.map(emp => {
-        const pend = valleData.asignaciones.filter(a => {
-          if(a.empleado_id !== emp.id) return false;
-          const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
-          return obtenerEstadoAsignacionValle(a, cap) === 'Pendiente';
-        }).length;
-        const nc = valleData.asignaciones.filter(a => {
-          if(a.empleado_id !== emp.id) return false;
-          const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
-          return obtenerEstadoAsignacionValle(a, cap) === 'No cumplió';
-        }).length;
-        return { ...emp, pend, nc };
-      }).sort((a, b) => b.pend - a.pend).slice(0, 8);
-
-      document.getElementById('valle-tabla-top-pendientes').innerHTML = topPendientes.length > 0 ? topPendientes.map(e => `
-        <tr><td>${e.nombre}</td><td>${e.cargo}</td><td>${e.cd}</td><td style="color:#f97316; font-weight:bold;">${e.pend}</td><td style="color:#ef4444; font-weight:bold;">${e.nc}</td></tr>
-      `).join('') : '<tr><td colspan="5" style="text-align:center; padding:20px; color:#7a8f99;">Sin datos pendientes</td></tr>';
-    }
-
-    function renderizarCalendarioValle() {
-      const year = valleData.mesActual.getFullYear();
-      const month = valleData.mesActual.getMonth();
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const startOffset = firstDay === 0 ? 6 : firstDay - 1;
-
-      let html = '';
-      ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].forEach(d => html += `<div class="calendar-header">${d}</div>`);
-      for(let i=0; i<startOffset; i++) html += `<div class="calendar-day" style="background:transparent; border:none;"></div>`;
-
-      let listaHTML = '<h3 style="margin-bottom:15px; color:#206987;">Sesiones del Mes</h3><div class="table-container"><table><thead><tr><th>Fecha</th><th>Pilar</th><th>Tipo</th><th>Aplica a</th><th>Avance</th><th>Acción</th></tr></thead><tbody>';
-
-      for(let d=1; d<=daysInMonth; d++) {
-        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const capsDia = valleData.capacitaciones.filter(c => c.fecha === dateStr);
-        html += `<div class="calendar-day"><div class="day-number">${d}</div><div>${capsDia.map(c => {
-          const count = valleData.asignaciones.filter(a => a.capacitacion_id === c.id).length;
-          return `<div class="session-chip pilar-${c.pilar.toLowerCase()}" title="${c.nombre}">${c.tipo === 'Kirkpatrick' ? 'K' : 'T'} ${c.nombre.substring(0,15)}... (${count})</div>`;
-        }).join('')}</div></div>`;
-
-        capsDia.forEach(c => {
-          const count = valleData.asignaciones.filter(a => a.capacitacion_id === c.id).length;
-          const cumplidos = valleData.asignaciones.filter(a => a.capacitacion_id === c.id && a.estado === 'Cumplió').length;
-          listaHTML += `<tr class="pilar-${c.pilar.toLowerCase()}"><td>${c.fecha}</td><td>${c.pilar}</td><td>${c.tipo}</td><td>CD: ${c.cds} | Op: ${c.operacion}</td><td>${cumplidos}/${count}</td><td><button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="cambiarPestañaValle('notas', document.querySelectorAll('.nav-valle-interna .nav-tab-btn')[3]); document.getElementById('valle-select-cap-notas').value='${c.id}'; cargarListaParaNotasValle();">Notas</button></td></tr>`;
-        });
-      }
-      listaHTML += '</tbody></table></div>';
-      document.getElementById('valle-calendar-container').innerHTML = html;
-      document.getElementById('valle-lista-sesiones').innerHTML = listaHTML;
-    }
-
-    function cambiarMesValle(delta) {
-      valleData.mesActual.setMonth(valleData.mesActual.getMonth() + delta);
-      document.getElementById('valle-filtro-mes').value = `${valleData.mesActual.getFullYear()}-${String(valleData.mesActual.getMonth()+1).padStart(2,'0')}`;
-      renderizarCalendarioValle();
-    }
-
-    function irAHoyValle() {
-      valleData.mesActual = new Date();
-      document.getElementById('valle-filtro-mes').value = `${valleData.mesActual.getFullYear()}-${String(valleData.mesActual.getMonth()+1).padStart(2,'0')}`;
-      renderizarCalendarioValle();
-    }
-
-    function calcularSemaforoPillarValle(empId, pilar) {
-      const capsPilar = valleData.capacitaciones.filter(c => c.pilar === pilar);
-      const asigsPilar = valleData.asignaciones.filter(a => a.empleado_id === empId && capsPilar.some(c => c.id === a.capacitacion_id));
-      if (asigsPilar.length === 0) return 'violeta';
-      let tieneRojo = false, tieneNaranja = false, todasVerdes = true;
-      asigsPilar.forEach(a => {
-        const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
-        const estado = obtenerEstadoAsignacionValle(a, cap);
-        if (estado === 'No cumplió') tieneRojo = true;
-        if (estado === 'Pendiente') tieneNaranja = true;
-        if (estado !== 'Cumplió') todasVerdes = false;
-      });
-      if (tieneRojo) return 'rojo';
-      if (tieneNaranja) return 'naranja';
-      if (todasVerdes) return 'verde';
-      return 'violeta';
-    }
-
-    function renderizarPersonasValle() {
-      const html = valleData.empleados.map(emp => {
-        const asigs = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
-        const total = asigs.length;
-        const cumplidas = asigs.filter(a => a.estado === 'Cumplió').length;
-        const pct = total > 0 ? Math.round((cumplidas / total) * 100) : 0;
-        const pilares = ['Safety', 'Management', 'People', 'Delivery', 'Warehouse', 'Fleet'];
-        const semaforos = pilares.map(p => `<td style="text-align:center;"><div class="semaforo semaforo-${calcularSemaforoPillarValle(emp.id, p)}"></div></td>`).join('');
-        return `<tr><td><strong>${emp.nombre}</strong><br><small style="color:#7a8f99;">${emp.documento}</small></td><td>${emp.cd}<br><small>${emp.operacion}</small></td><td>${emp.cargo}</td><td><div style="display:flex; align-items:center; gap:8px;"><div style="flex:1; background:#eef1f3; height:8px; border-radius:4px; overflow:hidden;"><div style="width:${pct}%; background:#206987; height:100%;"></div></div><span style="font-size:12px; font-weight:700;">${pct}%</span></div></td>${semaforos}<td><button class="btn btn-primary" style="padding:4px 8px; font-size:11px;" onclick="abrirDetallePersonaValle('${emp.id}')">Ver</button></td></tr>`;
-      }).join('');
-      document.getElementById('valle-tabla-personas').innerHTML = html || '<tr><td colspan="11" style="text-align:center; padding:20px; color:#7a8f99;">Sin datos</td></tr>';
-    }
-
-    function abrirDetallePersonaValle(empId) {
-      const emp = valleData.empleados.find(e => e.id === empId);
-      document.getElementById('valle-modal-nombre').textContent = emp.nombre;
-      const asigs = valleData.asignaciones.filter(a => a.empleado_id === empId);
-      let html = '<table style="width:100%; font-size:12px;"><thead><tr><th>Capacitación</th><th>Fecha</th><th>Pilar</th><th>Estado</th><th>Notas</th></tr></thead><tbody>';
-      asigs.forEach(a => {
-        const cap = valleData.capacitaciones.find(c => c.id === a.capacitacion_id);
-        const estado = obtenerEstadoAsignacionValle(a, cap);
-        let notasStr = '-';
-        if(cap.tipo === 'Kirkpatrick' && a.n2) notasStr = `N1:${a.n1} | N2:${a.n2} | N3:${a.n3} | N4:${a.n4}`;
-        else if(a.nota) notasStr = `Nota: ${a.nota}%`;
-        html += `<tr><td>${cap.nombre}</td><td>${cap.fecha}</td><td><span class="tag pilar-${cap.pilar.toLowerCase()}">${cap.pilar}</span></td><td><span class="tag tag-${estado.toLowerCase().replace(' ', '-')}">${estado}</span></td><td>${notasStr}</td></tr>`;
-      });
-      html += '</tbody></table>';
-      document.getElementById('valle-modal-detalle-contenido').innerHTML = html;
-      document.getElementById('valle-modal-persona').style.display = 'flex';
-    }
-
-    function cerrarModalValle() { document.getElementById('valle-modal-persona').style.display = 'none'; }
-
-    function cargarSelectNotasValle() {
-      const select = document.getElementById('valle-select-cap-notas');
-      select.innerHTML = '<option value="">-- Seleccione Capacitación --</option>' + valleData.capacitaciones.map(c => `<option value="${c.id}">${c.nombre} (${c.fecha})</option>`).join('');
-    }
-
-    function cargarListaParaNotasValle() {
-      const capId = document.getElementById('valle-select-cap-notas').value;
-      if(!capId) { document.getElementById('valle-contenedor-notas').innerHTML = ''; return; }
-      const cap = valleData.capacitaciones.find(c => c.id === capId);
-      const asigs = valleData.asignaciones.filter(a => a.capacitacion_id === capId);
-      let html = `<div style="background:#f8fafb; padding:12px; border-radius:8px; margin-bottom:15px; border-left:4px solid #206987;"><strong>Regla de aprobación:</strong> Mínimo ${cap.minimo}% ${cap.pilar === 'Safety' ? '(Safety exige 100%)' : ''}. La aprobación se mide con N2 en Kirkpatrick.</div>`;
-      html += '<div class="table-container"><table><thead><tr><th>Colaborador</th><th>Estado Actual</th><th>Calificación</th><th>Acción</th></tr></thead><tbody>';
-      asigs.forEach(a => {
-        const emp = valleData.empleados.find(e => e.id === a.empleado_id);
-        html += `<tr><td><strong>${emp.nombre}</strong><br><small>${emp.documento}</small></td><td><span class="tag tag-${obtenerEstadoAsignacionValle(a, cap).toLowerCase().replace(' ', '-')}">${obtenerEstadoAsignacionValle(a, cap)}</span></td><td>`;
-        if(cap.tipo === 'Tradicional') {
-          html += `<input type="number" id="nota-${a.id}" value="${a.nota || ''}" min="0" max="100" placeholder="Nota %" style="width:80px; padding:6px;">`;
-        } else {
-          html += `<div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"><input type="number" id="n1-${a.id}" value="${a.n1 || ''}" placeholder="N1" max="100" style="padding:4px;"><input type="number" id="n2-${a.id}" value="${a.n2 || ''}" placeholder="N2 (Aprob)" max="100" style="padding:4px; border-color:#206987; font-weight:bold;"><input type="number" id="n3-${a.id}" value="${a.n3 || ''}" placeholder="N3" max="100" style="padding:4px;"><input type="number" id="n4-${a.id}" value="${a.n4 || ''}" placeholder="N4" max="100" style="padding:4px;"></div>`;
-        }
-        html += `</td><td><button class="btn btn-success" style="padding:6px 10px; font-size:11px;" onclick="guardarNotaValle('${a.id}', '${cap.tipo}', ${cap.minimo}, '${cap.pilar}')">Guardar</button></td></tr>`;
-      });
-      html += '</tbody></table></div>';
-      document.getElementById('valle-contenedor-notas').innerHTML = html;
-    }
-
-    function guardarNotaValle(asigId, tipo, minimo, pilar) {
-      let notaFinal = 0;
-      if(tipo === 'Tradicional') notaFinal = Number(document.getElementById(`nota-${asigId}`).value);
-      else notaFinal = Number(document.getElementById(`n2-${asigId}`).value);
-      const estado = (notaFinal >= minimo) ? 'Cumplió' : 'No cumplió';
-      const asig = valleData.asignaciones.find(a => a.id === asigId);
-      asig.estado = estado;
-      asig.nota = notaFinal;
-      if(tipo === 'Kirkpatrick') {
-        asig.n1 = document.getElementById(`n1-${asigId}`).value;
-        asig.n2 = document.getElementById(`n2-${asigId}`).value;
-        asig.n3 = document.getElementById(`n3-${asigId}`).value;
-        asig.n4 = document.getElementById(`n4-${asigId}`).value;
-      }
-      alert(`Nota guardada. Estado actualizado a: ${estado}`);
-      cargarListaParaNotasValle();
-      renderizarResumenValle();
-    }
-
-    function guardarCapacitacionValle() {
-      const nuevaCap = {
-        id: 'c' + Date.now(),
-        nombre: document.getElementById('valle-cap-nombre').value,
-        pilar: document.getElementById('valle-cap-pilar').value,
-        tipo: document.getElementById('valle-cap-tipo').value,
-        fecha: document.getElementById('valle-cap-fecha').value,
-        minimo: Number(document.getElementById('valle-cap-minimo').value),
-        cds: document.getElementById('valle-cap-cds').value,
-        operacion: document.getElementById('valle-cap-op').value,
-        cargos: document.getElementById('valle-cap-cargos').value
-      };
-      if(!nuevaCap.nombre || !nuevaCap.fecha) return alert('Complete nombre y fecha');
-      valleData.capacitaciones.push(nuevaCap);
-      let asignadosCount = 0;
-      valleData.empleados.forEach(emp => {
-        if(!emp.activo) return;
-        if(nuevaCap.cds !== 'Todos' && !nuevaCap.cds.includes(emp.cd)) return;
-        if(nuevaCap.operacion !== 'Todos' && !nuevaCap.operacion.includes(emp.operacion)) return;
-        if(nuevaCap.cargos !== 'Todos' && !nuevaCap.cargos.includes(emp.cargo)) return;
-        valleData.asignaciones.push({
-          id: 'a' + Date.now() + Math.random().toString().slice(2,5),
-          capacitacion_id: nuevaCap.id,
-          empleado_id: emp.id,
-          estado: nuevaCap.fecha >= new Date().toISOString().split('T')[0] ? 'Programado' : 'Pendiente',
-          nota: null, n1: null, n2: null, n3: null, n4: null
-        });
-        asignadosCount++;
-      });
-      alert(`Capacitación creada y asignada automáticamente a ${asignadosCount} colaboradores.`);
-      renderizarListaConfigValle();
-      document.getElementById('valle-cap-nombre').value = '';
-      document.getElementById('valle-cap-fecha').value = '';
-    }
-
-    // ==================== OPCIÓN 2: CARGA MASIVA DESDE EXCEL ====================
-    async function procesarExcelValle(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const statusDiv = document.getElementById('valle-import-status');
-      statusDiv.innerHTML = '<div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #206987;"><i class="ti ti-loader-2" style="animation: spin 1s linear infinite;"></i> Procesando archivo Excel...</div>';
-
-      try {
-        const data = new Uint8Array(await file.arrayBuffer());
-        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-
-        let capacitacionesImportadas = 0;
-        let empleadosImportados = 0;
-
-        // Detectar formato del Plan Maestro
-        for (let i = 1; i < jsonData.length; i++) {
-          const row = jsonData[i];
-          if (!row || row.length < 3) continue;
-
-          const pilar = String(row[0] || '').trim();
-          const tema = String(row[1] || '').trim();
-          const mes = String(row[2] || '').trim();
-
-          if (pilar && tema && mes) {
-            // Mapear pilar
-            let pilarMapped = pilar;
-            if (pilar.toLowerCase().includes('seguridad')) pilarMapped = 'Safety';
-            else if (pilar.toLowerCase().includes('gestion')) pilarMapped = 'Management';
-            else if (pilar.toLowerCase().includes('gente')) pilarMapped = 'People';
-            else if (pilar.toLowerCase().includes('reparto')) pilarMapped = 'Delivery';
-            else if (pilar.toLowerCase().includes('almacen')) pilarMapped = 'Warehouse';
-            else if (pilar.toLowerCase().includes('flota')) pilarMapped = 'Fleet';
-
-            // Verificar si ya existe
-            const existe = valleData.capacitaciones.some(c => c.nombre.toLowerCase() === tema.toLowerCase() && c.pilar === pilarMapped);
-            if (!existe) {
-              valleData.capacitaciones.push({
-                id: 'c' + Date.now() + Math.random().toString().slice(2,5),
-                nombre: tema,
-                pilar: pilarMapped,
-                tipo: 'Tradicional',
-                mes: mes,
-                fecha: mesAFecha(mes),
-                minimo: pilarMapped === 'Safety' ? 100 : 80,
-                cds: 'Todos',
-                operacion: 'Todos',
-                cargos: 'Todos',
-                frecuencia: 'Importado'
-              });
-              capacitacionesImportadas++;
-            }
-          }
-        }
-
-        // Guardar en Firebase
-        const batch = db.batch();
-        valleData.capacitaciones.slice(-capacitacionesImportadas).forEach(cap => {
-          const docRef = db.collection('capacitaciones_valle').doc();
-          batch.set(docRef, cap);
-        });
-        await batch.commit();
-
-        statusDiv.innerHTML = `<div style="background: #dcfce7; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e;"><strong>✅ Importación Exitosa!</strong><br>• Capacitaciones importadas: ${capacitacionesImportadas}<br>• Empleados importados: ${empleadosImportados}</div>`;
-        renderizarListaConfigValle();
-
-      } catch (error) {
-        console.error(error);
-        statusDiv.innerHTML = `<div style="background: #fee2e2; padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444;"><strong>❌ Error:</strong> ${error.message}</div>`;
-      }
-    }
-
-    // ==================== OPCIÓN 1: IMPORTACIÓN POR PEGADO ====================
-    function procesarPegadoExcelValle() {
-      const texto = document.getElementById('valle-area-pegado').value.trim();
-      if(!texto) return alert('Pega los datos primero');
       
-      const filas = texto.split('\n');
-      let importados = 0;
-      let errores = 0;
-
-      filas.forEach(fila => {
-        const cols = fila.split('\t');
-        if (cols.length >= 3) {
-          const pilar = cols[0]?.trim();
-          const tema = cols[1]?.trim();
-          const mes = cols[2]?.trim();
-
-          if (pilar && tema && mes) {
-            const existe = valleData.capacitaciones.some(c => c.nombre.toLowerCase() === tema.toLowerCase());
-            if (!existe) {
-              valleData.capacitaciones.push({
-                id: 'c' + Date.now() + Math.random().toString().slice(2,5),
-                nombre: tema,
-                pilar: pilar,
-                tipo: 'Tradicional',
-                mes: mes,
-                fecha: mesAFecha(mes),
-                minimo: pilar === 'Safety' ? 100 : 80,
-                cds: 'Todos',
-                operacion: 'Todos',
-                cargos: 'Todos',
-                frecuencia: 'Pegado'
-              });
-              importados++;
-            }
-          } else {
-            errores++;
-          }
-        } else {
-          errores++;
-        }
-      });
-
-      alert(`✅ Importación completada:\n• Importados: ${importados}\n• Errores: ${errores}`);
-      document.getElementById('valle-area-pegado').value = '';
-      renderizarListaConfigValle();
-    }
-
-    function renderizarListaConfigValle() {
-      document.getElementById('valle-count-caps').textContent = valleData.capacitaciones.length;
-      document.getElementById('valle-lista-capacitaciones-config').innerHTML = valleData.capacitaciones.map(c => {
-        const count = valleData.asignaciones.filter(a => a.capacitacion_id === c.id).length;
-        return `<tr><td>${c.nombre}</td><td><span class="tag pilar-${c.pilar.toLowerCase()}">${c.pilar}</span></td><td>${c.tipo}</td><td>${c.fecha}</td><td>${c.mes}</td><td>${c.cargos}</td><td>${count}</td><td><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="eliminarCapValle('${c.id}')">Eliminar</button></td></tr>`;
-      }).join('') || '<tr><td colspan="8" style="text-align:center; padding:20px; color:#7a8f99;">Sin capacitaciones</td></tr>';
-    }
-
-    function eliminarCapValle(id) {
-      if(!confirm('¿Eliminar esta capacitación y sus asignaciones?')) return;
-      valleData.capacitaciones = valleData.capacitaciones.filter(c => c.id !== id);
-      valleData.asignaciones = valleData.asignaciones.filter(a => a.capacitacion_id !== id);
-      renderizarListaConfigValle();
-    }
-
-    function exportarCSVValle() {
-      let csv = 'Nombre,Documento,Cargo,CD,Operacion,Avance %\n';
-      valleData.empleados.forEach(emp => {
+      const topPendientes = valleData.empleados.map(emp => {
         const asigs = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
-        const cumplidas = asigs.filter(a => a.estado === 'Cumplió').length;
-        const pct = asigs.length > 0 ? Math.round((cumplidas / asigs.length) * 100) : 0;
-        csv += `${emp.nombre},${emp.documento},${emp.cargo},${emp.cd},${emp.operacion},${pct}%\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'avance_personas_valle.csv'; a.click();
+        return {
+          nombre: emp.nombre, cargo: emp.cargo, region: emp.region,
+          pendientes: asigs.filter(a => a.estado === 'Pendiente' || a.estado === 'Programado').length,
+          noCumplio: asigs.filter(a => a.estado === 'No cumplió').length
+        };
+      }).sort((a, b) => b.pendientes - a.pendientes).slice(0, 10);
+      
+      document.getElementById('valle-tabla-top-pendientes').innerHTML = topPendientes.map(e => `
+        <tr>
+          <td><strong>${e.nombre}</strong></td>
+          <td>${e.cargo}</td>
+          <td>${e.region}</td>
+          <td><span class="badge badge-warning">${e.pendientes}</span></td>
+          <td><span class="badge badge-danger">${e.noCumplio}</span></td>
+        </tr>
+      `).join('');
     }
 
-    // ==================== FUNCIONES EXISTENTES ====================
-    async function cargarPerfilAdmin(cedulaAdminLogueado) {
+    async function cargarPerfilAdmin(cedula) {
+      if (!cedula) { document.getElementById('adminName').textContent = 'Administrador'; return; }
       try {
-        const snapshot = await db.collection('empleados').where('cedula', '==', String(cedulaAdminLogueado)).limit(1).get();
-        if (!snapshot.empty) {
-          const adminData = snapshot.docs[0].data();
-          document.getElementById('adminName').textContent = adminData.nombre;
-        } else {
-          document.getElementById('adminName').textContent = "Administrador";
-        }
-      } catch (error) { console.error(error); document.getElementById('adminName').textContent = "Administrador"; }
-    }
-
-    async function guardarBeneficio() {
-      const btnGuardar = document.querySelector('[onclick="guardarBeneficio()"]');
-      const cargo = document.getElementById('benCargo').value.trim();
-      const region = document.getElementById('benRegion').value.trim();
-      const concepto = document.getElementById('benConcepto').value.trim();
-      const valorRaw = document.getElementById('benValor').value.toString().replace(/[^0-9]/g, '');
-      const valor = Number(valorRaw);
-      const indicador = document.getElementById('benIndicador').value.trim();
-      if (!cargo || !region || !concepto || !valor) return alert("Por favor llena los campos obligatorios.");
-      if (btnGuardar) btnGuardar.disabled = true;
-      try {
-        if (idBeneficioEdicion) {
-          await db.collection('beneficios').doc(idBeneficioEdicion).update({ cargo, region, concepto, valor, indicador });
-          alert("¡Beneficio modificado con éxito!");
-          limpiarFormularioBeneficio();
-        } else {
-          const consultaDuplicado = await db.collection('beneficios').where('cargo', '==', cargo).where('region', '==', region).get();
-          if (!consultaDuplicado.empty) { alert(`⚠️ Ya existe un beneficio configurado para el cargo "${cargo}" en la región "${region}".`); return; }
-          await db.collection('beneficios').add({ cargo, region, concepto, valor, indicador });
-          alert("¡Beneficio creado con éxito!");
-          limpiarFormularioBeneficio();
-        }
-      } catch (err) { console.error(err); alert("❌ Error de Firebase: " + err.message); }
-      finally { if (btnGuardar) btnGuardar.disabled = false; }
-    }
-
-    async function eliminarBeneficioReal(idDoc) {
-      if (!idDoc) return;
-      if (!confirm("⚠️ ¿Estás seguro de que deseas eliminar este beneficio?")) return;
-      try { await db.collection('beneficios').doc(idDoc).delete(); alert("✅ ¡Beneficio eliminado correctamente!"); limpiarFormularioBeneficio(); }
-      catch (err) { console.error(err); }
-    }
-
-    db.collection('beneficios').onSnapshot((snapshot) => {
-      const tbody = document.getElementById('tablaBeneficiosBody'); if (!tbody) return;
-      if (snapshot.empty) { tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center; color:#7a8f99;">No hay beneficios creados.</td></tr>`; return; }
-      let html = '';
-      snapshot.forEach((doc) => {
-        const b = doc.data();
-        const idDoc = doc.id;
-        const valorFormateado = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(b.valor) || 0);
-        const celdaAcciones = localStorage.getItem('usuario_rol') === 'people' ? '' : `<td style="padding:10px; text-align:center; display: flex; gap: 6px; justify-content: center;"><button onclick="cargarBeneficioForm('${idDoc}', '${b.cargo}', '${b.region || ''}', '${b.concepto}', ${b.valor}, '${b.indicador || ''}')" style="background:#fff8e1; color:#8a6e00; border:1px solid #c89b00; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">✏️ Editar</button><button onclick="eliminarBeneficioReal('${idDoc}')" style="background:#fff5f5; color:#a32d2d; border:1px solid #f09595; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700;">🗑️ Eliminar</button></td>`;
-        html += `<tr><td>${b.cargo}</td><td>${b.region || 'General'}</td><td>${b.concepto}</td><td>${valorFormateado}</td><td><span>🎯 ${b.indicador || 'General'}</span></td>${celdaAcciones}</tr>`;
-      });
-      tbody.innerHTML = html;
-    });
-
-    function limpiarFormularioBeneficio() {
-      document.getElementById('benCargo').value = '';
-      document.getElementById('benRegion').value = '';
-      document.getElementById('benConcepto').value = '';
-      document.getElementById('benValor').value = '';
-      document.getElementById('benIndicador').value = '';
-      idBeneficioEdicion = null;
-      const btnGuardar = document.querySelector('[onclick="guardarBeneficio()"]');
-      if (btnGuardar) { btnGuardar.innerHTML = "💾 Guardar / Actualizar Beneficio"; btnGuardar.style.background = "#1e6e7e"; }
-    }
-
-    function cargarBeneficioForm(id, cargo, region, concepto, valor, indicador) {
-      idBeneficioEdicion = id;
-      document.getElementById('benCargo').value = cargo;
-      document.getElementById('benRegion').value = region || '';
-      document.getElementById('benConcepto').value = concepto;
-      document.getElementById('benValor').value = valor;
-      document.getElementById('benIndicador').value = indicador;
-      const btnGuardar = document.querySelector('[onclick="guardarBeneficio()"]');
-      if (btnGuardar) { btnGuardar.innerHTML = "💾 Actualizar Beneficio Existente"; btnGuardar.style.background = "#0f6e56"; }
-    }
-
-    async function cargarExcel() {
-      const fileInput = document.getElementById('excelFile');
-      if (!fileInput || !fileInput.files.length) return alert("Por favor, selecciona un archivo de Excel primero.");
-      const file = fileInput.files[0];
-      const btn = document.querySelector('#bloqueCargaMasiva .btn-primary');
-      const textoOriginal = btn ? btn.innerHTML : '';
-      alert("⏳ Iniciando sincronización masiva de personal y auditoría anti-duplicados.\n\nPor favor, haz clic en Aceptar para procesar el archivo Excel.");
-      if (btn) btn.innerHTML = '⏳ Importando Personal...';
-      const reader = new FileReader();
-      reader.onload = async function (e) {
-        try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array', cellDates: true });
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
-          const listaEmpleados = XLSX.utils.sheet_to_json(worksheet);
-          if (listaEmpleados.length === 0) { if (btn) btn.innerHTML = textoOriginal; return alert("❌ Error: El archivo de Excel seleccionado está vacío."); }
-          const empleadosExcelMap = new Map();
-          for (const emp of listaEmpleados) {
-            const regNorm = {};
-            Object.keys(emp).forEach(k => { regNorm[k.toLowerCase().trim().replace(/[\s.\-,]/g, '_')] = emp[k]; });
-            const cedulaExcel = regNorm['cedula'] ? String(regNorm['cedula']).trim() : null;
-            if (!cedulaExcel) continue;
-            const rawFecha = regNorm['fecha_de_ingreso'] || regNorm['fecha_ingreso'] || null;
-            const fecha_ingreso = rawFecha instanceof Date ? rawFecha.toISOString().split('T')[0] : (rawFecha ? String(rawFecha).trim() : "");
-            empleadosExcelMap.set(cedulaExcel, { cedula: cedulaExcel, nombre: regNorm['nombre'] ? String(regNorm['nombre']).trim() : "Sin Nombre", cargo: regNorm['cargo'] ? String(regNorm['cargo']).trim() : "Operativo", region: regNorm['region'] ? String(regNorm['region']).trim() : "General", grupo: regNorm['grupo'] ? String(regNorm['grupo']).trim() : "General", rol: regNorm['rol'] ? String(regNorm['rol']).toLowerCase().trim() : "empleado", fecha_ingreso: fecha_ingreso });
-          }
-          const cedulasArray = Array.from(empleadosExcelMap.keys());
-          const mapFirestore = new Map();
-          const chunkSize = 30;
-          for (let i = 0; i < cedulasArray.length; i += chunkSize) {
-            const chunk = cedulasArray.slice(i, i + chunkSize);
-            const snapNumeric = await db.collection('empleados').where('cedula', 'in', chunk.map(Number)).get();
-            snapNumeric.forEach(doc => mapFirestore.set(String(doc.data().cedula), { docId: doc.id, data: doc.data() }));
-            const snapString = await db.collection('empleados').where('cedula', 'in', chunk.map(String)).get();
-            snapString.forEach(doc => mapFirestore.set(String(doc.data().cedula), { docId: doc.id, data: doc.data() }));
-          }
-          let batch = db.batch();
-          let opsEnBatch = 0;
-          let creados = 0;
-          let actualizados = 0;
-          for (const [cedula, datosExcel] of empleadosExcelMap) {
-            const registroExistente = mapFirestore.get(cedula);
-            if (registroExistente) { const docRef = db.collection('empleados').doc(registroExistente.docId); batch.update(docRef, datosExcel); actualizados++; }
-            else {
-              if (datosExcel.rol === 'empleado') {
-                datosExcel.es_apadrinado = true;
-                datosExcel.estado_plan_padrino = "Activo";
-                datosExcel.etapa_actual = "Inducción";
-                const formatFecha = (d) => d.toISOString().split('T')[0];
-                const baseDate = datosExcel.fecha_ingreso ? new Date(datosExcel.fecha_ingreso + 'T00:00:00') : new Date();
-                const f7 = new Date(baseDate); f7.setDate(f7.getDate() + 7);
-                const f30 = new Date(baseDate); f30.setDate(f30.getDate() + 30);
-                const f90 = new Date(baseDate); f90.setDate(f90.getDate() + 90);
-                datosExcel.fechas_limite_evaluaciones = { eval_7_dias: formatFecha(f7), eval_30_dias: formatFecha(f30), eval_90_dias: formatFecha(f90) };
-                datosExcel.hitos = { fecha_contratacion: datosExcel.fecha_ingreso, onboarding_safety_nota: 0, onboarding_people_nota: 0, eval_tecnico_nota: 0, eval_funcional_nota: 0, eval_autonomo_nota: 0 };
-              }
-              const nuevoDocRef = db.collection('empleados').doc();
-              batch.set(nuevoDocRef, datosExcel);
-              creados++;
-            }
-            opsEnBatch++;
-            if (opsEnBatch >= 400) { await batch.commit(); batch = db.batch(); opsEnBatch = 0; }
-          }
-          if (opsEnBatch > 0) await batch.commit();
-          if (btn) btn.innerHTML = textoOriginal;
-          alert(`¡Sincronización Masiva Completa! 🚀\n\n· Registros Nuevos Creados: ${creados}\n· Registros Existentes Actualizados: ${actualizados}`);
-          fileInput.value = '';
-        } catch (error) { if (btn) btn.innerHTML = textoOriginal; console.error("Error en Carga Masiva:", error); alert("❌ Ocurrió un error crítico al procesar el archivo Excel."); }
-      };
-      reader.readAsArrayBuffer(file);
-    }
-
-    async function buscarEmpleado() {
-      const cc = document.getElementById('searchCedula').value.trim();
-      if (!cc) return;
-      try {
-        let snap = await db.collection('empleados').where('cedula', '==', cc).limit(1).get();
-        if (!snap.empty) {
-          const emp = snap.docs[0].data();
-          document.getElementById('crudNombre').value = emp.nombre || '';
-          document.getElementById('crudCargo').value = emp.cargo || '';
-          document.getElementById('crudRegion').value = emp.region || '';
-          document.getElementById('regEmpleadoGrupo').value = emp.grupo || 'General';
-        }
-      } catch (e) { console.error(e); }
-    }
-
-    async function guardarEmpleado() {
-      const cc = document.getElementById('searchCedula').value.trim();
-      const nom = document.getElementById('crudNombre').value.trim();
-      const fechaRaw = document.getElementById('crudFechaIngreso').value;
-      if (!cc || !nom) return alert("Cédula y nombre requeridos.");
-      const datos = { cedula: cc, nombre: nom, cargo: document.getElementById('crudCargo').value.trim(), region: document.getElementById('crudRegion').value.trim(), grupo: document.getElementById('regEmpleadoGrupo').value.trim() || 'General', rol: document.getElementById('empleadoRol').value, fecha_ingreso: fechaRaw || "" };
-      try {
-        let snap = await db.collection('empleados').where('cedula', '==', cc).limit(1).get();
-        if (snap.empty) snap = await db.collection('empleados').where('cedula', '==', Number(cc)).limit(1).get();
-        if (!snap.empty) { await db.collection('empleados').doc(snap.docs[0].id).update(datos); alert("✅ Empleado actualizado correctamente."); }
-        else {
-          if (datos.rol === 'empleado') {
-            datos.es_apadrinado = true;
-            datos.estado_plan_padrino = "Activo";
-            datos.etapa_actual = "Inducción";
-            const base = fechaRaw ? new Date(fechaRaw + 'T00:00:00') : new Date();
-            const f7 = new Date(base); f7.setDate(f7.getDate() + 7);
-            const f30 = new Date(base); f30.setDate(f30.getDate() + 30);
-            const f90 = new Date(base); f90.setDate(f90.getDate() + 90);
-            datos.fechas_limite_evaluaciones = { eval_7_dias: f7.toISOString().split('T')[0], eval_30_dias: f30.toISOString().split('T')[0], eval_90_dias: f90.toISOString().split('T')[0] };
-            datos.hitos = { fecha_contratacion: fechaRaw || "", onboarding_safety_nota: 0, onboarding_people_nota: 0, eval_tecnico_nota: 0, eval_funcional_nota: 0, eval_autonomo_nota: 0 };
-          }
-          await db.collection('empleados').add(datos);
-          alert("✅ Empleado creado correctamente.");
-        }
-        limpiarFormularioCRUD();
-      } catch (e) { console.error(e); alert("❌ Error al guardar."); }
-    }
-
-    async function eliminarEmpleado() {
-      const cc = document.getElementById('searchCedula').value.trim();
-      if (!cc || !confirm("¿Eliminar empleado?")) return;
-      try { let snap = await db.collection('empleados').where('cedula', '==', cc).limit(1).get(); if (!snap.empty) { await db.collection('empleados').doc(snap.docs[0].id).delete(); alert("Eliminado."); limpiarFormularioCRUD(); } }
-      catch (e) { console.error(e); }
-    }
-
-    function limpiarFormularioCRUD() { document.getElementById('searchCedula').value = ''; document.getElementById('crudNombre').value = ''; document.getElementById('crudCargo').value = ''; document.getElementById('crudRegion').value = ''; document.getElementById('regEmpleadoGrupo').value = ''; }
-
-    async function publicarCapacitacion() {
-      const cc = document.getElementById('targetCedula').value.trim();
-      const tit = document.getElementById('capTitulo').value.trim();
-      const ppt = document.getElementById('capDriveId').value.trim();
-      const qr = document.getElementById('capQrUrl').value.trim();
-      const date = document.getElementById('capFechaLimite').value;
-      if (!cc || !tit || !ppt || !date) return alert("Llenar campos obligatorios.");
-      try { await db.collection('items_cronograma').add({ empleado_id: cc, titulo: tit, ppt_drive_id: ppt, qr_url: qr, fecha_limite: date, completado: false, visto_ppt: false }); alert("¡Publicada exitosamente!"); }
-      catch (e) { console.error(e); }
-    }
-
-    async function auditarAvanceReal() {
-      const cc = document.getElementById('auditCedula').value.trim();
-      if (!cc) return alert("⚠️ Digita la cédula a consultar.");
-      const inputDesdeReal = document.getElementById('auditDesde').value;
-      const inputHastaReal = document.getElementById('auditHasta').value;
-      if (!inputDesdeReal || !inputHastaReal) return alert("⚠️ Por favor selecciona el rango Desde / Hasta para la auditoría.");
-      try {
-        const snap = await db.collection('items_cronograma').where('empleado_id', '==', cc).get();
-        const tbody = document.getElementById('auditTableBody'); if (!tbody) return;
-        tbody.innerHTML = '';
-        let asig = 0, hechas = 0;
-        let htmlFilas = '';
-        snap.forEach(doc => {
-          const item = doc.data();
-          const limiteTarea = item.fecha_limite;
-          if (limiteTarea >= inputDesdeReal && limiteTarea <= inputHastaReal) {
-            asig++;
-            if (item.completado) hechas++;
-            htmlFilas += `<tr><td><strong>${item.titulo}</strong></td><td>${item.fecha_limite}</td><td>${item.visto_ppt ? '✓ Sí' : '✗ No'}</td><td>${item.completado ? '✓ Hecho' : '✗ Pendiente'}</td></tr>`;
-          }
-        });
-        if (asig === 0) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#7a8f99; padding: 15px;">No se registran capacitaciones asignadas en el rango de fechas seleccionado.</td></tr>`;
-        else tbody.innerHTML = htmlFilas;
-        const pct = asig > 0 ? Math.round((hechas / asig) * 100) : 0;
-        document.getElementById('auditPctText').textContent = pct + "%";
-        document.getElementById('auditCountText').textContent = `${hechas} / ${asig}`;
-        document.getElementById('auditResultPanel').style.display = 'block';
-      } catch (error) { console.error("Error en auditoría:", error); alert("❌ Error al procesar el historial de capacitación."); }
-    }
-
-    async function procesarOnboardingExcel(event, tipoOnboarding) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const btn = event.target.nextElementSibling || document.querySelector(`[onclick*="'${tipoOnboarding}'"]`);
-      const textoOriginal = btn ? btn.innerHTML : '';
-      alert(`⏳ Iniciando procesamiento de notas para Onboarding ${tipoOnboarding.toUpperCase()}.\n\nPor favor, haz clic en Aceptar para comenzar el cruce inteligente.`);
-      if (btn) btn.innerHTML = '⏳ Procesando Excel...';
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const data = new Uint8Array(e.target.result);
-          const wb = XLSX.read(data, { type: 'array', cellDates: true });
-          const ws = wb.Sheets[wb.SheetNames[0]];
-          const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
-          if (rows.length <= 1) { if (btn) btn.innerHTML = textoOriginal; return alert("❌ Error: El archivo de respuestas seleccionado está vacío."); }
-          const rawRows = rows.slice(1);
-          const idxTotalPuntos = 5;
-          const idxCedula = 32;
-          const umbral = tipoOnboarding === 'safety' ? 100 : 80;
-          const mejorNotaPorCedula = new Map();
-          for (let row of rawRows) {
-            if (row.length === 1 && typeof row[0] === 'string') row = row[0].split(';');
-            let cedulaRaw = String(row[idxCedula] || '').trim().replace(/['"\s.\-,]/g, '');
-            if (!cedulaRaw || cedulaRaw === 'null' || cedulaRaw === '0') continue;
-            let nota = Math.min(100, Math.max(0, Math.round(Number(row[idxTotalPuntos] || 0))));
-            const aprobado = nota >= umbral;
-            const fecha = row[1] instanceof Date ? row[1].toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
-            if (mejorNotaPorCedula.has(cedulaRaw)) { if (nota > mejorNotaPorCedula.get(cedulaRaw).nota) mejorNotaPorCedula.set(cedulaRaw, { nota, aprobado, fecha }); }
-            else mejorNotaPorCedula.set(cedulaRaw, { nota, aprobado, fecha });
-          }
-          const cedulasArray = Array.from(mejorNotaPorCedula.keys());
-          const mapFirestore = new Map();
-          const chunkSize = 30;
-          for (let i = 0; i < cedulasArray.length; i += chunkSize) {
-            const chunk = cedulasArray.slice(i, i + chunkSize);
-            const snapNumeric = await db.collection('empleados').where('cedula', 'in', chunk.map(Number)).get();
-            snapNumeric.forEach(doc => mapFirestore.set(String(doc.data().cedula), { docId: doc.id, data: doc.data() }));
-            const snapString = await db.collection('empleados').where('cedula', 'in', chunk.map(String)).get();
-            snapString.forEach(doc => mapFirestore.set(String(doc.data().cedula), { docId: doc.id, data: doc.data() }));
-          }
-          let batch = db.batch();
-          let opsEnBatch = 0;
-          let totalActualizados = 0;
-          for (const [cedula, { nota, aprobado, fecha }] of mejorNotaPorCedula) {
-            const registro = mapFirestore.get(cedula);
-            if (!registro) continue;
-            const { docId, data } = registro;
-            const hitos = { ...(data.hitos || {}) };
-            const up = {};
-            if (tipoOnboarding === 'safety') { hitos.onboarding_safety_nota = nota; hitos.onboarding_safety_fecha = fecha; up.onboarding_dia1 = { estado: aprobado ? 'Completado' : 'Reprobado', fecha_completado: fecha }; }
-            else { hitos.onboarding_people_nota = nota; hitos.onboarding_people_fecha = fecha; up.onboarding_dia2 = { estado: aprobado ? 'Completado' : 'Reprobado', fecha_completado: fecha }; }
-            up.hitos = hitos;
-            const docRef = db.collection('empleados').doc(docId);
-            batch.update(docRef, up);
-            opsEnBatch++;
-            totalActualizados++;
-            if (opsEnBatch >= 400) { await batch.commit(); batch = db.batch(); opsEnBatch = 0; }
-          }
-          if (opsEnBatch > 0) await batch.commit();
-          if (btn) btn.innerHTML = textoOriginal;
-          if (totalActualizados > 0) { alert(`✅ ¡Carga de Onboarding ${tipoOnboarding.toUpperCase()} Exitosa!\n\nSe procesaron las calificaciones de ${totalActualizados} colaboradores en milisegundos.`); location.reload(); }
-          else alert("️ Proceso finalizado.\nNo se detectó ninguna coincidencia entre las cédulas del formulario y los empleados registrados actualmente.");
-          event.target.value = '';
-        } catch (err) { if (btn) btn.innerHTML = textoOriginal; console.error(err); alert("❌ Ocurrió un error crítico al procesar la estructura del Microsoft Forms."); }
-      };
-      reader.readAsArrayBuffer(file);
-    }
-
-    async function inicializarModuloGestionPadrinos() {
-      const contenedorLista = document.getElementById('listaPadrinosClick');
-      if (!contenedorLista) return;
-      try {
-        const snap = await db.collection('empleados').where('es_padrino', '==', true).get();
-        if (snap.empty) { contenedorLista.innerHTML = `<div style="text-align:center;color:#7f8c8d;padding:10px;">No hay padrinos registrados.</div>`; return; }
-        contenedorLista.innerHTML = '';
-        snap.forEach(doc => {
-          const padrino = doc.data();
-          contenedorLista.innerHTML += `<button onclick="verApadrinadosAsociados('${padrino.cedula}', '${padrino.nombre}')" style="width: 100%; text-align: left; padding: 10px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 13px; font-weight: 600; color: #334155;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">👨‍ ${padrino.nombre} <br><span style="font-size:11px; color:#64748b; font-weight:normal;">CC ${padrino.cedula}</span></button>`;
-        });
-      } catch (error) { console.error("Error cargando lista de padrinos:", error); }
-    }
-
-    async function verApadrinadosAsociados(cedulaPadrino, nombrePadrino) {
-      const detalleDiv = document.getElementById('contenedorDetalleAlumnos');
-      detalleDiv.innerHTML = `<div style="text-align:center; padding:30px; color:#7f8c8d;">Buscando alumnos asignados...</div>`;
-      try {
-        const snap = await db.collection('empleados').where('padrino_id', '==', cedulaPadrino).where('es_apadrinado', '==', true).get();
-        if (snap.empty) { detalleDiv.innerHTML = `<div style="padding: 20px; text-align: center; color: #e11d48; background: #fff1f2; border-radius: 6px; font-size: 13px;">El padrino <strong>${nombrePadrino}</strong> no tiene alumnos asociados actualmente.</div>`; return; }
-        let htmlTabla = `<div style="font-size:13px; margin-bottom:10px; color:#475569;">Alumnos a cargo de: <strong>${nombrePadrino}</strong></div><table style="width:100%; border-collapse:collapse; background:white; border-radius:6px; overflow:hidden; box-shadow:0 2px 5px rgba(0,0,0,0.02);"><thead><tr style="background:#edf2f7; text-align:left; font-size:12px;"><th style="padding:10px;">Nombre Apadrinado</th><th style="padding:10px;">Link Alumno</th><th style="padding:10px;">Link Padrino</th><th style="padding:10px; text-align:center;">Acción</th></tr></thead><tbody>`;
-        snap.forEach(doc => {
-          const alumno = doc.data();
-          const linkAp = alumno.link_evaluacion_apadrinado ? `<a href="${alumno.link_evaluacion_apadrinado}" target="_blank" style="color: #16a34a; text-decoration: underline; font-weight: bold;">✅ Configurado</a>` : '<span style="color: #dc2626;">❌ Pendiente</span>';
-          const linkPad = alumno.link_evaluacion_padrino ? `<a href="${alumno.link_evaluacion_padrino}" target="_blank" style="color: #16a34a; text-decoration: underline; font-weight: bold;">✅ Configurado</a>` : '<span style="color: #dc2626;">❌ Pendiente</span>';
-          htmlTabla += `<tr style="border-bottom:1px solid #f1f5f9; font-size:12px;"><td style="padding:10px;"><strong>${alumno.nombre}</strong><br><span style="color:#64748b;font-size:11px;">CC ${alumno.cedula}</span></td><td style="padding:10px; color:${alumno.link_evaluacion_apadrinado ? '#16a34a':'#dc2626'}">${linkAp}</td><td style="padding:10px; color:${alumno.link_evaluacion_padrino ? '#16a34a':'#dc2626'}">${linkPad}</td><td style="padding:10px; text-align:center;"><button onclick="abrirModalAsignacion('${alumno.cedula}', '${alumno.nombre}', '${alumno.link_evaluacion_apadrinado || ''}', '${alumno.link_evaluacion_padrino || ''}')" style="background:#206987; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:11px;">🔗 Configurar Links</button></td></tr>`;
-        });
-        htmlTabla += `</tbody></table>`;
-        detalleDiv.innerHTML = htmlTabla;
-      } catch (error) { console.error("Error al traer apadrinados:", error); }
-    }
-
-    function abrirModalAsignacion(cedula, nombre, linkAp, linkPad) {
-      document.getElementById('modalCedulaAlumno').value = cedula;
-      document.getElementById('modalTituloAlumno').innerText = `Asignar Evaluaciones para: ${nombre}`;
-      document.getElementById('modalInputLinkApadrinado').value = linkAp;
-      document.getElementById('modalInputLinkPadrino').value = linkPad;
-      document.getElementById('modalAsignarLinks').style.display = 'flex';
-    }
-
-    function cerrarModalLinks() { document.getElementById('modalAsignarLinks').style.display = 'none'; }
-
-    async function procesarGuardadoLinksConTrazabilidad() {
-      const cedulaAlumno = document.getElementById('modalCedulaAlumno').value;
-      const linkApadrinado = document.getElementById('modalInputLinkApadrinado').value.trim();
-      const linkPadrino = document.getElementById('modalInputLinkPadrino').value.trim();
-      try {
-        let snap = await db.collection('empleados').where('cedula', '==', cedulaAlumno).limit(1).get();
-        if (snap.empty) return alert("Error: El alumno no existe.");
-        const docRef = snap.docs[0].ref;
-        const datosActuales = snap.docs[0].data();
-        let actualizaciones = { link_evaluacion_apadrinado: linkApadrinado, link_evaluacion_padrino: linkPadrino };
-        if (datosActuales.link_evaluacion_padrino && datosActuales.link_evaluacion_padrino !== linkPadrino) {
-          const registroHistorico = { padrino_id_historico: datosActuales.padrino_id || "Desconocido", link_padrino_anterior: datosActuales.link_evaluacion_padrino, fecha_modificacion: new Date().toISOString().split('T')[0], motivo: "Actualización manual de enlace de evaluación por el administrador" };
-          actualizaciones.historial_padrinos = firebase.firestore.FieldValue.arrayUnion(registroHistorico);
-        }
-        await docRef.update(actualizaciones);
-        alert("✅ Enlaces de evaluación asignados correctamente.");
-        cerrarModalLinks();
-        verApadrinadosAsociados(datosActuales.padrino_id, "Padrino Actual");
-      } catch (error) { console.error("Error actualizando enlaces:", error); alert("Hubo un error al guardar en Firestore."); }
-    }
-
-    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      if (localStorage.getItem('usuario_rol') === 'people') {
-        if (document.getElementById('seccionFormBeneficios')) document.getElementById('seccionFormBeneficios').style.display = 'none';
-        if (document.getElementById('bloqueCargaMasiva')) document.getElementById('bloqueCargaMasiva').style.display = 'none';
-        if (document.getElementById('bloqueCargaEvaluaciones')) document.getElementById('bloqueCargaEvaluaciones').style.display = 'none';
-        if (document.getElementById('seccionFormCapacitaciones')) document.getElementById('seccionFormCapacitaciones').style.display = 'none';
-        if (document.getElementById('btnGuardarEmpleado')) document.getElementById('btnGuardarEmpleado').style.display = 'none';
-        if (document.getElementById('btnEliminarEmpleado')) document.getElementById('btnEliminarEmpleado').style.display = 'none';
-        if (document.getElementById('crudNombre')) document.getElementById('crudNombre').disabled = true;
-        if (document.getElementById('crudCargo')) document.getElementById('crudCargo').disabled = true;
-        if (document.getElementById('crudRegion')) document.getElementById('crudRegion').disabled = true;
-        if (document.getElementById('regEmpleadoGrupo')) document.getElementById('regEmpleadoGrupo').disabled = true;
-        if (document.getElementById('crudFechaIngreso')) document.getElementById('crudFechaIngreso').disabled = true;
-        if (document.getElementById('empleadoRol')) document.getElementById('empleadoRol').disabled = true;
-        if (document.getElementById('thAccionesBeneficios')) document.getElementById('thAccionesBeneficios').style.display = 'none';
+        const snapshot = await db.collection('empleados').where('cedula', '==', cedula).limit(1).get();
+        document.getElementById('adminName').textContent = snapshot.empty ? 'Administrador' : snapshot.docs[0].data().nombre;
+      } catch (error) {
+        document.getElementById('adminName').textContent = 'Administrador';
       }
-      setTimeout(() => { if (typeof inicializarModuloGestionPadrinos === 'function') inicializarModuloGestionPadrinos(); }, 500);
-      if (localStorage.getItem('usuario_rol') === 'lider') {
-        const botonesMenu = document.querySelectorAll('.navbar-menu .nav-tab-btn');
-        if (botonesMenu.length >= 5) { botonesMenu[0].style.display = 'none'; botonesMenu[1].style.display = 'none'; botonesMenu[2].style.display = 'none'; botonesMenu[3].style.display = 'none'; }
-        const btnPlanPadrino = document.querySelector('.header button');
-        if (btnPlanPadrino) btnPlanPadrino.style.display = 'none';
-        if (botonesMenu[4]) cambiarSeccionAdmin('capacitaciones', botonesMenu[4]);
-      }
-      renderizarListaConfigValle();
-    });
+    }
 
-    window.inicializarModuloGestionPadrinos = inicializarModuloGestionPadrinos;
-    window.verApadrinadosAsociados = verApadrinadosAsociados;
-    window.abrirModalAsignacion = abrirModalAsignacion;
-    window.cerrarModalLinks = cerrarModalLinks;
-    window.procesarGuardadoLinksConTrazabilidad = procesarGuardadoLinksConTrazabilidad;
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
   </script>
 </body>
 </html>
