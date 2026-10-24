@@ -17,7 +17,7 @@
     .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
     .card { background: white; border-radius: 16px; padding: 25px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); margin-bottom: 20px; }
     .video-wrapper { position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; }
-    .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .video-wrapper div { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
     .progress-bar { width: 100%; height: 10px; background: #e2e8f0; border-radius: 5px; margin: 20px 0; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); width: 0%; transition: width 0.3s; }
     .progress-text { text-align: center; margin-top: 8px; font-size: 13px; color: #718096; font-weight: 600; }
@@ -71,9 +71,7 @@
           </div>
         </div>
 
-        <div class="video-wrapper">
-          <iframe id="youtubePlayer" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
+        <div class="video-wrapper" id="videoWrapper"></div>
 
         <div class="progress-bar">
           <div class="progress-fill" id="progressFill"></div>
@@ -82,7 +80,7 @@
 
         <div id="statusBox" class="status-box status-pending">
           <i class="ti ti-info-circle"></i>
-          <span id="statusText">Debes ver el video completo (95%) para desbloquear la evaluación</span>
+          <span id="statusText">Debes ver el video completo sin adelantar para desbloquear la evaluación</span>
         </div>
 
         <button id="btnEval" class="btn-eval btn-locked" disabled onclick="irAEvaluacion()">
@@ -105,7 +103,7 @@
     </div>
   </div>
 
-   <script>
+  <script>
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
@@ -114,11 +112,16 @@
     const asigId = params.get('asig');
     const empParam = params.get('emp');
 
-    let videoVisto = false;
-    let videoProgreso = 0;
+    let videoCompletado = false;
     let capacitacionData = null;
     let asignacionData = null;
-    let player = null;
+    
+    // 🔒 SISTEMA ANTI-ADELANTO ROBUSTO
+    let ytPlayer = null;
+    let ytTimer = null;
+    let maxPermitido = 0;
+    let ytPendiente = null;
+    let avisoTimer = null;
 
     if (!capId || (!asigId && !empParam)) {
       document.getElementById('loadingState').innerHTML = `
@@ -129,6 +132,17 @@
     } else {
       cargarDatos();
     }
+
+    // Carga YouTube API
+    (function cargarYouTubeAPI() {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    })();
+
+    window.onYouTubeIframeAPIReady = () => {
+      if (ytPendiente) { ytPendiente(); ytPendiente = null; }
+    };
 
     async function cargarDatos() {
       try {
@@ -146,7 +160,7 @@
         }
 
         if (!asigDoc) {
-          throw new Error('Asignación no encontrada. Verifica que el administrador te haya asignado esta capacitación.');
+          throw new Error('Asignación no encontrada.');
         }
         
         asignacionData = { id: asigDoc.id, ...asigDoc.data() };
@@ -155,12 +169,8 @@
         if (!capSnap.exists) throw new Error('Capacitación no encontrada');
         capacitacionData = { id: capSnap.id, ...capSnap.data() };
 
-        // ✅ IMPORTANTE: NO cargamos video_visto desde BD para forzar que lo vea de nuevo
-        // Solo lo usamos para mostrar el estado inicial, pero no desbloqueamos
-        // if (asignacionData.video_visto === true) videoVisto = true;
-
         renderizar();
-        setupYouTubeTracking();
+        setupYouTubePlayer();
       } catch (err) {
         console.error(err);
         document.getElementById('loadingState').innerHTML = `
@@ -179,87 +189,125 @@
       document.getElementById('capPilar').textContent = capacitacionData.pilar;
       document.getElementById('capPilar').classList.add(`badge-${capacitacionData.pilar.toLowerCase()}`);
       document.getElementById('capTipo').textContent = capacitacionData.tipo || 'Tradicional';
+    }
 
+    function setupYouTubePlayer() {
       const videoId = capacitacionData.youtube_video_id;
-      if (videoId) {
-        // ✅ Agregamos enablejsapi=1 para poder trackear el progreso
-        const youtubeUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1&playsinline=1`;
-        document.getElementById('youtubePlayer').src = youtubeUrl;
+      if (!videoId) {
+        alert('Video no disponible');
+        return;
       }
 
-      // ✅ El botón SIEMPRE empieza bloqueado, sin importar si ya lo vio antes
-      actualizarUIProgreso(0);
-    }
+      // ✅ Limpiar intervalo anterior si existe
+      if (ytTimer) {
+        clearInterval(ytTimer);
+        ytTimer = null;
+      }
 
-    function setupYouTubeTracking() {
-      // Cargar API de YouTube
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
+      // Reset estado
+      maxPermitido = 0;
+      videoCompletado = false;
+      bloquearEvaluacion();
+      document.getElementById('videoWrapper').innerHTML = '<div id="ytContainer"></div>';
 
-      window.onYouTubeIframeAPIReady = function() {
-        player = new YT.Player('youtubePlayer', {
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-          }
+      const crear = () => {
+        ytPlayer = new YT.Player('ytContainer', {
+          videoId,
+          playerVars: { rel: 0, modestbranding: 1, playsinline: 1, disablekb: 1 },
+          events: { onStateChange: onEstadoVideo }
         });
+        ytTimer = setInterval(vigilarVideo, 500);
       };
+
+      if (window.YT && YT.Player) crear();
+      else ytPendiente = crear;
+
+      // ✅ OPCIÓN A: Si ya lo vio antes, desbloquear automáticamente
+      if (asignacionData.video_visto === true) {
+        videoCompletado = true;
+        desbloquearEvaluacion();
+      }
     }
 
-    function onPlayerReady(event) {
-      console.log('YouTube Player ready');
-      // Iniciar el tracking de progreso cada segundo
-      setInterval(trackProgress, 1000);
+    function vigilarVideo() {
+      if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+
+      const t = ytPlayer.getCurrentTime();
+
+      // No permitir acelerar
+      if (ytPlayer.getPlaybackRate() !== 1) ytPlayer.setPlaybackRate(1);
+
+      // Salto hacia adelante más allá de lo visto → lo devolvemos
+      if (t > maxPermitido + 2) {
+        ytPlayer.seekTo(maxPermitido, true);
+        mostrarAviso('No puedes adelantar el video. Continúa desde donde ibas.');
+        return;
+      }
+
+      // Avance normal
+      if (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING && t > maxPermitido) {
+        maxPermitido = t;
+        actualizarProgresoUI();
+      }
     }
 
-    function onPlayerStateChange(event) {
-      if (event.data === YT.PlayerState.ENDED) {
-        // Video terminó completamente
-        if (!videoVisto) {
-          videoVisto = true;
-          actualizarUIProgreso(100);
+    function onEstadoVideo(e) {
+      if (e.data === YT.PlayerState.ENDED) {
+        const dur = ytPlayer.getDuration();
+        // Solo cuenta si realmente vio hasta el final (tolerancia 3 s)
+        if (maxPermitido >= dur - 3) {
+          videoCompletado = true;
           desbloquearEvaluacion();
           guardarProgreso();
+        } else {
+          ytPlayer.seekTo(maxPermitido, true);
+          mostrarAviso('Debes ver el video completo sin adelantar.');
         }
       }
     }
 
-    function trackProgress() {
-      if (!player || typeof player.getCurrentTime !== 'function') return;
-      
-      const currentTime = player.getCurrentTime();
-      const duration = player.getDuration();
-      
+    function actualizarProgresoUI() {
+      const duration = ytPlayer.getDuration();
       if (duration > 0) {
-        const porcentaje = Math.round((currentTime / duration) * 100);
-        videoProgreso = porcentaje;
-        
-        actualizarUIProgreso(porcentaje);
-        
-        // ✅ Desbloquear al llegar al 95% o más
-        if (porcentaje >= 95 && !videoVisto) {
-          videoVisto = true;
-          desbloquearEvaluacion();
-          guardarProgreso();
-        }
+        const porcentaje = Math.round((maxPermitido / duration) * 100);
+        document.getElementById('progressFill').style.width = porcentaje + '%';
+        document.getElementById('progressText').textContent = `${porcentaje}% completado - Sigue así...`;
       }
     }
 
-    function actualizarUIProgreso(porcentaje) {
-      const progressFill = document.getElementById('progressFill');
-      const progressText = document.getElementById('progressText');
-      
-      progressFill.style.width = porcentaje + '%';
-      
-      if (porcentaje >= 95) {
-        progressText.textContent = `✅ ${porcentaje}% completado - ¡Casi listo!`;
-        progressFill.style.background = 'linear-gradient(90deg, #48bb78 0%, #38a169 100%)';
-      } else if (porcentaje > 0) {
-        progressText.textContent = `▶️ ${porcentaje}% completado - Sigue así...`;
-      } else {
-        progressText.textContent = '0% completado - Mira el video para desbloquear la evaluación';
-      }
+    function mostrarAviso(msg) {
+      const statusBox = document.getElementById('statusBox');
+      const statusText = document.getElementById('statusText');
+      statusBox.className = 'status-box status-pending';
+      statusBox.style.background = '#fee2e2';
+      statusBox.style.borderLeftColor = '#ef4444';
+      statusText.textContent = `🚫 ${msg}`;
+      statusText.style.color = '#991b1b';
+
+      // ✅ Limpiar timeout anterior para evitar acumulación
+      clearTimeout(avisoTimer);
+      avisoTimer = setTimeout(() => {
+        if (!videoCompletado) bloquearEvaluacion();
+      }, 2500);
+    }
+
+    function bloquearEvaluacion() {
+      const btn = document.getElementById('btnEval');
+      const statusBox = document.getElementById('statusBox');
+      const statusText = document.getElementById('statusText');
+      const qrSection = document.getElementById('qrSection');
+
+      btn.disabled = true;
+      btn.className = 'btn-eval btn-locked';
+      btn.innerHTML = '<i class="ti ti-lock"></i><span>Evaluación bloqueada - Completa el video sin adelantar</span>';
+
+      statusBox.className = 'status-box status-pending';
+      statusBox.style.background = '#fef3c7';
+      statusBox.style.borderLeftColor = '#f59e0b';
+      statusText.textContent = 'Debes ver el video completo sin adelantar para desbloquear la evaluación';
+      statusText.style.color = '#92400e';
+
+      qrSection.style.display = 'none';
     }
 
     function desbloquearEvaluacion() {
@@ -273,7 +321,10 @@
       btn.innerHTML = '<i class="ti ti-clipboard-check"></i><span>Ir a la Evaluación</span>';
 
       statusBox.className = 'status-box status-ready';
+      statusBox.style.background = '#d1fae5';
+      statusBox.style.borderLeftColor = '#10b981';
       statusText.textContent = '¡Video completado! Ya puedes hacer la evaluación.';
+      statusText.style.color = '#065f46';
 
       if (capacitacionData.link_evaluacion) {
         qrSection.style.display = 'block';
@@ -281,6 +332,9 @@
         document.getElementById('qrImage').src = 
           `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(capacitacionData.link_evaluacion)}`;
       }
+      
+      document.getElementById('progressText').textContent = '✅ 100% completado - ¡Desbloqueado!';
+      document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #48bb78 0%, #38a169 100%)';
     }
 
     async function guardarProgreso() {
@@ -289,18 +343,17 @@
           video_visto: true,
           video_visto_fecha: firebase.firestore.FieldValue.serverTimestamp(),
           estado: 'Pendiente evaluación',
-          video_progreso: videoProgreso
+          video_progreso: 100
         });
-        console.log('Progreso guardado:', videoProgreso + '%');
+        console.log('Progreso guardado: 100%');
       } catch (err) {
         console.error('Error guardando progreso:', err);
       }
     }
 
     function irAEvaluacion() {
-      // ✅ Doble verificación de seguridad
-      if (!videoVisto || videoProgreso < 95) {
-        alert('Debes ver al menos el 95% del video para acceder a la evaluación.');
+      if (!videoCompletado) {
+        alert('Debes ver el video completo sin adelantar para acceder a la evaluación.');
         return;
       }
       

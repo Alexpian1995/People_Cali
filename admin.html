@@ -116,6 +116,40 @@
       background: #ef4444;
     }
 
+    /* MULTI-SELECT PARA CARGOS */
+    .multi-select-container {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 10px;
+      background: #f7fafc;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .multi-select-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .multi-select-option:hover {
+      background: #edf2f7;
+    }
+    .multi-select-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .selected-count {
+      font-size: 12px;
+      color: #206987;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+
     @media (max-width: 768px) {
       .admin-container { padding: 10px; }
       .header { flex-direction: column; gap: 15px; text-align: center; padding: 15px; }
@@ -238,7 +272,7 @@
               <select id="crudRegion"><option value="">Seleccionar...</option><option value="Cali">Cali</option><option value="Yumbo">Yumbo</option><option value="Tuluá">Tuluá</option><option value="Popayán">Popayán</option></select>
             </div>
             <div class="form-group"><label>Operación</label>
-              <select id="regEmpleadoGrupo"><option value="OL">OL (Operaciones Logística)</option><option value="UC">UC (Última Milla)</option></select>
+              <select id="regEmpleadoGrupo"><option value="OL">OL (Almacén)</option><option value="UC">UC (Transporte)</option></select>
             </div>
             <div class="form-group"><label>Fecha de Ingreso</label><input type="date" id="crudFechaIngreso"></div>
           </div>
@@ -315,8 +349,8 @@
             <label>1. Selecciona Grupo (OL/UC)</label>
             <select id="masivaGrupo" onchange="actualizarPilaresMasivos()">
               <option value="">-- Seleccionar --</option>
-              <option value="OL">OL (Operaciones Logística)</option>
-              <option value="UC">UC (Última Milla)</option>
+              <option value="OL">OL (Almacén)</option>
+              <option value="UC">UC (Transporte)</option>
             </select>
           </div>
           <div class="form-group">
@@ -326,7 +360,11 @@
             </select>
           </div>
           <div class="form-group">
-            <label>3. Selecciona Cargo</label>
+            <label>3. Selecciona Cargos (Múltiples)</label>
+            <div id="masivaCargosMultiSelect" class="multi-select-container" style="display: none;">
+              <div style="font-size: 12px; color: #718096; margin-bottom: 10px;">Selecciona uno o varios cargos:</div>
+              <div id="masivaCargosCheckboxes"></div>
+            </div>
             <select id="masivaCargo" disabled>
               <option value="">-- Primero selecciona Pilar --</option>
             </select>
@@ -442,12 +480,57 @@
       </div>
     </div>
 
-    <!-- REPORTES -->
+    <!-- REPORTES CON FILTROS -->
     <div id="reportes" class="section-pane">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon"><i class="ti ti-filter"></i></div>
+          <div>
+            <div class="card-title">Filtros de Reportes</div>
+            <div style="color: #718096; font-size: 13px;">Filtra por estado de las capacitaciones</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Estado</label>
+            <select id="reporteFilterEstado" onchange="renderizarReportes()">
+              <option value="">Todos los estados</option>
+              <option value="pendientes">Pendientes</option>
+              <option value="vencidas">Vencidas</option>
+              <option value="cumplidas">Cumplidas</option>
+              <option value="todas">Todas</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Pilar</label>
+            <select id="reporteFilterPilar" onchange="renderizarReportes()">
+              <option value="">Todos los pilares</option>
+              <option value="Safety">Safety</option>
+              <option value="Management">Management</option>
+              <option value="People">People</option>
+              <option value="Delivery">Delivery</option>
+              <option value="Warehouse">Warehouse</option>
+              <option value="Fleet">Fleet</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>CD / Región</label>
+            <select id="reporteFilterCD" onchange="renderizarReportes()">
+              <option value="">Todos los CD</option>
+              <option value="Cali">Cali</option>
+              <option value="Yumbo">Yumbo</option>
+              <option value="Tuluá">Tuluá</option>
+              <option value="Popayán">Popayán</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
       <div class="card">
         <div class="card-header"><div class="card-icon"><i class="ti ti-chart-pie"></i></div><div class="card-title">Avance por Pilares</div></div>
         <div style="height: 400px;"><canvas id="valleChart"></canvas></div>
       </div>
+      
       <div class="card">
         <div class="card-header">
           <div class="card-icon"><i class="ti ti-alert-triangle"></i></div>
@@ -575,7 +658,7 @@
         </div>
         <div class="form-group"><label>Operación</label>
           <select id="editEmpGrupo">
-            <option value="OL">OL (Operaciones Logística)</option><option value="UC">UC (Última Milla)</option>
+            <option value="OL">OL (Almacén)</option><option value="UC">UC (Transporte)</option>
           </select>
         </div>
         <div class="form-group"><label>Fecha de Ingreso</label><input type="date" id="editEmpFechaIngreso"></div>
@@ -714,7 +797,7 @@
       const cargo = document.getElementById('benCargo').value.trim();
       const region = document.getElementById('benRegion').value.trim();
       const concepto = document.getElementById('benConcepto').value.trim();
-      const valor = Number(document.getElementById('benValor').value.replace(/[^\d]/g, '')) || 0; // ✅ Corrección de formato
+      const valor = Number(document.getElementById('benValor').value.replace(/[^\d]/g, '')) || 0;
       const indicador = document.getElementById('benIndicador').value.trim();
 
       if (!cargo || !region || !concepto || !valor) return alert('Completa todos los campos');
@@ -1092,10 +1175,7 @@
     function actualizarPilaresMasivos() {
       const grupo = document.getElementById('masivaGrupo').value;
       const selectPilar = document.getElementById('masivaPilar');
-      const selectCargo = document.getElementById('masivaCargo');
       selectPilar.innerHTML = '<option value="">-- Seleccionar Pilar --</option>';
-      selectCargo.innerHTML = '<option value="">-- Primero selecciona Pilar --</option>';
-      selectCargo.disabled = true;
       if (!grupo) { selectPilar.disabled = true; return; }
       selectPilar.disabled = false;
       const pilaresUnicos = [...new Set(valleData.capacitaciones.map(c => c.pilar))];
@@ -1105,29 +1185,52 @@
         option.textContent = pilar;
         selectPilar.appendChild(option);
       });
+      // Resetear cargos
+      document.getElementById('masivaCargo').innerHTML = '<option value="">-- Primero selecciona Pilar --</option>';
+      document.getElementById('masivaCargo').disabled = true;
+      document.getElementById('masivaCargosMultiSelect').style.display = 'none';
     }
 
     function actualizarCargosMasivos() {
       const grupo = document.getElementById('masivaGrupo').value;
       const pilar = document.getElementById('masivaPilar').value;
-      const selectCargo = document.getElementById('masivaCargo');
-      selectCargo.innerHTML = '<option value="">-- Seleccionar Cargo --</option>';
-      if (!grupo || !pilar) { selectCargo.disabled = true; return; }
-      selectCargo.disabled = false;
-      const cargosUnicos = [...new Set(valleData.empleados.filter(emp => emp.grupo === grupo).map(emp => emp.cargo).filter(c => c))];
-      cargosUnicos.forEach(cargo => {
-        const option = document.createElement('option');
-        option.value = cargo;
-        option.textContent = cargo;
-        selectCargo.appendChild(option);
-      });
+      
+      if (!grupo || !pilar) { 
+        document.getElementById('masivaCargo').disabled = true; 
+        document.getElementById('masivaCargosMultiSelect').style.display = 'none';
+        return; 
+      }
+      
+      // Mostrar multi-select
+      document.getElementById('masivaCargo').style.display = 'none';
+      const multiSelectContainer = document.getElementById('masivaCargosMultiSelect');
+      const checkboxesContainer = document.getElementById('masivaCargosCheckboxes');
+      multiSelectContainer.style.display = 'block';
+      
+      // Obtener cargos únicos del grupo seleccionado
+      const cargosUnicos = [...new Set(valleData.empleados
+        .filter(emp => emp.grupo === grupo)
+        .map(emp => emp.cargo)
+        .filter(c => c)
+      )];
+      
+      checkboxesContainer.innerHTML = cargosUnicos.map(cargo => `
+        <label class="multi-select-option">
+          <input type="checkbox" value="${cargo}" class="cargo-checkbox" onchange="actualizarPreviewMasivo()">
+          <span>${cargo}</span>
+        </label>
+      `).join('');
+      
       cargarCapacitacionesEnSelect();
     }
 
+    function getCargosSeleccionados() {
+      const checkboxes = document.querySelectorAll('.cargo-checkbox:checked');
+      return Array.from(checkboxes).map(cb => cb.value);
+    }
+
     function cargarCapacitacionesEnSelect() {
-      const grupo = document.getElementById('masivaGrupo').value;
       const pilar = document.getElementById('masivaPilar').value;
-      const cargo = document.getElementById('masivaCargo').value;
       const select = document.getElementById('masivaCapacitacion');
       select.innerHTML = '<option value="">-- Seleccionar capacitación --</option>';
       let capacitacionesFiltradas = valleData.capacitaciones;
@@ -1138,39 +1241,57 @@
         option.textContent = `${cap.nombre} (${cap.pilar})`;
         select.appendChild(option);
       });
-      if (grupo && pilar && cargo) mostrarPreviewMasivo(grupo, pilar, cargo);
+      actualizarPreviewMasivo();
     }
 
-    function mostrarPreviewMasivo(grupo, pilar, cargo) {
-      const empleadosFiltrados = valleData.empleados.filter(emp => emp.grupo === grupo && emp.cargo === cargo);
+    function actualizarPreviewMasivo() {
+      const grupo = document.getElementById('masivaGrupo').value;
+      const cargosSeleccionados = getCargosSeleccionados();
+      
+      if (!grupo || cargosSeleccionados.length === 0) {
+        document.getElementById('previewMasiva').style.display = 'none';
+        return;
+      }
+      
+      const empleadosFiltrados = valleData.empleados.filter(emp => 
+        emp.grupo === grupo && cargosSeleccionados.includes(emp.cargo)
+      );
+      
       const preview = document.getElementById('previewMasiva');
       const content = document.getElementById('previewContent');
       preview.style.display = 'block';
       content.innerHTML = `
         <div style="margin-top: 10px;">
-          <strong>Grupo:</strong> ${grupo}<br><strong>Pilar:</strong> ${pilar}<br><strong>Cargo:</strong> ${cargo}<br>
+          <strong>Grupo:</strong> ${grupo}<br>
+          <strong>Cargos seleccionados:</strong> ${cargosSeleccionados.join(', ')}<br>
           <strong>Empleados que recibirán la asignación:</strong> ${empleadosFiltrados.length}
         </div>
         ${empleadosFiltrados.length > 0 ? `
           <div style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
-            ${empleadosFiltrados.map(emp => `<div style="padding: 5px; background: white; border-radius: 5px; margin: 3px 0;">${emp.nombre} - ${emp.cedula}</div>`).join('')}
+            ${empleadosFiltrados.map(emp => `<div style="padding: 5px; background: white; border-radius: 5px; margin: 3px 0;">${emp.nombre} - ${emp.cedula} - ${emp.cargo}</div>`).join('')}
           </div>` : '<div style="color: #e53e3e; margin-top: 10px;">No hay empleados que coincidan con estos filtros</div>'}`;
     }
 
-    // ✅ ASIGNACIÓN MASIVA SEGURA
+    // ✅ ASIGNACIÓN MASIVA CON MÚLTIPLES CARGOS
     async function confirmarAsignacionMasiva() {
       const grupo = document.getElementById('masivaGrupo').value;
       const pilar = document.getElementById('masivaPilar').value;
-      const cargo = document.getElementById('masivaCargo').value;
+      const cargosSeleccionados = getCargosSeleccionados();
       const capId = document.getElementById('masivaCapacitacion').value;
       const fecha = document.getElementById('masivaFecha').value;
       const notaMinima = document.getElementById('masivaNota').value;
       
-      if (!grupo || !pilar || !cargo || !capId || !fecha) return alert('Por favor completa todos los campos');
+      if (!grupo || !pilar || cargosSeleccionados.length === 0 || !capId || !fecha) {
+        return alert('Por favor completa todos los campos y selecciona al menos un cargo');
+      }
+      
       const cap = valleData.capacitaciones.find(c => c.id === capId);
       if (!cap) return alert('Capacitación no encontrada');
       
-      const empleadosFiltrados = valleData.empleados.filter(emp => emp.grupo === grupo && emp.cargo === cargo);
+      const empleadosFiltrados = valleData.empleados.filter(emp => 
+        emp.grupo === grupo && cargosSeleccionados.includes(emp.cargo)
+      );
+      
       if (empleadosFiltrados.length === 0) return alert('No hay empleados que coincidan con los filtros seleccionados');
       if (!confirm(`¿Asignar "${cap.nombre}" a ${empleadosFiltrados.length} empleados?`)) return;
       
@@ -1191,14 +1312,15 @@
         await batch.commit();
         
         const appLink = window.location.origin + '/index.html';
-        alert(`✅ Asignación masiva exitosa!\n\n📚 ${cap.nombre}\n👥 Asignados: ${empleadosFiltrados.length} empleados\n📅 Fecha límite: ${fecha}\n⭐ Nota mínima: ${notaMinima}%\n\n📲 Link de acceso a la app: ${appLink}\n\n💡 Los empleados deben iniciar sesión con su número de cédula.`);
+        alert(`✅ Asignación masiva exitosa!\n\n📚 ${cap.nombre}\n👥 Asignados: ${empleadosFiltrados.length} empleados\n Fecha límite: ${fecha}\n⭐ Nota mínima: ${notaMinima}%\n\n📲 Link de acceso a la app: ${appLink}\n\n💡 Los empleados deben iniciar sesión con su número de cédula.`);
         
         document.getElementById('masivaGrupo').value = '';
         document.getElementById('masivaPilar').value = '';
-        document.getElementById('masivaCargo').value = '';
         document.getElementById('masivaCapacitacion').value = '';
         document.getElementById('masivaFecha').value = '';
         document.getElementById('previewMasiva').style.display = 'none';
+        document.getElementById('masivaCargosMultiSelect').style.display = 'none';
+        document.getElementById('masivaCargo').style.display = 'block';
         await cargarDatos();
       } catch (error) {
         alert('❌ Error: ' + error.message);
@@ -1273,7 +1395,7 @@
                 <div><strong style="color: #718096; font-size: 12px;">FECHA LÍMITE:</strong><div style="font-weight: 700;">${fecha}</div></div>
               </div>
               <div style="margin-bottom: 20px;">
-                <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;">🔗 LINK DE ACCESO A LA APP:</strong>
+                <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 8px;"> LINK DE ACCESO A LA APP:</strong>
                 <div style="background: #edf2f7; padding: 12px; border-radius: 8px; font-size: 12px; word-break: break-all; font-family: monospace; border: 1px solid #cbd5e0;">${appLink}</div>
               </div>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -1350,7 +1472,6 @@
         const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
         if (!emp || !cap) return '';
         
-        // ✅ Link seguro a la app principal
         const appLink = window.location.origin + '/index.html';
         
         let estadoClass = 'badge-warning';
@@ -1561,22 +1682,51 @@
       document.getElementById('modalDiaCapacitaciones').classList.remove('active');
     }
 
-    // ==================== REPORTES ====================
+    // ==================== REPORTES CON FILTROS ====================
     function renderizarReportes() {
       const ctx = document.getElementById('valleChart').getContext('2d');
       if (window.valleChartInstance) window.valleChartInstance.destroy();
+      
       const hoyStr = new Date().toISOString().split('T')[0];
-      const empleadosConAsignaciones = valleData.empleados.filter(emp => valleData.asignaciones.some(a => a.empleado_id === emp.id));
+      const filterEstado = document.getElementById('reporteFilterEstado').value;
+      const filterPilar = document.getElementById('reporteFilterPilar').value;
+      const filterCD = document.getElementById('reporteFilterCD').value;
+      
+      // Filtrar asignaciones según los filtros seleccionados
+      let asignacionesFiltradas = valleData.asignaciones.filter(asig => {
+        const emp = valleData.empleados.find(e => e.id === asig.empleado_id);
+        const cap = valleData.capacitaciones.find(c => c.id === asig.capacitacion_id);
+        if (!emp || !cap) return false;
+        
+        // Filtro por CD
+        if (filterCD && emp.region !== filterCD) return false;
+        
+        // Filtro por Pilar
+        if (filterPilar && cap.pilar !== filterPilar) return false;
+        
+        // Filtro por Estado
+        if (filterEstado === 'pendientes' && (asig.estado === 'Cumplió' || asig.estado === 'No cumplió')) return false;
+        if (filterEstado === 'vencidas' && (asig.estado === 'Cumplió' || asig.estado === 'No cumplió' || asig.fecha_limite >= hoyStr)) return false;
+        if (filterEstado === 'cumplidas' && asig.estado !== 'Cumplió') return false;
+        
+        return true;
+      });
+      
+      const empleadosConAsignaciones = [...new Set(asignacionesFiltradas.map(a => a.empleado_id))].map(id => 
+        valleData.empleados.find(e => e.id === id)
+      ).filter(e => e);
+      
       const pilares = ['Safety', 'Management', 'People', 'Delivery', 'Warehouse', 'Fleet'];
       const data = pilares.map(pilar => {
         const capsPilar = valleData.capacitaciones.filter(c => c.pilar === pilar);
-        const asigsPilar = valleData.asignaciones.filter(a => capsPilar.some(c => c.id === a.capacitacion_id));
+        const asigsPilar = asignacionesFiltradas.filter(a => capsPilar.some(c => c.id === a.capacitacion_id));
         return {
           cumplidas: asigsPilar.filter(a => a.estado === 'Cumplió').length,
           pendientes: asigsPilar.filter(a => a.estado === 'Programado' || a.estado === 'Pendiente evaluación').length,
           vencidas: asigsPilar.filter(a => a.estado !== 'Cumplió' && a.estado !== 'No cumplió' && a.fecha_limite && a.fecha_limite < hoyStr).length
         };
       });
+      
       window.valleChartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -1589,9 +1739,10 @@
         },
         options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
       });
+      
       const tbody = document.getElementById('valle-tabla-top-pendientes');
       const reporteEmpleados = empleadosConAsignaciones.map(emp => {
-        const asigs = valleData.asignaciones.filter(a => a.empleado_id === emp.id);
+        const asigs = asignacionesFiltradas.filter(a => a.empleado_id === emp.id);
         const total = asigs.length;
         const cumplidas = asigs.filter(a => a.estado === 'Cumplió').length;
         const vencidas = asigs.filter(a => a.estado !== 'Cumplió' && a.estado !== 'No cumplió' && a.fecha_limite && a.fecha_limite < hoyStr).length;

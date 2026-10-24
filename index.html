@@ -3,15 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal People - Inicio</title>
+  <title>Portal People - Benefix</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <!-- Librería para generar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #eef2f5; min-height: 100vh; color: #1c2430; }
+    body { 
+      font-family: 'Segoe UI', system-ui, sans-serif; 
+      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); 
+      min-height: 100vh; 
+      color: #1c2430; 
+    }
 
     .app-shell {
       width: 100%;
-      max-width: 100%;
+      max-width: 1400px;
       margin: 0 auto;
       background: #f0f4f6;
       min-height: 100vh;
@@ -22,9 +29,8 @@
 
     @media (min-width: 768px) {
       .app-shell {
-        max-width: 1024px;
         margin: 20px auto;
-        border-radius: 14px;
+        border-radius: 16px;
         border: 1.5px solid #cdd5db;
         box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         min-height: calc(100vh - 40px);
@@ -32,335 +38,248 @@
       }
     }
 
-    .header { background: #206987; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 62px; border-bottom: 3px solid #3cbcae; }
-    .logo-img { height: 38px; width: auto; object-fit: contain; display: block; }
-    .header-badge { background: #ffc404; color: #1c2430; font-size: 9.5px; font-weight: 700; padding: 4px 9px; border-radius: 20px; white-space: nowrap; }
-    .notif-btn { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .header { 
+      background: rgba(255,255,255,0.95); 
+      backdrop-filter: blur(10px);
+      padding: 15px 20px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      border-bottom: 3px solid #3cbcae;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .logo-img { height: 45px; width: auto; object-fit: contain; display: block; }
+    .header-title { font-size: 20px; font-weight: 700; color: #2d3748; margin-left: 12px; }
+    .header-subtitle { font-size: 11px; color: #718096; font-weight: 500; }
+    .header-badge { 
+      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); 
+      color: white; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 20px; white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(32,105,135,0.3);
+    }
+    .notif-btn { 
+      width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #ffc404 0%, #fbbf24 100%); 
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255,196,4,0.4); transition: transform 0.2s;
+    }
+    .notif-btn:hover { transform: scale(1.1); }
 
-    .tab-bar { display: flex; background: #fff; border-bottom: 0.5px solid #dde3e7; }
-    .tab { flex: 1; padding: 11px 6px 9px; text-align: center; font-size: 9.5px; font-weight: 500; color: #7a8f99; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all .2s; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .tab.active { color: #206987; border-bottom-color: #206987; }
+    .tab-bar { 
+      display: flex; background: white; padding: 10px; gap: 8px; border-bottom: 2px solid #e2e8f0; overflow-x: auto;
+    }
+    .tab { 
+      flex: 1; min-width: 100px; padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #718096; 
+      cursor: pointer; border-radius: 12px; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      background: #f7fafc; border: 2px solid transparent;
+    }
+    .tab i { font-size: 20px; }
+    .tab.active { 
+      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; box-shadow: 0 4px 12px rgba(32,105,135,0.3); transform: translateY(-2px);
+    }
+    .tab:hover:not(.active) { background: #edf2f7; border-color: #206987; color: #206987; }
 
-    .screen { display: none; padding: 14px 14px 20px; flex: 1; pointer-events: none; }
+    .screen { display: none; padding: 20px; flex: 1; pointer-events: none; }
     .screen.active { display: flex; flex-direction: column; pointer-events: auto; }
 
-    .section-title { font-size: 10px; font-weight: 700; color: #206987; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; margin-top: 14px; }
-    .card { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 0.5px solid #dde3e7; }
-    .card-header { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
-    
-    .card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-    .card-icon.teal { background: #e1f5ee; }
-    .card-icon.yellow { background: #fff8e1; }
-    .card-icon i { font-size: 20px; }
+    .section-title { 
+      font-size: 14px; font-weight: 700; color: #206987; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title i { font-size: 20px; }
+
+    .card { 
+      background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+    .card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .card-icon.teal { background: linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); }
+    .card-icon.yellow { background: linear-gradient(135deg, #fff8e1 0%, #feebc8 100%); }
+    .card-icon i { font-size: 24px; }
     .card-icon.teal i { color: #206987; }
     .card-icon.yellow i { color: #c89b00; }
-    .card-title { font-size: 13px; font-weight: 600; color: #1a3540; }
-    .card-sub { font-size: 10px; color: #7a8f99; }
+    .card-title { font-size: 16px; font-weight: 700; color: #2d3748; }
+    .card-sub { font-size: 12px; color: #718096; margin-top: 2px; }
 
-    .benefit-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid #eef1f3; }
-    .benefit-row:last-child { border-bottom: none; }
-    .benefit-label { font-size: 11px; color: #3a5a68; }
-    .benefit-amount { font-size: 12px; font-weight: 700; color: #206987; }
+    .profile-card { 
+      background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; flex-wrap: wrap;
+    }
+    .avatar { 
+      width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); 
+      display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: white; flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(32,105,135,0.3);
+    }
+    .profile-info { flex: 1; min-width: 200px; }
+    .profile-info .name { font-size: 18px; font-weight: 700; color: #2d3748; margin-bottom: 4px; }
+    .profile-info .cargo { font-size: 13px; color: #718096; margin-bottom: 2px; }
+    .profile-info .fecha-ingreso { font-size: 12px; color: #206987; font-weight: 600; }
+    .profile-info .dias-activos { font-size: 11px; color: #48bb78; font-weight: 700; margin-top: 2px; }
+    .btn-logout { 
+      background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); color: white; border: none; padding: 8px 16px; border-radius: 8px; 
+      font-size: 12px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 8px rgba(245,101,101,0.3); transition: transform 0.2s;
+    }
+    .btn-logout:hover { transform: translateY(-2px); }
 
-    .tag { font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
-    .tag.green { background: #e1f5ee; color: #0f6e56; }
-    .tag.yellow { background: #fef9e7; color: #8a6e00; }
-    .tag.blue { background: #e1f0f5; color: #206987; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .stat-card { padding: 20px; border-radius: 14px; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .stat-card h3 { font-size: 12px; opacity: 0.9; margin-bottom: 8px; font-weight: 600; }
+    .stat-card .value { font-size: 32px; font-weight: 700; }
+    .stat-card.teal { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); }
+    .stat-card.green { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); }
+    .stat-card.orange { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); }
+    .stat-card.blue { background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); }
 
-    .alert-card { background: #fff8e6; border: 0.5px solid #ffc404; border-radius: 12px; padding: 10px 12px; display: flex; gap: 9px; align-items: flex-start; margin-bottom: 8px; }
-    .alert-card i { color: #c89b00; font-size: 18px; margin-top: 1px; }
-    .alert-text { font-size: 10.5px; color: #5a4200; line-height: 1.45; }
-    .alert-time { font-size: 9px; color: #a08030; margin-top: 2px; }
+    .avance-global { 
+      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(32,105,135,0.3);
+    }
+    .avance-label { font-size: 13px; color: #a8d8e0; font-weight: 600; margin-bottom: 8px; }
+    .avance-pct { font-size: 42px; font-weight: 700; color: white; margin-bottom: 8px; }
+    .avance-sub { font-size: 13px; color: #a8d8e0; margin-bottom: 15px; }
+    .avance-bar { height: 12px; background: rgba(255,255,255,0.2); border-radius: 8px; overflow: hidden; }
+    .avance-fill { 
+      height: 100%; background: linear-gradient(90deg, #ffc404 0%, #fbbf24 100%); border-radius: 8px; width: 0%; transition: width 0.5s ease;
+      box-shadow: 0 2px 8px rgba(255,196,4,0.4);
+    }
 
-    /* 🎥 NUEVOS ESTILOS PARA CAPACITACIONES CON VIDEO EMBEBIDO */
-    .capacitacion-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border: 1px solid #dde3e7;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-    
-    .cap-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    
-    .cap-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 22px;
-    }
-    
-    .cap-icon.safety { background: #fee2e2; color: #dc2626; }
-    .cap-icon.management { background: #dbeafe; color: #2563eb; }
-    .cap-icon.people { background: #f3e8ff; color: #9333ea; }
-    .cap-icon.delivery { background: #ffedd5; color: #ea580c; }
-    .cap-icon.warehouse { background: #dcfce7; color: #16a34a; }
-    .cap-icon.fleet { background: #f3f4f6; color: #4b5563; }
-    
-    .cap-info h3 {
-      font-size: 13px;
-      font-weight: 700;
-      color: #1a3540;
-      margin-bottom: 4px;
-    }
-    
-    .cap-meta {
-      font-size: 10px;
-      color: #7a8f99;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    
-    .cap-video-container {
-      position: relative;
-      padding-bottom: 56.25%; /* 16:9 */
-      height: 0;
-      overflow: hidden;
-      background: #000;
-      border-radius: 10px;
-      margin-bottom: 12px;
-    }
-    
-    .cap-video-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    
-    .cap-progress {
-      background: #eef1f3;
-      height: 6px;
-      border-radius: 3px;
-      overflow: hidden;
-      margin: 10px 0;
-    }
-    
-    .cap-progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #206987, #3cbcae);
-      border-radius: 3px;
-      transition: width 0.3s ease;
-    }
-    
-    .cap-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-    
     .btn-watch {
-      flex: 1;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: none;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s;
+      padding: 14px 20px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
-    
-    .btn-watch.primary {
-      background: linear-gradient(135deg, #206987, #3cbcae);
-      color: white;
-    }
-    
-    .btn-watch.secondary {
-      background: #e1f5ee;
-      color: #0f6e56;
-    }
-    
-    .btn-watch:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
+    .btn-watch.primary { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; }
+    .btn-watch.primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(32,105,135,0.4); }
+    .btn-watch.secondary { background: linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); color: #0f6e56; }
+    .btn-watch:disabled { opacity: 0.5; cursor: not-allowed; transform: none; background: #e2e8f0; color: #a0aec0; }
     .btn-whatsapp {
-      background: #25D366;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: none;
-      font-size: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; padding: 12px 16px; border-radius: 12px; border: none;
+      font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 4px 12px rgba(37,211,102,0.3); transition: transform 0.2s;
     }
+    .btn-whatsapp:hover { transform: translateY(-2px); }
 
-    .avance-global { background: #206987; border-radius: 14px; padding: 14px; margin-bottom: 10px; border-bottom: 4px solid #3cbcae; }
-    .avance-label { font-size: 10px; color: #a8d8e0; font-weight: 600; margin-bottom: 2px; }
-    .avance-pct { font-size: 28px; font-weight: 700; color: #fff; }
-    .avance-sub { font-size: 10px; color: #a8d8e0; margin-top: 2px; }
-    .avance-bar { height: 8px; background: rgba(255,255,255,0.18); border-radius: 6px; overflow: hidden; margin-top: 10px; }
-    .avance-fill { height: 100%; background: #ffc404; border-radius: 6px; width: 0%; transition: width 0.5s ease; }
+    .capacitacion-card {
+      background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .capacitacion-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .cap-header { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
+    .cap-icon {
+      width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 26px;
+    }
+    .cap-icon.safety { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #dc2626; }
+    .cap-icon.management { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #2563eb; }
+    .cap-icon.people { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); color: #9333ea; }
+    .cap-icon.delivery { background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%); color: #ea580c; }
+    .cap-icon.warehouse { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #16a34a; }
+    .cap-icon.fleet { background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); color: #4b5563; }
+    .cap-info h3 { font-size: 16px; font-weight: 700; color: #2d3748; margin-bottom: 6px; }
+    .cap-meta { font-size: 12px; color: #718096; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .tag { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .tag.blue { background: #e1f0f5; color: #206987; }
+    .tag.yellow { background: #fef9e7; color: #8a6e00; }
+    .tag.green { background: #e1f5ee; color: #0f6e56; }
+    .tag.red { background: #fee2e2; color: #991b1b; }
+    
+    .cap-progress { background: #e2e8f0; height: 8px; border-radius: 6px; overflow: hidden; margin: 15px 0; }
+    .cap-progress-bar {
+      height: 100%; background: linear-gradient(90deg, #206987 0%, #3cbcae 100%); border-radius: 6px; transition: width 0.3s ease;
+    }
+    .cap-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
 
-    .profile-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff; margin-bottom: 10px; border-radius: 14px; border: 0.5px solid #dde3e7; }
-    .avatar { width: 42px; height: 42px; border-radius: 50%; background: #206987; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; flex-shrink: 0; overflow: hidden; }
-    .profile-info .name { font-size: 13px; font-weight: 600; color: #1a3540; }
-    .profile-info .cargo { font-size: 10.5px; color: #7a8f99; }
-    .btn-logout { background: none; border: none; color: #a32d2d; font-size: 11px; cursor: pointer; font-weight: 600; margin-top: 5px; }
+    .benefit-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
+    .benefit-row:last-child { border-bottom: none; }
+    .benefit-label { font-size: 13px; color: #4a5568; font-weight: 600; display: flex; align-items: center; }
+    .benefit-amount { font-size: 18px; font-weight: 700; color: #206987; }
 
-    .tag-skill { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 10.5px; font-weight: 600; }
-    .tag-tecnica { background: #e1f5ee; color: #0f6e56; border: 1px solid #3cbcae; }
-    .tag-blanda { background: #fff8e1; color: #8a6e00; border: 1px solid #ffc404; }
+    .alert-card { 
+      background: linear-gradient(135deg, #fff8e6 0%, #feebc8 100%); border: 1px solid #ffc404; border-radius: 14px; padding: 15px; 
+      display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(255,196,4,0.2);
+    }
+    .alert-card i { color: #c89b00; font-size: 22px; margin-top: 2px; }
+    .alert-text { font-size: 13px; color: #744210; line-height: 1.5; font-weight: 600; }
+    .alert-time { font-size: 11px; color: #92400e; margin-top: 4px; display: flex; align-items: center; }
+
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+      z-index: 10000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: white; border-radius: 20px; width: 100%; max-width: 900px; max-height: 90vh;
+      overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      padding: 20px 25px; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    }
+    .modal-header h3 { font-size: 18px; color: #2d3748; font-weight: 700; }
+    .modal-close {
+      background: none; border: none; font-size: 28px; cursor: pointer; color: #718096; width: 40px; height: 40px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .modal-close:hover { background: #e2e8f0; color: #2d3748; }
+    .modal-body { padding: 25px; overflow-y: auto; }
+    .video-wrapper {
+      position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 12px;
+      overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .video-wrapper iframe,
+    .video-wrapper div { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+    .padrino-header {
+      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; padding: 25px;
+      border-radius: 16px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(32,105,135,0.3);
+    }
+    .padrino-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
+    .padrino-header p { font-size: 13px; opacity: 0.9; }
+
+    .tag-skill { display: inline-block; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin: 3px; }
+    .tag-tecnica { background: linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); color: #0f6e56; }
+    .tag-blanda { background: linear-gradient(135deg, #fff8e1 0%, #feebc8 100%); color: #744210; }
 
     .hito-progreso-wrap {
-      padding: 22px 18px;
-      border-radius: 18px;
-      background: linear-gradient(165deg, #ffffff 0%, #f7fafc 100%);
-      border: 0.5px solid #dde3e7;
-      box-shadow: 0 6px 22px rgba(32, 105, 135, 0.05);
+      padding: 25px; border-radius: 16px; background: linear-gradient(165deg, #ffffff 0%, #f7fafc 100%);
+      border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(32,105,135,0.08); margin-bottom: 20px;
     }
-    .hito-fecha-contrato-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding-bottom: 16px;
-      border-bottom: 1px dashed #dde3e7;
-    }
+    .hito-fecha-contrato-row { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px dashed #e2e8f0; }
     .hito-fecha-icon {
-      width: 38px; height: 38px; border-radius: 11px;
-      background: #e1f0f5; color: #206987;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      width: 45px; height: 45px; border-radius: 12px; background: linear-gradient(135deg, #e1f0f5 0%, #bee3f8 100%); 
+      color: #206987; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .hito-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
-    }
+    .hito-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
     .hito-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.025);
-      transition: transform 0.15s ease;
+      background: white; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; border: 2px solid #e2e8f0;
     }
-    .hito-card:hover { transform: translateY(-2px); }
-    .hito-card-head { display: flex; align-items: center; gap: 8px; }
-    .hito-card-icon {
-      width: 30px; height: 30px; border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; flex-shrink: 0;
-    }
-    .hito-card-label { font-size: 10.5px; font-weight: 700; color: #1c2430; line-height: 1.2; }
-    .hito-card-score { font-size: 19px; font-weight: 800; }
-    .hito-card-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 9.5px; font-weight: 700; padding: 3px 9px;
-      border-radius: 20px; width: fit-content;
-    }
-    .hito-card-meta { font-size: 8.5px; color: #7a8f99; line-height: 1.4; margin-top: 2px; }
+    .hito-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+    .hito-card-head { display: flex; align-items: center; gap: 10px; }
+    .hito-card-icon { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .hito-card-label { font-size: 12px; font-weight: 700; color: #2d3748; }
+    .hito-card-score { font-size: 24px; font-weight: 800; }
+    .hito-card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; width: fit-content; }
+    .hito-card-meta { font-size: 10px; color: #718096; line-height: 1.4; }
 
-    /* Modal para video */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.9);
-      z-index: 10000;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+    .footer { text-align: center; padding: 30px 20px; margin-top: auto; background: white; border-top: 2px solid #e2e8f0; }
+    .footer div { font-size: 12px; font-weight: 600; color: #718096; letter-spacing: 0.03em; }
+    .footer .dev { font-size: 11px; font-weight: 700; color: #206987; letter-spacing: 0.05em; margin-top: 5px; text-transform: uppercase; }
     
-    .modal-overlay.active {
-      display: flex;
-    }
-    
-    .modal-content {
-      background: #fff;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 800px;
-      max-height: 90vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .modal-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #e2e8f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .modal-header h3 {
-      font-size: 15px;
-      color: #1a3540;
-    }
-    
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #718096;
-    }
-    
-    .modal-body {
-      padding: 20px;
-      overflow-y: auto;
-    }
-    
-    .video-wrapper {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      background: #000;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    
-    .video-wrapper iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
 <div class="app-shell">
-  
   <div class="header">
-    <img src="logo.png" alt="Logística Conectamos Más" class="logo-img">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <div id="headerRegion" class="header-badge">---</div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <img src="logo.png" alt="Logística Conectamos Más" class="logo-img">
+      <div>
+        <div class="header-title">Benefix</div>
+        <div class="header-subtitle">Cali · Yumbo · Tuluá · Popayán — Operaciones OL y UC</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div id="headerRegion" class="header-badge">CD ---</div>
       <div class="notif-btn" onclick="showTab('notif')">
-        <i class="ti ti-bell" style="font-size:17px;color:#ffc404"></i>
+        <i class="ti ti-bell" style="font-size:18px;color:white"></i>
       </div>
     </div>
   </div>
@@ -374,138 +293,129 @@
   </div>
 
   <div class="screen active" id="screen-home">
-    <div class="profile-row" style="margin-top:10px;">
+    <div class="profile-card">
       <div id="userAvatar" class="avatar">--</div>
       <div class="profile-info">
         <div id="userName" class="name">Cargando...</div>
         <div id="userCargo" class="cargo">Por favor espera</div>
-        <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+        <div id="userFechaIngreso" class="fecha-ingreso">Fecha de ingreso: ---</div>
+        <div id="userDiasActivos" class="dias-activos">⏱️ 0 días activos</div>
       </div>
-      <span class="tag green" style="margin-left:auto">✓ Al día</span>
+      <button class="btn-logout" onclick="logout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </div>
 
-    <div class="section-title">Resumen de capacitación</div>
+    <div class="section-title"><i class="ti ti-chart-bar"></i> Resumen de Capacitación</div>
+    <div class="stats-grid">
+      <div class="stat-card teal"><h3>Total Asignadas</h3><div class="value" id="statTotal">0</div></div>
+      <div class="stat-card green"><h3>Completadas</h3><div class="value" id="statCompletadas">0</div></div>
+      <div class="stat-card orange"><h3>Pendientes</h3><div class="value" id="statPendientes">0</div></div>
+      <div class="stat-card blue"><h3>% Progreso</h3><div class="value" id="statProgreso">0%</div></div>
+    </div>
     <div class="avance-global">
       <div class="avance-label">Avance del Cronograma Actual</div>
       <div id="homeAvancePct" class="avance-pct">0%</div>
       <div id="homeAvanceSub" class="avance-sub">Calculando tareas...</div>
       <div class="avance-bar"><div id="homeAvanceBar" class="avance-fill"></div></div>
     </div>
-
-    <div class="section-title">Accesos rápidos</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div class="card" style="cursor:pointer;padding:12px;" onclick="showTab('beneficios')">
-        <i class="ti ti-gift" style="font-size:22px;color:#ffc404;display:block;margin-bottom:5px;"></i>
-        <div style="font-size:11px;font-weight:600;color:#1a3540;">Mis Beneficios</div>
-      </div>
-      <div class="card" style="cursor:pointer;padding:12px;" onclick="showTab('capacitaciones')">
-        <i class="ti ti-school" style="font-size:22px;color:#206987;display:block;margin-bottom:5px;"></i>
-        <div style="font-size:11px;font-weight:600;color:#1a3540;">Capacitaciones</div>
-      </div>
-    </div>
   </div>
 
   <div class="screen" id="screen-beneficios">
-    <div class="section-title" style="margin-top:10px;">Beneficios & compensación por cargo</div>
+    <div class="section-title"><i class="ti ti-gift"></i> Beneficios & Compensación por Cargo</div>
     <div id="contenedor-beneficios-lista">
-      <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Cargando tus beneficios asignados...</div>
+      <div style="text-align:center; padding:40px; color:#718096; font-size:14px;">
+        <i class="ti ti-loader" style="font-size:32px; animation: spin 1s linear infinite;"></i>
+        <p style="margin-top:10px;">Cargando tus beneficios asignados...</p>
+      </div>
     </div>
   </div>
 
   <div class="screen" id="screen-capacitaciones">
-    <div class="section-title" style="margin-top:10px;">Mis Capacitaciones Asignadas</div>
+    <div class="section-title"><i class="ti ti-video"></i> Mis Capacitaciones Asignadas</div>
     <div id="capacitaciones-list">
-      <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Cargando tus capacitaciones...</div>
+      <div style="text-align:center; padding:40px; color:#718096; font-size:14px;">
+        <i class="ti ti-loader" style="font-size:32px; animation: spin 1s linear infinite;"></i>
+        <p style="margin-top:10px;">Cargando tus capacitaciones...</p>
+      </div>
     </div>
   </div>
 
   <div class="screen" id="screen-notif">
-    <div class="section-title" style="margin-top:10px;">Alertas de Entrenamiento</div>
+    <div class="section-title"><i class="ti ti-bell"></i> Alertas de Entrenamiento</div>
     <div id="alert-list">
-      <div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">Sin mensajes ni asignaciones nuevas.</div>
+      <div style="text-align:center; padding:40px; color:#718096; font-size:14px;">
+        <i class="ti ti-check" style="font-size:32px; color:#48bb78;"></i>
+        <p style="margin-top:10px;">✓ Al día. Sin alertas pendientes.</p>
+      </div>
     </div>
   </div>
 
   <div class="screen" id="screen-padrino">
-    
-    <div id="padrinoHeaderFicha" style="background: #206987; color: white; padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 15px; border-bottom: 4px solid #3cbcae;">
-      <div style="font-size: 16px; font-weight: 700;" id="padrinoFichaNombre">---</div>
-      <div style="font-size: 11px; color: #e1f5ee; margin-top: 2px;" id="padrinoFichaCargo">---</div>
-      <div style="display: flex; gap: 6px; justify-content: center; margin-top: 10px;">
-        <span class="tag" style="background: rgba(255,255,255,0.2); color: white; font-weight:700;" id="padrinoFichaEtapa">---</span>
-        <span class="tag" style="background: #ffc404; color: #1c2430; font-weight:700;">Apadrinado(a)</span>
+    <div class="padrino-header">
+      <h2 id="padrinoFichaNombre">---</h2>
+      <p id="padrinoFichaCargo">---</p>
+      <div style="margin-top: 10px;">
+        <span class="tag" style="background: rgba(255,255,255,0.2); color: white; font-weight:700; padding: 6px 12px; border-radius: 20px;" id="padrinoFichaEtapa">---</span>
+        <span class="tag" style="background: #ffc404; color: #1c2430; font-weight:700; padding: 6px 12px; border-radius: 20px; margin-left: 8px;">Apadrinado(a)</span>
       </div>
     </div>
-
-    <div class="section-title" style="display: flex; align-items: center; gap: 6px; margin-top: 14px;">
-      <i class="ti ti-info-circle" style="font-size: 14px; color: #206987;"></i> Información Básica de Ingreso
-    </div>
-    <div class="card" style="padding: 12px 16px; margin-bottom: 15px; background: #fff; border-radius: 14px; border: 0.5px solid #dde3e7; display: flex; align-items: center; justify-content: space-between;">
+    <div class="section-title"><i class="ti ti-info-circle"></i> Información Básica de Ingreso</div>
+    <div class="card" style="display: flex; align-items: center; justify-content: space-between; padding: 18px;">
       <div>
-        <div style="font-size: 9px; color: #7a8f99; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Tiempo Activo en la Compañía</div>
-        <div style="font-size: 13px; font-weight: 700; color: #206987; margin-top: 2px;" id="padrinoFichaTiempoTranscurrido">Calculando...</div>
+        <div style="font-size: 11px; color: #718096; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px;">Tiempo Activo en la Compañía</div>
+        <div style="font-size: 20px; font-weight: 700; color: #206987;" id="padrinoFichaTiempoTranscurrido">Calculando...</div>
       </div>
-      <div style="width: 34px; height: 34px; border-radius: 10px; background: #e1f0f5; display: flex; align-items: center; justify-content: center; color: #206987;">
-        <i class="ti ti-clock" style="font-size: 20px;"></i>
+      <div style="width: 50px; height: 50px; border-radius: 12px; background: linear-gradient(135deg, #e1f0f5 0%, #bee3f8 100%); display: flex; align-items: center; justify-content: center; color: #206987;">
+        <i class="ti ti-clock" style="font-size: 26px;"></i>
       </div>
     </div>
-
-    <div class="section-title" style="display: flex; align-items: center; gap: 6px; margin-top: 20px;">
-      <i class="ti ti-timeline" style="font-size: 14px; color: #206987;"></i> Mi Progreso de Onboarding
-    </div>
-
+    <div class="section-title"><i class="ti ti-timeline"></i> Mi Progreso de Onboarding</div>
     <div class="hito-progreso-wrap">
       <div class="hito-fecha-contrato-row">
-        <div class="hito-fecha-icon">
-          <i class="ti ti-calendar-event" style="font-size:19px;"></i>
-        </div>
+        <div class="hito-fecha-icon"><i class="ti ti-calendar-event" style="font-size:22px;"></i></div>
         <div>
-          <div style="font-size: 9px; color: #7a8f99; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Fecha de Contratación</div>
-          <div style="font-size: 14px; font-weight: 700; color: #1c2430;" id="hitoFechaContrato">---</div>
+          <div style="font-size: 11px; color: #718096; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Fecha de Contratación</div>
+          <div style="font-size: 16px; font-weight: 700; color: #2d3748;" id="hitoFechaContrato">---</div>
         </div>
       </div>
       <div id="gridHitosEmpleado" class="hito-grid">
-        <div style="text-align:center; padding:15px; color:#7a8f99; font-size:11px; grid-column: 1 / -1;">Cargando tu progreso...</div>
+        <div style="text-align:center; padding:20px; color:#718096; font-size:13px; grid-column: 1 / -1;">
+          <i class="ti ti-loader" style="font-size:24px; animation: spin 1s linear infinite;"></i>
+          <p style="margin-top:8px;">Cargando tu progreso...</p>
+        </div>
       </div>
     </div>
-
-    <div class="section-title"> Mi Padrino Certificado Asignado</div>
-    <div class="card" style="background: #fff; border: 1.5px solid #dde3e7; padding: 0; overflow:hidden; border-radius:14px; box-shadow: 0 4px 12px rgba(0,0,0,0.01);">
-      
-      <div style="background: #206987; color: white; padding: 15px; display: flex; align-items: center; gap: 15px; border-bottom: 3px solid #3cbcae;">
-        <div id="avatarPadrinoAsignado" style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.2); border: 2px solid white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight:700;">--</div>
+    <div class="section-title"><i class="ti ti-users"></i> Mi Padrino Certificado Asignado</div>
+    <div class="card" style="padding: 0; overflow:hidden; border: 2px solid #e2e8f0;">
+      <div style="background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; padding: 20px; display: flex; align-items: center; gap: 18px;">
+        <div id="avatarPadrinoAsignado" style="width: 65px; height: 65px; border-radius: 50%; overflow: hidden; background: rgba(255,255,255,0.2); border: 3px solid white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight:700; font-size: 20px;">--</div>
         <div>
-          <div style="font-size: 14px; font-weight: 700; color: #fff;" id="nombrePadrinoAsignado">Buscando tutor...</div>
-          <div style="font-size: 11px; color: #e1f5ee; margin-top: 2px;" id="cargoPadrinoAsignado">Cargando competencias...</div>
+          <div style="font-size: 18px; font-weight: 700; color: white;" id="nombrePadrinoAsignado">Buscando tutor...</div>
+          <div style="font-size: 13px; color: #e1f5ee; margin-top: 3px;" id="cargoPadrinoAsignado">Cargando competencias...</div>
         </div>
       </div>
-
-      <div style="padding: 15px; display: flex; flex-direction: column; gap: 12px; background: #f8fafb;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; font-size: 11px;">
-          <div><span style="color:#7a8f99; display:block; font-size:8.5px; font-weight:700;">EMPRESA</span><strong id="padFichaEmpresa">---</strong></div>
-          <div><span style="color:#7a8f99; display:block; font-size:8.5px; font-weight:700;">ANTIGÜEDAD</span><strong id="padFichaTiempo">---</strong></div>
-          <div><span style="color:#0f6e56; display:block; font-size:8.5px; font-weight:700;">CORREO DE CONTACTO</span><strong id="padFichaCorreo" style="word-break:break-all; font-size:10.5px;">---</strong></div>
+      <div style="padding: 20px; background: #f8fafb;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 12px; font-size: 12px; margin-bottom: 20px;">
+          <div><span style="color:#718096; display:block; font-size:10px; font-weight:700; margin-bottom: 4px;">EMPRESA</span><strong id="padFichaEmpresa" style="color:#2d3748;">---</strong></div>
+          <div><span style="color:#718096; display:block; font-size:10px; font-weight:700; margin-bottom: 4px;">ANTIGÜEDAD</span><strong id="padFichaTiempo" style="color:#2d3748;">---</strong></div>
+          <div><span style="color:#0f6e56; display:block; font-size:10px; font-weight:700; margin-bottom: 4px;">CORREO DE CONTACTO</span><strong id="padFichaCorreo" style="word-break:break-all; font-size:12px; color:#2d3748;">---</strong></div>
         </div>
-        
-        <div>
-          <span style="color:#7a8f99; display:block; font-size:8.5px; font-weight:700; margin-bottom: 4px;">FORTALEZAS TÉCNICAS</span>
-          <div id="padFichaTecnicas" style="display:flex; flex-wrap:wrap; gap:4px;">---</div>
+        <div style="margin-bottom: 15px;">
+          <span style="color:#718096; display:block; font-size:10px; font-weight:700; margin-bottom: 8px;">FORTALEZAS TÉCNICAS</span>
+          <div id="padFichaTecnicas" style="display:flex; flex-wrap:wrap; gap:6px;"><span style="color:#718096; font-size:12px;">Ninguna</span></div>
         </div>
-
         <div>
-          <span style="color:#7a8f99; display:block; font-size:8.5px; font-weight:700; margin-bottom: 4px;">HABILIDADES BLANDAS</span>
-          <div id="padFichaBlandas" style="display:flex; flex-wrap:wrap; gap:4px;">---</div>
+          <span style="color:#718096; display:block; font-size:10px; font-weight:700; margin-bottom: 8px;">HABILIDADES BLANDAS</span>
+          <div id="padFichaBlandas" style="display:flex; flex-wrap:wrap; gap:6px;"><span style="color:#718096; font-size:12px;">Ninguna</span></div>
         </div>
         <div id="historialPadrinosAnteriores"></div>
       </div>
     </div>
   </div>
 
-  <div style="text-align: center; padding: 25px 15px 40px 15px; margin-top: 20px;">
-    <div style="font-size: 11px; font-weight: 600; color: #7a8f99; letter-spacing: 0.03em;">© 2026 Todos los derechos reservados</div>
-    <div style="font-size: 10px; font-weight: 700; color: #206987; letter-spacing: 0.05em; margin-top: 2px; text-transform: uppercase;">Anderson Alexander Devs</div>
+  <div class="footer">
+    <div>© 2026 Todos los derechos reservados</div>
+    <div class="dev">Anderson Alexander Devs</div>
   </div>
-
 </div>
 
 <!-- Modal para ver videos -->
@@ -516,12 +426,12 @@
       <button class="modal-close" onclick="cerrarVideoModal()">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="video-wrapper">
-        <iframe id="modalVideoIframe" src="" allowfullscreen></iframe>
-      </div>
-      <div style="margin-top: 16px; text-align: center;">
-        <button class="btn-watch primary" onclick="marcarComoVisto()" style="width: 100%;">
-          <i class="ti ti-check"></i> Marcar como visto y continuar
+      <!-- ✅ CAMBIO 1: Reemplazar iframe por div -->
+      <div class="video-wrapper" id="videoWrapper"></div>
+      <div style="margin-top: 20px; text-align: center;">
+        <!-- ✅ CAMBIO 2: Agregar id y disabled -->
+        <button id="btnMarcarVisto" class="btn-watch primary" onclick="marcarComoVisto()" style="width: 100%; padding: 16px; font-size: 15px;" disabled>
+          <i class="ti ti-lock"></i> <span>Mira el video completo para continuar</span>
         </button>
       </div>
     </div>
@@ -537,99 +447,29 @@
   const db = firebase.firestore();
 
   const cedulaLogueada = localStorage.getItem('usuario_cedula');
-  if (!cedulaLogueada) {
-    window.location.href = 'login.html';
-  }
+  if (!cedulaLogueada) { window.location.href = 'login.html'; }
 
   let capacitacionActual = null;
   let asignacionActualId = null;
-  let youtubePlayer = null;
-  let videoProgress = 0;
+  
+  // Variables anti-adelanto
+  let ytPlayer = null;
+  let ytTimer = null;
+  let maxPermitido = 0;
+  let videoCompletado = false;
+  let ytPendiente = null;
+  let avisoTimer = null;
 
-  const FESTIVOS_COLOMBIA = [
-      "2026-01-01", "2026-01-12", "2026-03-23", "2026-04-02", "2026-04-03",
-      "2026-05-01", "2026-05-18", "2026-06-08", "2026-06-15", "2026-06-29",
-      "2026-07-20", "2026-08-07", "2026-08-17", "2026-10-12", "2026-11-02",
-      "2026-11-16", "2026-12-08", "2026-12-25",
-      "2027-01-01", "2027-01-11", "2027-03-22", "2027-03-25", "2027-03-26",
-      "2027-05-01", "2027-05-10", "2027-05-31", "2027-06-07", "2027-07-05",
-      "2027-07-20", "2027-08-07", "2027-08-16", "2027-10-18", "2027-11-01",
-      "2027-11-15", "2027-12-08", "2027-12-25"
-  ];
+  // Carga la API de YouTube una sola vez
+  (function cargarYouTubeAPI() {
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+  })();
 
-  function esDiaInhabilColombia(fechaObjeto) {
-      if (fechaObjeto.getDay() === 0) return true;
-      const formatoISO = fechaObjeto.toISOString().split('T')[0];
-      return FESTIVOS_COLOMBIA.includes(formatoISO);
-  }
-
-  function calcularFechaLimiteHabilesColombia(fechaIngresoStr, diasHabilesAsumidos) {
-      if (!fechaIngresoStr || fechaIngresoStr === "—") return null;
-      let fechaActual = new Date(fechaIngresoStr + 'T00:00:00');
-      let diasContados = 0;
-      while (diasContados < diasHabilesAsumidos) {
-          fechaActual.setDate(fechaActual.getDate() + 1);
-          if (!esDiaInhabilColombia(fechaActual)) {
-              diasContados++;
-          }
-      }
-      return fechaActual.toISOString().split('T')[0];
-  }
-
-  function calcularFechaLimiteCalendarioISO(fechaIngresoStr, dias) {
-      if (!fechaIngresoStr || fechaIngresoStr === "—") return null;
-      const d = new Date(fechaIngresoStr + 'T00:00:00');
-      d.setDate(d.getDate() + dias);
-      return d.toISOString().split('T')[0];
-  }
-
-  function buildHitoEmpleadoCard(label, icono, nota, fechaEjecucion, fechaBase, diasDesfase, umbralAprobacion) {
-      const limiteStr = (diasDesfase === 0 || diasDesfase === 1 || diasDesfase === 7)
-          ? calcularFechaLimiteHabilesColombia(fechaBase, diasDesfase)
-          : calcularFechaLimiteCalendarioISO(fechaBase, diasDesfase);
-
-      const hoy = new Date(); hoy.setHours(0,0,0,0);
-      const limiteFecha = limiteStr ? new Date(limiteStr + 'T00:00:00') : null;
-      const notaNum = Number(nota) || 0;
-
-      let estadoTexto = '', estadoColor = '', estadoBg = '', estadoBorder = '', estadoIcono = '';
-
-      if (notaNum === 0) {
-          const vencido = limiteFecha ? hoy > limiteFecha : false;
-          if (vencido) {
-              estadoTexto = 'Vencido'; estadoColor = '#a32d2d'; estadoBg = '#fff5f5'; estadoBorder = '#f09595'; estadoIcono = '⚠️';
-          } else {
-              estadoTexto = 'Pendiente'; estadoColor = '#8a6e00'; estadoBg = '#fff8e1'; estadoBorder = '#ffc404'; estadoIcono = '⏳';
-          }
-      } else {
-          const aprobo = notaNum >= umbralAprobacion;
-          if (!aprobo) {
-              estadoTexto = 'Reprobado'; estadoColor = '#a32d2d'; estadoBg = '#fff5f5'; estadoBorder = '#f09595'; estadoIcono = '❌';
-          } else {
-              const ejecutoATiempo = limiteFecha ? (new Date((fechaEjecucion || fechaBase) + 'T00:00:00') <= limiteFecha) : true;
-              if (ejecutoATiempo) {
-                  estadoTexto = 'A tiempo'; estadoColor = '#0f6e56'; estadoBg = '#e1f5ee'; estadoBorder = '#3cbcae'; estadoIcono = '✓';
-              } else {
-                  estadoTexto = 'Fuera de plazo'; estadoColor = '#206987'; estadoBg = '#e8f3f6'; estadoBorder = '#8fc4d6'; estadoIcono = '';
-              }
-          }
-      }
-
-      return `
-          <div class="hito-card" style="border:1.5px solid ${estadoBorder};">
-              <div class="hito-card-head">
-                  <div class="hito-card-icon" style="background:${estadoBg};">${icono}</div>
-                  <div class="hito-card-label">${label}</div>
-              </div>
-              <div class="hito-card-score" style="color:${estadoColor};">${notaNum > 0 ? notaNum + '%' : '—'}</div>
-              <div class="hito-card-badge" style="background:${estadoBg}; color:${estadoColor};">
-                  ${estadoIcono} ${estadoTexto}
-              </div>
-              <div class="hito-card-meta">
-                  ${notaNum > 0 ? `Hecho: ${fechaEjecucion || '—'}` : `Límite: ${limiteStr || '—'}`}
-              </div>
-          </div>`;
-  }
+  window.onYouTubeIframeAPIReady = () => {
+    if (ytPendiente) { ytPendiente(); ytPendiente = null; }
+  };
 
   window.addEventListener('DOMContentLoaded', () => {
     inicializarEscuchadorEmpleadoRealtime();
@@ -638,458 +478,384 @@
   });
 
   function inicializarEscuchadorEmpleadoRealtime() {
-    db.collection('empleados')
-      .where('cedula', '==', String(cedulaLogueada))
-      .onSnapshot(async (snapshot) => {
-        if (snapshot.empty) return;
+    db.collection('empleados').where('cedula', '==', String(cedulaLogueada)).onSnapshot(async (snapshot) => {
+      if (snapshot.empty) return;
+      const usuario = snapshot.docs[0].data();
+      const cargoEmpleado = usuario.cargo || "Operativo";
+      const regionEmpleado = usuario.region || "General";
+      const fechaIngreso = usuario.fecha_ingreso || (usuario.hitos && usuario.hitos.fecha_contratacion) || "";
 
-        const docSnap = snapshot.docs[0];
-        const usuario = docSnap.data();
-        const cargoEmpleado = usuario.cargo || "Operativo";
-        const regionEmpleado = usuario.region || "General";
+      document.getElementById('userName').textContent = usuario.nombre;
+      document.getElementById('userCargo').textContent = `${cargoEmpleado} · CD ${regionEmpleado}`;
+      document.getElementById('headerRegion').textContent = `CD ${regionEmpleado}`;
+      document.getElementById('userAvatar').textContent = usuario.nombre.substring(0,2).toUpperCase();
 
-        const fechaBaseReal = usuario.fecha_ingreso || (usuario.hitos && usuario.hitos.fecha_contratacion) || "";
+      if (fechaIngreso) {
+        const fechaObj = new Date(fechaIngreso);
+        document.getElementById('userFechaIngreso').textContent = `Fecha de ingreso: ${fechaObj.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+        const hoy = new Date(); fechaObj.setHours(0,0,0,0); hoy.setHours(0,0,0,0);
+        document.getElementById('userDiasActivos').textContent = `⏱️ ${Math.ceil(Math.abs(hoy - fechaObj) / (1000 * 60 * 60 * 24))} días activos en la compañía`;
+      }
 
-        document.getElementById('userName').textContent = usuario.nombre;
-        document.getElementById('userCargo').textContent = cargoEmpleado + " · Región " + regionEmpleado;
-        document.getElementById('headerRegion').textContent = "Región " + regionEmpleado;
-        document.getElementById('userAvatar').textContent = usuario.nombre.substring(0,2).toUpperCase();
-
-        // Padrino
-        if (usuario.es_apadrinado === true || usuario.padrino_id) {
-          if(document.getElementById('tab-padrino')) document.getElementById('tab-padrino').style.display = 'flex';
-
-          let diasTranscurridos = 0;
-          if (fechaBaseReal) {
-            const fechaIngresoObj = new Date(fechaBaseReal + 'T00:00:00');
-            const hoy = new Date();
-            fechaIngresoObj.setHours(0,0,0,0);
-            hoy.setHours(0,0,0,0);
-            const diferenciaMilisegundos = hoy - fechaIngresoObj;
-            diasTranscurridos = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
-          }
-          
-          document.getElementById('padrinoFichaNombre').textContent = usuario.nombre;
-          document.getElementById('padrinoFichaCargo').textContent = cargoEmpleado;
-          document.getElementById('padrinoFichaEtapa').textContent = usuario.etapa_actual || "Etapa Técnico";
-          document.getElementById('padrinoFichaTiempoTranscurrido').textContent = (diasTranscurridos >= 0 ? diasTranscurridos : 0) + " días activos";
-          document.getElementById('hitoFechaContrato').textContent = fechaBaseReal || "---";
-
-          const h = usuario.hitos || {};
-          const gridHitos = document.getElementById('gridHitosEmpleado');
-
-          if (gridHitos) {
-            if (fechaBaseReal) {
-              gridHitos.innerHTML =
-                  buildHitoEmpleadoCard("Safety (D1)", "️", h.onboarding_safety_nota, h.onboarding_safety_fecha, fechaBaseReal, 0, 100) +
-                  buildHitoEmpleadoCard("People (D2)", "", h.onboarding_people_nota, h.onboarding_people_fecha, fechaBaseReal, 1, 80) +
-                  buildHitoEmpleadoCard("7 DIAS", "️", h.eval_tecnico_nota, h.eval_tecnico_fecha, fechaBaseReal, 7, 60) +
-                  buildHitoEmpleadoCard("30 DIAS", "", h.eval_funcional_nota, h.eval_funcional_fecha, fechaBaseReal, 32, 60) +
-                  buildHitoEmpleadoCard("90 DIAS", "🏆", h.eval_autonomo_nota, h.eval_autonomo_fecha, fechaBaseReal, 92, 60);
-            } else {
-              gridHitos.innerHTML = '<div style="text-align:center; padding:15px; color:#7a8f99; font-size:11px; grid-column: 1 / -1;">Fecha de contratación no registrada aún.</div>';
-            }
-          }
-
-          if (usuario.padrino_id) {
-            const tutorSnapshot = await db.collection('empleados').where('cedula', '==', String(usuario.padrino_id)).limit(1).get();
+      const beneficioSnapshot = await db.collection('beneficios').where('cargo', '==', cargoEmpleado).where('region', '==', regionEmpleado).get();
+      const listaContainer = document.getElementById('contenedor-beneficios-lista');
+      if (listaContainer) {
+        listaContainer.innerHTML = '';
+        if (!beneficioSnapshot.empty) {
+          beneficioSnapshot.forEach((doc) => {
+            const bReal = doc.data();
+            const valorNumerico = typeof bReal.valor === 'number' ? bReal.valor : parseFloat(String(bReal.valor).replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+            const valorFormateado = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(valorNumerico);
             
-            if (!tutorSnapshot.empty) {
-              const tData = tutorSnapshot.docs[0].data();
-              const boxAvatar = document.getElementById('avatarPadrinoAsignado');
-              
-              document.getElementById('nombrePadrinoAsignado').textContent = tData.nombre;
-              document.getElementById('cargoPadrinoAsignado').textContent = tData.cargo || "Supervisor Logístico";
-              document.getElementById('padFichaEmpresa').textContent = tData.empresa_padrino || "Bavaria AB InBev";
-              document.getElementById('padFichaTiempo').textContent = tData.tiempo_compania || "9 meses";
-
-              if(document.getElementById('padFichaCorreo')) {
-                document.getElementById('padFichaCorreo').textContent = tData.correo || "Sin correo registrado";
-              }
-
-              if (boxAvatar) {
-                if (tData.foto_url && tData.foto_url.trim() !== "") {
-                  boxAvatar.innerHTML = `<img src="${tData.foto_url}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                } else if (tData.nombre.toLowerCase().includes("michel")) {
-                  boxAvatar.innerHTML = `<img src="michel.png" style="width:100%; height:100%; object-fit:cover;">`;
-                } else {
-                  boxAvatar.innerHTML = `<div style="font-weight:bold; font-size:16px; color:#fff;">${tData.nombre.substring(0,2).toUpperCase()}</div>`;
-                }
-              }
-
-              const boxTecnicas = document.getElementById('padFichaTecnicas');
-              if (boxTecnicas) {
-                boxTecnicas.innerHTML = '';
-                if (tData.habilidades_tecnicas && tData.habilidades_tecnicas.length > 0) {
-                  tData.habilidades_tecnicas.forEach(h => { boxTecnicas.innerHTML += `<span class="tag-skill tag-tecnica">${h}</span>`; });
-                } else { boxTecnicas.innerHTML = '<span style="color:#7a8f99;">Ninguna</span>'; }
-              }
-
-              const boxBlandas = document.getElementById('padFichaBlandas');
-              if (boxBlandas) {
-                boxBlandas.innerHTML = '';
-                if (tData.habilidades_blandas && tData.habilidades_blandas.length > 0) {
-                  tData.habilidades_blandas.forEach(h => { boxBlandas.innerHTML += `<span class="tag-skill tag-blanda">${h}</span>`; });
-                } else { boxBlandas.innerHTML = '<span style="color:#7a8f99;">Ninguna</span>'; }
-              }
-            }
-          }
-        }
-
-        // Beneficios - CON PARSER ROBUSTO PARA FORMATOS MIXTOS
-        const beneficioSnapshot = await db.collection('beneficios')
-          .where('cargo', '==', cargoEmpleado)
-          .where('region', '==', regionEmpleado)
-          .get();
-
-        const listaContainer = document.getElementById('contenedor-beneficios-lista');
-        if (listaContainer) {
-          listaContainer.innerHTML = '';
-          if (!beneficioSnapshot.empty) {
+            const indicadorHTML = bReal.indicador ? `
+              <div class="benefit-row">
+                <span class="benefit-label"><i class="ti ti-target" style="margin-right:5px;"></i>Requisito:</span>
+                <span style="font-size:13px; color:#4a5568; font-weight:600;">${bReal.indicador}</span>
+              </div>
+            ` : '';
             
-            // Función robusta para parsear montos en formato COP
-            function parseMonto(v) {
-              if (typeof v === 'number') return v;
-              const s = String(v).trim().replace(/[^\d.,]/g, '');
-              // Si termina en ,dd o .dd (1-2 decimales), se trata como decimal
-              const m = s.match(/^(.*)[.,](\d{1,2})$/);
-              const entero = (m ? m[1] : s).replace(/[.,]/g, '');
-              return parseFloat(entero + (m ? '.' + m[2] : '')) || 0;
-            }
-
-            beneficioSnapshot.forEach((doc) => {
-              const bReal = doc.data();
-              
-              // Usar el parser robusto
-              const valorNumerico = parseMonto(bReal.valor);
-              
-              // Formatear correctamente para Colombia
-              const valorFormateado = new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-              }).format(valorNumerico);
-              
-              listaContainer.innerHTML += `
-                <div class="card" style="margin-bottom: 15px;">
-                  <div class="card-header">
-                    <div class="card-icon yellow"><i class="ti ti-coin"></i></div>
-                    <div>
-                      <div class="card-title" style="color: #206987; font-weight: 700;">${bReal.concepto || "Compensación"}</div>
-                      <div class="card-sub">Cargo: ${cargoEmpleado} · Sede: ${regionEmpleado}</div>
-                    </div>
+            listaContainer.innerHTML += `
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-icon yellow"><i class="ti ti-coin"></i></div>
+                  <div>
+                    <div class="card-title">${bReal.concepto || "Compensación"}</div>
+                    <div class="card-sub">Cargo: ${cargoEmpleado} · CD: ${regionEmpleado}</div>
                   </div>
-                  <div class="benefit-row">
-                    <span class="benefit-label">Monto asignado para tu perfil:</span>
-                    <span class="benefit-amount" style="color: #206987; font-weight: 700; font-size: 18px;">${valorFormateado}</span>
-                  </div>
-                </div>`;
-            });
-          } else {
-            listaContainer.innerHTML = `<div style="text-align:center; padding:20px; color:#7a8f99; font-size:12px;">No registras beneficios configurados para el cargo de ${cargoEmpleado} en la sede de ${regionEmpleado}.</div>`;
-          }
+                </div>
+                <div class="benefit-row">
+                  <span class="benefit-label">Monto asignado:</span>
+                  <span class="benefit-amount">${valorFormateado}</span>
+                </div>
+                ${indicadorHTML}
+              </div>`;
+          });
+        } else {
+          listaContainer.innerHTML = `<div class="card" style="text-align:center; padding:40px;"><i class="ti ti-gift" style="font-size:48px; color:#e2e8f0; margin-bottom:15px;"></i><p style="color:#718096;">No registras beneficios configurados.</p></div>`;
         }
-      });
+      }
+    });
   }
 
-  // 🎥 CARGAR CAPACITACIONES ASIGNADAS CON VIDEO EMBEBIDO
   async function cargarCapacitacionesAsignadas() {
     const container = document.getElementById('capacitaciones-list');
-    
     try {
-      const snapshot = await db.collection('asignaciones_valle')
-        .where('empleado_documento', '==', cedulaLogueada)
-        .get();
-
+      const snapshot = await db.collection('asignaciones_valle').where('empleado_documento', '==', cedulaLogueada).get();
       if (snapshot.empty) {
-        container.innerHTML = '<div style="text-align:center; padding:30px; color:#7a8f99; font-size:12px;">No tienes capacitaciones asignadas aún.</div>';
-        actualizarBarraProgreso(0, 0);
+        container.innerHTML = `<div class="card" style="text-align:center; padding:40px;"><i class="ti ti-video" style="font-size:48px; color:#e2e8f0; margin-bottom:15px;"></i><p style="color:#718096;">No tienes capacitaciones asignadas aún.</p></div>`;
+        actualizarDashboardCapacitaciones(0, 0, 0, 0);
         return;
       }
 
-      // Convertir a array y ordenar en el cliente
       let asignaciones = [];
-      snapshot.forEach(doc => {
-        asignaciones.push({ id: doc.id, ...doc.data() });
-      });
+      snapshot.forEach(doc => asignaciones.push({ id: doc.id, ...doc.data() }));
+      asignaciones.sort((a, b) => (b.creado_en?.toDate() || new Date(0)) - (a.creado_en?.toDate() || new Date(0)));
 
-      // Ordenar por fecha de creación (más reciente primero)
-      asignaciones.sort((a, b) => {
-        const dateA = a.creado_en?.toDate() || new Date(0);
-        const dateB = b.creado_en?.toDate() || new Date(0);
-        return dateB - dateA;
-      });
-
-      let html = '';
-      let total = asignaciones.length;
-      let completadas = 0;
+      let html = '', total = asignaciones.length, completadas = 0, pendientes = 0, progresoTotal = 0;
 
       asignaciones.forEach(asig => {
-        if (asig.estado === 'Cumplió') completadas++;
+        if (asig.estado === 'Cumplió') completadas++; else pendientes++;
 
         const videoVisto = asig.video_visto === true;
         const evaluacionCompletada = asig.estado === 'Cumplió';
-        
         const iconClass = getPilarIconClass(asig.pilar || 'Safety');
         const estadoClass = getEstadoClass(asig.estado);
-        const progresoWidth = videoVisto ? 50 : (evaluacionCompletada ? 100 : 0);
+        
+        const progresoReal = evaluacionCompletada ? 100 : (asig.video_progreso || (videoVisto ? 100 : 0));
+        const progresoTexto = evaluacionCompletada ? '100% - Completado' : `${progresoReal}% - En progreso`;
+        progresoTotal += progresoReal;
+
+        // ✅ LÓGICA CORREGIDA: Un solo bloque HTML limpio
+        let accionesHTML = '';
+        if (!evaluacionCompletada) {
+          accionesHTML = `
+            <div class="cap-actions">
+              <button class="btn-watch primary" onclick="abrirVideo('${asig.id}', '${asig.video_url || ''}', '${asig.youtube_video_id || ''}', '${asig.capacitacion_nombre || 'Capacitación'}')" style="flex:1;">
+                <i class="ti ti-player-play"></i> ${videoVisto ? 'Continuar video' : 'Ver video'}
+              </button>
+              <button class="btn-watch secondary" ${!videoVisto ? 'disabled' : ''} onclick="irAEvaluacion('${asig.id}', '${asig.link_evaluacion || ''}')" style="flex:1; ${!videoVisto ? 'opacity: 0.4; cursor: not-allowed;' : ''}">
+                <i class="ti ti-clipboard-text"></i> ${videoVisto ? 'Evaluación' : 'Bloqueado'}
+              </button>
+            </div>
+            ${asig.form_abierto && asig.estado === 'Pendiente evaluación' ? `
+              <div style="margin-top: 12px; padding: 12px; background: #fff3cd; border: 1px solid #ffc404; border-radius: 8px; text-align: center;">
+                <div style="color: #856404; font-size: 13px; margin-bottom: 8px;">
+                  <i class="ti ti-info-circle"></i> ¿Ya completaste la evaluación?
+                </div>
+                <button class="btn-watch primary" onclick="confirmarEvaluacionCompletada('${asig.id}')" style="width: 100%; max-width: 300px; font-size: 13px; margin: 0 auto;">
+                  <i class="ti ti-check"></i> Sí, ya la completé
+                </button>
+              </div>
+            ` : ''}
+          `;
+        } else {
+          accionesHTML = `
+            <div style="text-align:center; padding:15px; background:linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); border-radius:12px; color:#0f6e56; font-weight:700;">
+              <i class="ti ti-check-circle" style="font-size:24px; margin-bottom:5px;"></i>
+              <div>Capacitación completada ✅</div>
+              <button class="btn-watch primary" onclick="generarCertificado('${asig.id}', '${asig.capacitacion_nombre || 'Capacitación'}')" style="margin-top: 12px; width: 100%; max-width: 300px; font-size: 14px;">
+                <i class="ti ti-download"></i> Descargar Certificado PDF
+              </button>
+            </div>
+          `;
+        }
 
         html += `
           <div class="capacitacion-card">
             <div class="cap-header">
-              <div class="cap-icon ${iconClass}">
-                <i class="ti ti-video"></i>
-              </div>
-              <div class="cap-info">
+              <div class="cap-icon ${iconClass}"><i class="ti ti-video"></i></div>
+              <div class="cap-info" style="flex:1;">
                 <h3>${asig.capacitacion_nombre || 'Capacitación sin nombre'}</h3>
                 <div class="cap-meta">
                   <span class="tag ${estadoClass}">${asig.estado || 'Programado'}</span>
-                  <span style="color:#7a8f99;"> ${asig.fecha_limite || 'Sin fecha'}</span>
+                  <span><i class="ti ti-calendar"></i> ${asig.fecha_limite ? new Date(asig.fecha_limite).toLocaleDateString('es-CO') : 'Sin fecha'}</span>
                 </div>
               </div>
             </div>
             
-            <div class="cap-progress">
-              <div class="cap-progress-bar" style="width: ${progresoWidth}%"></div>
+            <div class="cap-progress"><div class="cap-progress-bar" style="width: ${progresoReal}%"></div></div>
+            <div style="text-align: right; font-size: 11px; color: #718096; margin-top: -10px; margin-bottom: 15px; font-weight: 600;">
+              Progreso: ${progresoTexto}
             </div>
             
-            ${!evaluacionCompletada ? `
-              <div class="cap-actions">
-                <button class="btn-watch primary" onclick="abrirVideo('${asig.id}', '${asig.video_url || ''}', '${asig.youtube_video_id || ''}', '${asig.capacitacion_nombre || 'Capacitación'}')">
-                  <i class="ti ti-player-play"></i> ${videoVisto ? 'Continuar video' : 'Ver video'}
-                </button>
-                <button class="btn-watch secondary" ${!videoVisto ? 'disabled' : ''} onclick="irAEvaluacion('${asig.id}', '${asig.link_evaluacion || ''}')" style="${!videoVisto ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
-                  <i class="ti ti-clipboard-text"></i> ${videoVisto ? 'Evaluación' : 'Evaluación (bloqueada)'}
-                </button>
-                <button class="btn-whatsapp" onclick="compartirPorWhatsApp('${asig.capacitacion_nombre || 'Capacitación'}', '${asig.fecha_limite || ''}')">
-                  <i class="ti ti-brand-whatsapp"></i> Alerta
-                </button>
-              </div>
-            ` : `
-              <div style="text-align:center; padding:10px; color:#0f6e56; font-weight:700;">
-                <i class="ti ti-check-circle" style="font-size:20px;"></i> Capacitación completada
-              </div>
-            `}
+            ${accionesHTML}
           </div>
         `;
       });
 
       container.innerHTML = html;
+      const promedioProgreso = total > 0 ? Math.round(progresoTotal / total) : 0;
+      actualizarDashboardCapacitaciones(total, completadas, pendientes, promedioProgreso);
       actualizarBarraProgreso(completadas, total);
 
     } catch (error) {
       console.error("Error cargando capacitaciones:", error);
-      container.innerHTML = `
-        <div style="text-align:center; padding:20px; color:#dc2626; font-size:12px;">
-          Error al cargar capacitaciones<br>
-          <small>${error.message}</small>
-        </div>`;
+      container.innerHTML = `<div class="card" style="text-align:center; padding:40px; border:2px solid #fee2e2;"><p style="color:#dc2626;">Error al cargar capacitaciones</p></div>`;
     }
   }
 
+  // ✅ NUEVA FUNCIÓN: Para que el empleado confirme que terminó la evaluación
+  async function confirmarEvaluacionCompletada(asigId) {
+    if (!confirm('¿Confirmas que ya completaste la evaluación y obtuviste la nota aprobatoria?')) return;
+    
+    try {
+      await db.collection('asignaciones_valle').doc(asigId).update({
+        estado: 'Cumplió',
+        evaluacion_completada_fecha: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      alert('✅ ¡Felicitaciones! Evaluación marcada como completada.');
+      cargarCapacitacionesAsignadas();
+      cargarMensajesAlertaAutomaticas();
+    } catch (error) {
+      console.error('Error confirmando evaluación:', error);
+      alert('Error al actualizar el estado.');
+    }
+  }
+
+  async function generarCertificado(asigId, nombreCapacitacion) {
+    try {
+      const empSnap = await db.collection('empleados').where('cedula', '==', cedulaLogueada).limit(1).get();
+      if (empSnap.empty) return alert('No se pudieron obtener los datos del empleado.');
+      const empData = empSnap.docs[0].data();
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+      const primaryColor = [32, 105, 135];
+      const secondaryColor = [60, 188, 174];
+      const textColor = [45, 55, 72];
+
+      doc.setLineWidth(3); doc.setDrawColor(...primaryColor); doc.rect(10, 10, 277, 190);
+      doc.setLineWidth(1); doc.setDrawColor(...secondaryColor); doc.rect(15, 15, 267, 180);
+
+      doc.setFillColor(...primaryColor); doc.rect(0, 0, 297, 45, 'F');
+      doc.setTextColor(255, 255, 255); doc.setFontSize(26); doc.setFont('helvetica', 'bold');
+      doc.text('CERTIFICADO DE CAPACITACIÓN', 148.5, 28, { align: 'center' });
+
+      doc.setTextColor(...textColor); doc.setFontSize(14); doc.setFont('helvetica', 'normal');
+      doc.text('Se otorga el presente certificado a:', 148.5, 75, { align: 'center' });
+
+      doc.setFontSize(24); doc.setFont('helvetica', 'bold'); doc.setTextColor(...primaryColor);
+      doc.text(empData.nombre.toUpperCase(), 148.5, 92, { align: 'center' });
+
+      doc.setFontSize(14); doc.setFont('helvetica', 'normal'); doc.setTextColor(...textColor);
+      doc.text(`Identificado con C.C. ${empData.cedula}`, 148.5, 105, { align: 'center' });
+      doc.text(`Cargo: ${empData.cargo || 'No especificado'}`, 148.5, 115, { align: 'center' });
+
+      doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+      doc.text('Por haber completado satisfactoriamente la capacitación:', 148.5, 135, { align: 'center' });
+
+      doc.setFontSize(20); doc.setTextColor(...secondaryColor);
+      const splitTitle = doc.splitTextToSize(nombreCapacitacion, 250);
+      doc.text(splitTitle, 148.5, 150, { align: 'center' });
+
+      const fecha = new Date();
+      const fechaStr = fecha.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+      const horaStr = fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+
+      doc.setFontSize(12); doc.setFont('helvetica', 'italic'); doc.setTextColor(100, 100, 100);
+      doc.text(`Expedido el ${fechaStr} a las ${horaStr}`, 148.5, 175, { align: 'center' });
+
+      doc.setDrawColor(...primaryColor); doc.setLineWidth(1); doc.line(60, 182, 237, 182);
+      doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...primaryColor);
+      doc.text('Plan de Entrenamiento Valle', 148.5, 188, { align: 'center' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(100, 100, 100);
+      doc.text('Logística Conectamos Más', 148.5, 193, { align: 'center' });
+
+      doc.save(`Certificado_${nombreCapacitacion.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
+    } catch (error) {
+      console.error('Error generando certificado:', error);
+      alert('Hubo un error al generar el certificado.');
+    }
+  }
+
+  function actualizarDashboardCapacitaciones(total, completadas, pendientes, progreso) {
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statCompletadas').textContent = completadas;
+    document.getElementById('statPendientes').textContent = pendientes;
+    document.getElementById('statProgreso').textContent = progreso + '%';
+  }
+
   function getPilarIconClass(pilar) {
-    const map = {
-      'Safety': 'safety',
-      'Management': 'management',
-      'People': 'people',
-      'Delivery': 'delivery',
-      'Warehouse': 'warehouse',
-      'Fleet': 'fleet'
-    };
+    const map = { 'Safety': 'safety', 'Management': 'management', 'People': 'people', 'Delivery': 'delivery', 'Warehouse': 'warehouse', 'Fleet': 'fleet' };
     return map[pilar] || 'safety';
   }
 
   function getEstadoClass(estado) {
-    const map = {
-      'Programado': 'blue',
-      'Pendiente evaluación': 'yellow',
-      'Cumplió': 'green',
-      'No cumplió': 'red'
-    };
+    const map = { 'Programado': 'blue', 'Pendiente evaluación': 'yellow', 'Cumplió': 'green', 'No cumplió': 'red' };
     return map[estado] || 'blue';
   }
 
-  // 🎥 FUNCIONES DE VIDEO CON TRACKING DE PROGRESO
   function abrirVideo(asigId, videoUrl, youtubeVideoId, titulo) {
-    capacitacionActual = asigId;
     asignacionActualId = asigId;
-    videoProgress = 0; // Resetear progreso
-    
     document.getElementById('modalVideoTitle').textContent = titulo;
-    
-    // Construir URL con API habilitada
-    let embedUrl = '';
-    if (youtubeVideoId) {
-      embedUrl = `https://www.youtube.com/embed/${youtubeVideoId}?rel=0&modestbranding=1&enablejsapi=1&playsinline=1`;
-    } else if (videoUrl) {
-      const videoId = extraerIdYouTube(videoUrl);
-      if (videoId) {
-        embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&enablejsapi=1&playsinline=1`;
-      }
-    }
-    
-    document.getElementById('modalVideoIframe').src = embedUrl;
-    
-    // Deshabilitar botón inicialmente
-    const btnMarcarVisto = document.querySelector('#videoModal .btn-watch.primary');
-    btnMarcarVisto.disabled = true;
-    btnMarcarVisto.style.opacity = '0.5';
-    btnMarcarVisto.style.cursor = 'not-allowed';
-    btnMarcarVisto.innerHTML = '<i class="ti ti-lock"></i> Video bloqueado - Reprodúcelo para continuar';
-    btnMarcarVisto.style.background = '';
-    
     document.getElementById('videoModal').classList.add('active');
-    
-    // Inicializar tracking después de que cargue el iframe
-    setTimeout(initYouTubeTracking, 1000);
-  }
 
-  function initYouTubeTracking() {
-    // Verificar si la API de YouTube está disponible
-    if (typeof YT === 'undefined' || !YT.Player) {
-      // Cargar API si no está disponible
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.body.appendChild(tag);
-      
-      window.onYouTubeIframeAPIReady = function() {
-        setupPlayer();
-      };
-    } else {
-      setupPlayer();
-    }
-  }
+    const videoId = youtubeVideoId || extraerIdYouTube(videoUrl);
+    if (!videoId) { alert('Video no disponible'); return; }
 
-  function setupPlayer() {
-    const iframe = document.getElementById('modalVideoIframe');
-    if (!iframe) return;
-    
-    try {
-      youtubePlayer = new YT.Player('modalVideoIframe', {
-        events: {
-          'onReady': onModalPlayerReady,
-          'onStateChange': onModalPlayerStateChange
-        }
+    clearInterval(ytTimer);
+    maxPermitido = 0;
+    videoCompletado = false;
+    bloquearBoton();
+    document.getElementById('videoWrapper').innerHTML = '<div id="ytContainer"></div>';
+
+    const crear = () => {
+      ytPlayer = new YT.Player('ytContainer', {
+        videoId,
+        width: '100%',
+        height: '100%',
+        playerVars: { rel: 0, modestbranding: 1, playsinline: 1, disablekb: 1 },
+        events: { onStateChange: onEstadoVideo }
       });
-      
-      // Iniciar tracking de progreso cada 2 segundos
-      setInterval(trackModalProgress, 2000);
-    } catch (err) {
-      console.error('Error inicializando player:', err);
+      ytTimer = setInterval(vigilarVideo, 500);
+    };
+
+    if (window.YT && YT.Player) crear();
+    else ytPendiente = crear;
+  }
+
+  function vigilarVideo() {
+    if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+    const t = ytPlayer.getCurrentTime();
+
+    if (ytPlayer.getPlaybackRate() !== 1) ytPlayer.setPlaybackRate(1);
+
+    if (t > maxPermitido + 2) {
+      ytPlayer.seekTo(maxPermitido, true);
+      mostrarAviso('🚫 No puedes adelantar el video.');
+      return;
+    }
+
+    if (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING && t > maxPermitido) {
+      maxPermitido = t;
     }
   }
 
-  function onModalPlayerReady(event) {
-    console.log('Modal player ready');
-  }
-
-  function onModalPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-      // Video completado
-      enableMarkAsSeenButton();
-    }
-  }
-
-  function trackModalProgress() {
-    if (!youtubePlayer || typeof youtubePlayer.getCurrentTime !== 'function') return;
-    
-    try {
-      const currentTime = youtubePlayer.getCurrentTime();
-      const duration = youtubePlayer.getDuration();
-      
-      if (duration > 0) {
-        const percentage = Math.round((currentTime / duration) * 100);
-        videoProgress = percentage;
-        
-        // Actualizar texto del botón si está cerca del final
-        if (percentage >= 95) {
-          enableMarkAsSeenButton();
-        } else if (percentage > 50) {
-          const btn = document.querySelector('#videoModal .btn-watch.primary');
-          btn.innerHTML = `<i class="ti ti-clock"></i> Progreso: ${percentage}% - Sigue viendo...`;
-        }
+  function onEstadoVideo(e) {
+    if (e.data === YT.PlayerState.ENDED) {
+      const dur = ytPlayer.getDuration();
+      if (maxPermitido >= dur - 3) {
+        videoCompletado = true;
+        desbloquearBoton();
+      } else {
+        ytPlayer.seekTo(maxPermitido, true);
+        mostrarAviso('🚫 Debes ver el video completo sin adelantar.');
       }
-    } catch (err) {
-      // Silenciar errores de tracking
     }
   }
 
-  function enableMarkAsSeenButton() {
-    const btn = document.querySelector('#videoModal .btn-watch.primary');
+  function bloquearBoton() {
+    const btn = document.getElementById('btnMarcarVisto');
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+    btn.innerHTML = '<i class="ti ti-lock"></i> <span>Mira el video completo para continuar</span>';
+  }
+
+  function desbloquearBoton() {
+    const btn = document.getElementById('btnMarcarVisto');
     btn.disabled = false;
     btn.style.opacity = '1';
     btn.style.cursor = 'pointer';
-    btn.innerHTML = '<i class="ti ti-check"></i> Marcar como visto y continuar';
-    btn.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+    btn.innerHTML = '<i class="ti ti-check"></i> <span>Marcar como visto y continuar</span>';
+  }
+
+  function mostrarAviso(msg) {
+    const btn = document.getElementById('btnMarcarVisto');
+    btn.querySelector('span').textContent = msg;
+    clearTimeout(avisoTimer);
+    avisoTimer = setTimeout(() => { if (!videoCompletado) bloquearBoton(); }, 2500);
   }
 
   function cerrarVideoModal() {
-    // Pausar video al cerrar
-    if (youtubePlayer && typeof youtubePlayer.pauseVideo === 'function') {
-      youtubePlayer.pauseVideo();
-    }
-    
+    clearInterval(ytTimer);
+    clearTimeout(avisoTimer);
+    if (ytPlayer && ytPlayer.destroy) ytPlayer.destroy();
+    ytPlayer = null;
+    document.getElementById('videoWrapper').innerHTML = '';
     document.getElementById('videoModal').classList.remove('active');
-    document.getElementById('modalVideoIframe').src = '';
-    youtubePlayer = null;
-    videoProgress = 0;
-    capacitacionActual = null;
   }
 
   async function marcarComoVisto() {
-    // Verificar que haya visto al menos 95% del video
-    if (videoProgress < 95) {
-      alert(`Debes ver al menos el 95% del video para continuar. Progreso actual: ${videoProgress}%`);
-      return;
-    }
-    
-    if (!asignacionActualId) return;
-    
+    if (!asignacionActualId || !videoCompletado) return;
     try {
       await db.collection('asignaciones_valle').doc(asignacionActualId).update({
         video_visto: true,
         video_visto_fecha: firebase.firestore.FieldValue.serverTimestamp(),
-        video_progreso: videoProgress
+        video_progreso: 100,
+        estado: 'Pendiente evaluación'
       });
-      
-      alert('✅ Video marcado como visto. Ahora puedes realizar la evaluación.');
+      alert('✅ Video marcado como visto. Ahora realiza la evaluación y confirma que la terminaste.');
       cerrarVideoModal();
       cargarCapacitacionesAsignadas();
-      
     } catch (error) {
-      console.error("Error marcando video:", error);
+      console.error('Error marcando video:', error);
       alert('Error al guardar progreso');
     }
   }
 
   function extraerIdYouTube(url) {
     if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
+    const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
     return (match && match[2].length === 11) ? match[2] : null;
   }
 
   function irAEvaluacion(asigId, evalUrl) {
     window.open(evalUrl, '_blank');
-    
     db.collection('asignaciones_valle').doc(asigId).update({
-      form_abierto: true,
+      form_abierto: true, 
       form_abierto_fecha: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      cargarCapacitacionesAsignadas(); // Refresca para mostrar el botón amarillo de confirmación
     });
-  }
-
-  function compartirPorWhatsApp(titulo, fechaLimite) {
-    const mensaje = ` Nueva capacitación asignada: *${titulo}*\n\n⏰ Fecha límite: ${fechaLimite || 'Por definir'}\n\nDebo completarla lo antes posible.`;
-    const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, '_blank');
   }
 
   function actualizarBarraProgreso(hechas, totales) {
     const pct = totales > 0 ? Math.round((hechas / totales) * 100) : 0;
-    if(document.getElementById('homeAvancePct')) document.getElementById('homeAvancePct').textContent = pct + "%";
-    if(document.getElementById('homeAvanceSub')) document.getElementById('homeAvanceSub').textContent = `${hechas} de ${totales} capacitaciones completadas`;
-    if(document.getElementById('homeAvanceBar')) document.getElementById('homeAvanceBar').style.width = pct + "%";
+    document.getElementById('homeAvancePct').textContent = pct + "%";
+    document.getElementById('homeAvanceSub').textContent = `${hechas} de ${totales} capacitaciones completadas`;
+    document.getElementById('homeAvanceBar').style.width = pct + "%";
   }
 
   function cargarMensajesAlertaAutomaticas() {
@@ -1101,38 +867,51 @@
         if(!container) return;
         
         let alertasHtml = '';
+        let hayAlertas = false;
         
         snapshot.forEach(doc => {
           const item = doc.data();
-          alertasHtml += `
-            <div class="alert-card">
-              <i class="ti ti-alert-circle"></i>
-              <div>
-                <div class="alert-text">Tienes pendiente: <strong>"${item.capacitacion_nombre || 'Capacitación'}"</strong> ${item.fecha_limite ? 'antes del ' + item.fecha_limite : ''}</div>
-                <div class="alert-time">Estado: ${item.estado || 'Programado'}</div>
-              </div>
-            </div>`;
+          if (item.estado !== 'Cumplió' && item.estado !== 'No cumplió') {
+            hayAlertas = true;
+            const fechaLimite = item.fecha_limite ? new Date(item.fecha_limite).toLocaleDateString('es-CO') : 'Sin fecha límite';
+            alertasHtml += `
+              <div class="alert-card">
+                <i class="ti ti-alert-circle"></i>
+                <div>
+                  <div class="alert-text">
+                    Tienes pendiente: <strong>"${item.capacitacion_nombre || 'Capacitación'}"</strong>
+                  </div>
+                  <div class="alert-time">
+                    <i class="ti ti-calendar" style="margin-right:5px;"></i>
+                    Fecha límite: ${fechaLimite}
+                  </div>
+                </div>
+              </div>`;
+          }
         });
         
-        container.innerHTML = alertasHtml || '<div style="text-align:center; padding:20px; color:#7a8f99;">✓ Al día. Sin alertas pendientes.</div>';
+        if (hayAlertas) {
+          container.innerHTML = alertasHtml;
+        } else {
+          container.innerHTML = `
+            <div class="card" style="text-align:center; padding:40px; background: linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); border: 2px solid #3cbcae;">
+              <i class="ti ti-check-circle" style="font-size:48px; color:#0f6e56; margin-bottom:15px;"></i>
+              <p style="color:#065f46; font-size:16px; font-weight:700;">¡Felicitaciones!</p>
+              <p style="color:#0f6e56; font-size:14px; margin-top:5px;">✓ Al día. No tienes capacitaciones pendientes.</p>
+            </div>`;
+        }
       });
   }
 
   function showTab(name) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    if(document.getElementById('screen-' + name)) document.getElementById('screen-' + name).classList.add('active');
-    if(document.getElementById('tab-' + name)) document.getElementById('tab-' + name).classList.add('active');
-    
-    if (name === 'capacitaciones') {
-      cargarCapacitacionesAsignadas();
-    }
+    document.getElementById('screen-' + name).classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+    if (name === 'capacitaciones') cargarCapacitacionesAsignadas();
   }
 
-  function logout() { 
-    localStorage.clear(); 
-    window.location.href = 'login.html'; 
-  }
+  function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 </script>
 </body>
 </html>
