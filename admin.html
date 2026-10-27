@@ -887,31 +887,48 @@
     }
 
     async function cargarExcel(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      try {
-        const data = new Uint8Array(await file.arrayBuffer());
-        const workbook = XLSX.read(data, { type: 'array' });
-        const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        let creados = 0;
-        const batch = db.batch();
-        for (const emp of jsonData) {
-          const cedula = String(emp.cedula || '').trim();
-          if (!cedula) continue;
-          const docRef = db.collection('empleados').doc();
-          batch.set(docRef, {
-            cedula, nombre: emp.nombre || '', cargo: emp.cargo || '', region: emp.region || '',
-            grupo: emp.grupo || 'General', rol: 'empleado', fecha_ingreso: emp.fecha_ingreso || new Date().toISOString().split('T')[0]
-          });
-          creados++;
-        }
-        await batch.commit();
-        alert(`✅ ${creados} empleados importados`);
-        cargarDatos();
-      } catch (error) {
-        alert('❌ Error al importar: ' + error.message);
-      }
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const data = new Uint8Array(await file.arrayBuffer());
+    const workbook = XLSX.read(data, { type: 'array' });
+    const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+    let creados = 0;
+    const batch = db.batch();
+    
+    for (const emp of jsonData) {
+      // ✅ Manejar case-insensitive: buscar tanto "Cedula" como "cedula"
+      const cedula = String(emp.Cedula || emp.cedula || '').trim();
+      const nombre = emp.Nombre || emp.nombre || '';
+      const cargo = emp.Cargo || emp.cargo || '';
+      const grupo = emp.Grupo || emp.grupo || 'General';
+      const region = emp.Region || emp.region || '';
+      const rol = emp.Rol || emp.rol || 'empleado';
+      const fecha_ingreso = emp.Fecha_ingreso || emp.fecha_ingreso || new Date().toISOString().split('T')[0];
+      
+      if (!cedula) continue;
+      
+      const docRef = db.collection('empleados').doc();
+      batch.set(docRef, {
+        cedula, 
+        nombre, 
+        cargo, 
+        region,
+        grupo, 
+        rol, 
+        fecha_ingreso
+      });
+      creados++;
     }
+    
+    await batch.commit();
+    alert(`✅ ${creados} empleados importados correctamente`);
+    cargarDatos();
+  } catch (error) {
+    console.error('Error:', error);
+    alert('❌ Error al importar: ' + error.message);
+  }
+}
 
     async function guardarEmpleado() {
       const cedula = document.getElementById('searchCedula').value.trim();
