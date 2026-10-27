@@ -886,43 +886,69 @@
       }
     }
 
-    async function cargarExcel(event) {
+    function normKey(k) {
+  return String(k).trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function normalizarRegion(r) {
+  const v = normKey(r || '');
+  if (v.includes('yumbo')) return 'Yumbo';
+  if (v.includes('tulua')) return 'Tuluá';
+  if (v.includes('popayan')) return 'Popayán';
+  if (v.includes('cali')) return 'Cali';
+  return String(r || '').trim();
+}
+
+   async function cargarExcel(event) {
   const file = event.target.files[0];
   if (!file) return;
   try {
     const data = new Uint8Array(await file.arrayBuffer());
     const workbook = XLSX.read(data, { type: 'array' });
-    const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-    let creados = 0;
-    const batch = db.batch();
-    
-    for (const emp of jsonData) {
-      // ✅ Manejar case-insensitive: buscar tanto "Cedula" como "cedula"
-      const cedula = String(emp.Cedula || emp.cedula || '').trim();
-      const nombre = emp.Nombre || emp.nombre || '';
-      const cargo = emp.Cargo || emp.cargo || '';
-      const grupo = emp.Grupo || emp.grupo || 'General';
-      const region = emp.Region || emp.region || '';
-      const rol = emp.Rol || emp.rol || 'empleado';
-      const fecha_ingreso = emp.Fecha_ingreso || emp.fecha_ingreso || new Date().toISOString().split('T')[0];
-      
+    const rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: '' });
+
+    // Normalizar encabezados: "Cedula ", "Cédula", "CEDULA" -> "cedula"
+    const rows = rawRows.map(r => {
+      const o = {};
+      Object.keys(r).forEach(k => o[normKey(k)] = r[k]);
+      return o;
+    });
+
+    const hoy = new Date().toISOString().split('T')[0];
+    const empleados = [];
+
+    for (const r of rows) {
+      const cedula = String(r.cedula ?? '').trim();
       if (!cedula) continue;
-      
-      const docRef = db.collection('empleados').doc();
-      batch.set(docRef, {
-        cedula, 
-        nombre, 
-        cargo, 
-        region,
-        grupo, 
-        rol, 
-        fecha_ingreso
+      empleados.push({
+        cedula,
+        nombre: String(r.nombre ?? '').trim(),
+        cargo: String(r.cargo ?? '').trim(),
+        grupo: String(r.grupo ?? 'General').trim().toUpperCase(),
+        region: normalizarRegion(r.region),
+        rol: String(r.rol ?? 'empleado').trim().toLowerCase(),
+        fecha_ingreso: r.fecha_ingreso || hoy
       });
-      creados++;
     }
-    
-    await batch.commit();
-    alert(`✅ ${creados} empleados importados correctamente`);
+
+    if (empleados.length === 0) {
+      return alert('❌ No se encontraron filas válidas. Revisa que exista la columna "Cedula".');
+    }
+
+    // Evitar duplicados por cédula
+    const existentes = new Set(valleData.empleados.map(e => String(e.cedula)));
+    const nuevos = empleados.filter(e => !existentes.has(e.cedula));
+
+    // Batches de máx. 450
+    for (let i = 0; i < nuevos.length; i += 450) {
+      const batch = db.batch();
+      nuevos.slice(i, i + 450).forEach(emp => batch.set(db.collection('empleados').doc(), emp));
+      await batch.commit();
+    }
+
+    alert(`✅ ${nuevos.length} empleados importados\n⏭️ ${empleados.length - nuevos.length} omitidos por cédula duplicada`);
+    event.target.value = ''; // permite volver a subir el mismo archivo
     cargarDatos();
   } catch (error) {
     console.error('Error:', error);
