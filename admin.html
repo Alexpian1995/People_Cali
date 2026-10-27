@@ -262,6 +262,20 @@
           <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" style="display: none;" onchange="cargarExcel(event)">
           <button class="btn btn-success" style="margin-top: 20px;" onclick="document.getElementById('excelFile').click()"><i class="ti ti-upload"></i> Seleccionar Archivo</button>
         </div>
+        
+        <!-- NUEVA ZONA: Actualización de Fechas -->
+        <div style="margin-top: 20px; padding: 20px; background: #fffbeb; border: 2px dashed #f59e0b; border-radius: 12px; text-align: center;">
+          <i class="ti ti-calendar" style="font-size: 32px; color: #f59e0b;"></i>
+          <h3 style="margin: 10px 0; color: #92400e;">Actualizar Solo Fechas de Ingreso</h3>
+          <p style="font-size: 13px; color: #78350f; margin-bottom: 15px;">
+            Sube un Excel con solo: <strong>Cedula</strong> y <strong>fecha_ingreso</strong> (o "Ingreso")
+          </p>
+          <input type="file" id="excelFechas" accept=".xlsx, .xls" style="display: none;" onchange="actualizarFechasIngresoMasivo(event)">
+          <button class="btn btn-warning" onclick="document.getElementById('excelFechas').click()">
+            <i class="ti ti-upload"></i> Actualizar Fechas Masivamente
+          </button>
+        </div>
+        
         <div style="margin-top: 30px; padding: 20px; background: #f7fafc; border-radius: 12px;">
           <div class="card-title" style="margin-bottom: 15px; font-size: 16px;"><i class="ti ti-user-plus" style="color: #206987;"></i> Registro Individual</div>
           <div class="form-grid">
@@ -887,74 +901,137 @@
     }
 
     function normKey(k) {
-  return String(k).trim().toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-}
-
-function normalizarRegion(r) {
-  const v = normKey(r || '');
-  if (v.includes('yumbo')) return 'Yumbo';
-  if (v.includes('tulua')) return 'Tuluá';
-  if (v.includes('popayan')) return 'Popayán';
-  if (v.includes('cali')) return 'Cali';
-  return String(r || '').trim();
-}
-
-   async function cargarExcel(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  try {
-    const data = new Uint8Array(await file.arrayBuffer());
-    const workbook = XLSX.read(data, { type: 'array' });
-    const rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: '' });
-
-    // Normalizar encabezados: "Cedula ", "Cédula", "CEDULA" -> "cedula"
-    const rows = rawRows.map(r => {
-      const o = {};
-      Object.keys(r).forEach(k => o[normKey(k)] = r[k]);
-      return o;
-    });
-
-    const hoy = new Date().toISOString().split('T')[0];
-    const empleados = [];
-
-    for (const r of rows) {
-      const cedula = String(r.cedula ?? '').trim();
-      if (!cedula) continue;
-      empleados.push({
-        cedula,
-        nombre: String(r.nombre ?? '').trim(),
-        cargo: String(r.cargo ?? '').trim(),
-        grupo: String(r.grupo ?? 'General').trim().toUpperCase(),
-        region: normalizarRegion(r.region),
-        rol: String(r.rol ?? 'empleado').trim().toLowerCase(),
-        fecha_ingreso: r.fecha_ingreso || hoy
-      });
+      return String(k).trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
-    if (empleados.length === 0) {
-      return alert('❌ No se encontraron filas válidas. Revisa que exista la columna "Cedula".');
+    function normalizarRegion(r) {
+      const v = normKey(r || '');
+      if (v.includes('yumbo')) return 'Yumbo';
+      if (v.includes('tulua')) return 'Tuluá';
+      if (v.includes('popayan')) return 'Popayán';
+      if (v.includes('cali')) return 'Cali';
+      return String(r || '').trim();
     }
 
-    // Evitar duplicados por cédula
-    const existentes = new Set(valleData.empleados.map(e => String(e.cedula)));
-    const nuevos = empleados.filter(e => !existentes.has(e.cedula));
+    async function cargarExcel(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const data = new Uint8Array(await file.arrayBuffer());
+        const workbook = XLSX.read(data, { type: 'array' });
+        const rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: '' });
 
-    // Batches de máx. 450
-    for (let i = 0; i < nuevos.length; i += 450) {
-      const batch = db.batch();
-      nuevos.slice(i, i + 450).forEach(emp => batch.set(db.collection('empleados').doc(), emp));
-      await batch.commit();
+        // Normalizar encabezados: "Cedula ", "Cédula", "CEDULA" -> "cedula"
+        const rows = rawRows.map(r => {
+          const o = {};
+          Object.keys(r).forEach(k => o[normKey(k)] = r[k]);
+          return o;
+        });
+
+        const hoy = new Date().toISOString().split('T')[0];
+        const empleados = [];
+
+        for (const r of rows) {
+          const cedula = String(r.cedula ?? '').trim();
+          if (!cedula) continue;
+          empleados.push({
+            cedula,
+            nombre: String(r.nombre ?? '').trim(),
+            cargo: String(r.cargo ?? '').trim(),
+            grupo: String(r.grupo ?? 'General').trim().toUpperCase(),
+            region: normalizarRegion(r.region),
+            rol: String(r.rol ?? 'empleado').trim().toLowerCase(),
+            fecha_ingreso: r.fecha_ingreso || r.ingreso || hoy
+          });
+        }
+
+        if (empleados.length === 0) {
+          return alert('❌ No se encontraron filas válidas. Revisa que exista la columna "Cedula".');
+        }
+
+        // Evitar duplicados por cédula
+        const existentes = new Set(valleData.empleados.map(e => String(e.cedula)));
+        const nuevos = empleados.filter(e => !existentes.has(e.cedula));
+
+        // Batches de máx. 450
+        for (let i = 0; i < nuevos.length; i += 450) {
+          const batch = db.batch();
+          nuevos.slice(i, i + 450).forEach(emp => batch.set(db.collection('empleados').doc(), emp));
+          await batch.commit();
+        }
+
+        alert(`✅ ${nuevos.length} empleados importados\n️ ${empleados.length - nuevos.length} omitidos por cédula duplicada`);
+        event.target.value = ''; // permite volver a subir el mismo archivo
+        cargarDatos();
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error al importar: ' + error.message);
+      }
     }
 
-    alert(`✅ ${nuevos.length} empleados importados\n⏭️ ${empleados.length - nuevos.length} omitidos por cédula duplicada`);
-    event.target.value = ''; // permite volver a subir el mismo archivo
-    cargarDatos();
-  } catch (error) {
-    console.error('Error:', error);
-    alert('❌ Error al importar: ' + error.message);
-  }
-}
+    // ✅ NUEVA FUNCIÓN: Actualizar solo fechas de ingreso masivamente
+    async function actualizarFechasIngresoMasivo(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      try {
+        const data = new Uint8Array(await file.arrayBuffer());
+        const workbook = XLSX.read(data, { type: 'array' });
+        const rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: '' });
+
+        // Normalizar encabezados
+        const rows = rawRows.map(r => {
+          const o = {};
+          Object.keys(r).forEach(k => o[normKey(k)] = r[k]);
+          return o;
+        });
+
+        let actualizados = 0;
+        const errores = [];
+        const batch = db.batch();
+
+        for (const r of rows) {
+          const cedula = String(r.cedula ?? '').trim();
+          const fecha = r.fecha_ingreso || r.ingreso || '';
+          
+          if (!cedula || !fecha) {
+            errores.push(`Cédula ${cedula || 'sin cedula'} sin fecha`);
+            continue;
+          }
+          
+          // Buscar el empleado por cédula
+          const empleado = valleData.empleados.find(e => String(e.cedula) === cedula);
+          if (!empleado) {
+            errores.push(`Cédula ${cedula} no encontrada en la base de datos`);
+            continue;
+          }
+          
+          // Actualizar solo la fecha
+          batch.update(db.collection('empleados').doc(empleado.id), {
+            fecha_ingreso: fecha
+          });
+          actualizados++;
+        }
+
+        if (actualizados > 0) {
+          await batch.commit();
+        }
+
+        let mensaje = `✅ ${actualizados} fechas actualizadas correctamente`;
+        if (errores.length > 0) {
+          mensaje += `\n️ ${errores.length} errores (revisa la consola)`;
+          console.error('Errores en actualización:', errores);
+        }
+        
+        alert(mensaje);
+        event.target.value = '';
+        cargarDatos();
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error al actualizar fechas: ' + error.message);
+      }
+    }
 
     async function guardarEmpleado() {
       const cedula = document.getElementById('searchCedula').value.trim();
@@ -1355,7 +1432,7 @@ function normalizarRegion(r) {
         await batch.commit();
         
         const appLink = window.location.origin + '/index.html';
-        alert(`✅ Asignación masiva exitosa!\n\n📚 ${cap.nombre}\n👥 Asignados: ${empleadosFiltrados.length} empleados\n Fecha límite: ${fecha}\n⭐ Nota mínima: ${notaMinima}%\n\n📲 Link de acceso a la app: ${appLink}\n\n💡 Los empleados deben iniciar sesión con su número de cédula.`);
+        alert(`✅ Asignación masiva exitosa!\n\n ${cap.nombre}\n👥 Asignados: ${empleadosFiltrados.length} empleados\n Fecha límite: ${fecha}\n⭐ Nota mínima: ${notaMinima}%\n\n📲 Link de acceso a la app: ${appLink}\n\n💡 Los empleados deben iniciar sesión con su número de cédula.`);
         
         document.getElementById('masivaGrupo').value = '';
         document.getElementById('masivaPilar').value = '';
@@ -1457,7 +1534,7 @@ function normalizarRegion(r) {
 
     // ✅ FUNCIÓN DE WHATSAPP SEGURA (Sin mostrar la cédula)
     function enviarWhatsAppSeguro(nombre, capacitacion, fecha, appLink) {
-      const mensaje = `📚 *Nueva Capacitación Asignada*\n\n` +
+      const mensaje = ` *Nueva Capacitación Asignada*\n\n` +
         `👤 *Empleado:* ${nombre}\n` +
         `📖 *Capacitación:* ${capacitacion}\n` +
         `⏰ *Fecha límite:* ${fecha}\n\n` +
