@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal People - Benefix</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-  <!-- Librería para generar PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,78 +16,34 @@
     }
 
     .app-shell {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      background: #f0f4f6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: relative;
+      width: 100%; max-width: 1400px; margin: 0 auto; background: #f0f4f6; min-height: 100vh;
+      display: flex; flex-direction: column; position: relative;
     }
-
     @media (min-width: 768px) {
-      .app-shell {
-        margin: 20px auto;
-        border-radius: 16px;
-        border: 1.5px solid #cdd5db;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        min-height: calc(100vh - 40px);
-        overflow: hidden;
-      }
+      .app-shell { margin: 20px auto; border-radius: 16px; border: 1.5px solid #cdd5db; box-shadow: 0 8px 32px rgba(0,0,0,0.1); min-height: calc(100vh - 40px); overflow: hidden; }
     }
 
-    .header { 
-      background: rgba(255,255,255,0.95); 
-      backdrop-filter: blur(10px);
-      padding: 15px 20px; 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      border-bottom: 3px solid #3cbcae;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
+    .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #3cbcae; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .logo-img { height: 45px; width: auto; object-fit: contain; display: block; }
     .header-title { font-size: 20px; font-weight: 700; color: #2d3748; margin-left: 12px; }
     .header-subtitle { font-size: 11px; color: #718096; font-weight: 500; }
-    .header-badge { 
-      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); 
-      color: white; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 20px; white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(32,105,135,0.3);
-    }
-    .notif-btn { 
-      width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #ffc404 0%, #fbbf24 100%); 
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      box-shadow: 0 2px 8px rgba(255,196,4,0.4); transition: transform 0.2s;
-    }
+    .header-badge { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 20px; white-space: nowrap; box-shadow: 0 2px 8px rgba(32,105,135,0.3); }
+    .notif-btn { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #ffc404 0%, #fbbf24 100%); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(255,196,4,0.4); transition: transform 0.2s; }
     .notif-btn:hover { transform: scale(1.1); }
 
-    .tab-bar { 
-      display: flex; background: white; padding: 10px; gap: 8px; border-bottom: 2px solid #e2e8f0; overflow-x: auto;
-    }
-    .tab { 
-      flex: 1; min-width: 100px; padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #718096; 
-      cursor: pointer; border-radius: 12px; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px;
-      background: #f7fafc; border: 2px solid transparent;
-    }
+    .tab-bar { display: flex; background: white; padding: 10px; gap: 8px; border-bottom: 2px solid #e2e8f0; overflow-x: auto; }
+    .tab { flex: 1; min-width: 100px; padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 600; color: #718096; cursor: pointer; border-radius: 12px; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 6px; background: #f7fafc; border: 2px solid transparent; }
     .tab i { font-size: 20px; }
-    .tab.active { 
-      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; box-shadow: 0 4px 12px rgba(32,105,135,0.3); transform: translateY(-2px);
-    }
+    .tab.active { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; box-shadow: 0 4px 12px rgba(32,105,135,0.3); transform: translateY(-2px); }
     .tab:hover:not(.active) { background: #edf2f7; border-color: #206987; color: #206987; }
 
     .screen { display: none; padding: 20px; flex: 1; pointer-events: none; }
     .screen.active { display: flex; flex-direction: column; pointer-events: auto; }
 
-    .section-title { 
-      font-size: 14px; font-weight: 700; color: #206987; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
-    }
+    .section-title { font-size: 14px; font-weight: 700; color: #206987; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
     .section-title i { font-size: 20px; }
 
-    .card { 
-      background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;
-    }
+    .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; }
     .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
     .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
     .card-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
@@ -100,24 +55,14 @@
     .card-title { font-size: 16px; font-weight: 700; color: #2d3748; }
     .card-sub { font-size: 12px; color: #718096; margin-top: 2px; }
 
-    .profile-card { 
-      background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; flex-wrap: wrap;
-    }
-    .avatar { 
-      width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); 
-      display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: white; flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(32,105,135,0.3);
-    }
+    .profile-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+    .avatar { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: white; flex-shrink: 0; box-shadow: 0 4px 12px rgba(32,105,135,0.3); }
     .profile-info { flex: 1; min-width: 200px; }
     .profile-info .name { font-size: 18px; font-weight: 700; color: #2d3748; margin-bottom: 4px; }
     .profile-info .cargo { font-size: 13px; color: #718096; margin-bottom: 2px; }
     .profile-info .fecha-ingreso { font-size: 12px; color: #206987; font-weight: 600; }
     .profile-info .dias-activos { font-size: 11px; color: #48bb78; font-weight: 700; margin-top: 2px; }
-    .btn-logout { 
-      background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); color: white; border: none; padding: 8px 16px; border-radius: 8px; 
-      font-size: 12px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 8px rgba(245,101,101,0.3); transition: transform 0.2s;
-    }
+    .btn-logout { background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 8px rgba(245,101,101,0.3); transition: transform 0.2s; }
     .btn-logout:hover { transform: translateY(-2px); }
 
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
@@ -129,42 +74,18 @@
     .stat-card.orange { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); }
     .stat-card.blue { background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); }
 
-    .avance-global { 
-      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(32,105,135,0.3);
-    }
-    .avance-label { font-size: 13px; color: #a8d8e0; font-weight: 600; margin-bottom: 8px; }
-    .avance-pct { font-size: 42px; font-weight: 700; color: white; margin-bottom: 8px; }
-    .avance-sub { font-size: 13px; color: #a8d8e0; margin-bottom: 15px; }
-    .avance-bar { height: 12px; background: rgba(255,255,255,0.2); border-radius: 8px; overflow: hidden; }
-    .avance-fill { 
-      height: 100%; background: linear-gradient(90deg, #ffc404 0%, #fbbf24 100%); border-radius: 8px; width: 0%; transition: width 0.5s ease;
-      box-shadow: 0 2px 8px rgba(255,196,4,0.4);
-    }
-
-    .btn-watch {
-      padding: 14px 20px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
+    .btn-watch { padding: 14px 20px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
     .btn-watch.primary { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; }
     .btn-watch.primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(32,105,135,0.4); }
     .btn-watch.secondary { background: linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); color: #0f6e56; }
     .btn-watch:disabled { opacity: 0.5; cursor: not-allowed; transform: none; background: #e2e8f0; color: #a0aec0; }
-    .btn-whatsapp {
-      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; padding: 12px 16px; border-radius: 12px; border: none;
-      font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
-      box-shadow: 0 4px 12px rgba(37,211,102,0.3); transition: transform 0.2s;
-    }
+    .btn-whatsapp { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; padding: 12px 16px; border-radius: 12px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(37,211,102,0.3); transition: transform 0.2s; }
     .btn-whatsapp:hover { transform: translateY(-2px); }
 
-    .capacitacion-card {
-      background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;
-    }
+    .capacitacion-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; }
     .capacitacion-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
     .cap-header { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
-    .cap-icon {
-      width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 26px;
-    }
+    .cap-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 26px; }
     .cap-icon.safety { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); color: #dc2626; }
     .cap-icon.management { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #2563eb; }
     .cap-icon.people { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); color: #9333ea; }
@@ -180,9 +101,7 @@
     .tag.red { background: #fee2e2; color: #991b1b; }
     
     .cap-progress { background: #e2e8f0; height: 8px; border-radius: 6px; overflow: hidden; margin: 15px 0; }
-    .cap-progress-bar {
-      height: 100%; background: linear-gradient(90deg, #206987 0%, #3cbcae 100%); border-radius: 6px; transition: width 0.3s ease;
-    }
+    .cap-progress-bar { height: 100%; background: linear-gradient(90deg, #206987 0%, #3cbcae 100%); border-radius: 6px; transition: width 0.3s ease; }
     .cap-actions { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
 
     .benefit-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #e2e8f0; }
@@ -190,66 +109,33 @@
     .benefit-label { font-size: 13px; color: #4a5568; font-weight: 600; display: flex; align-items: center; }
     .benefit-amount { font-size: 18px; font-weight: 700; color: #206987; }
 
-    .alert-card { 
-      background: linear-gradient(135deg, #fff8e6 0%, #feebc8 100%); border: 1px solid #ffc404; border-radius: 14px; padding: 15px; 
-      display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(255,196,4,0.2);
-    }
+    .alert-card { background: linear-gradient(135deg, #fff8e6 0%, #feebc8 100%); border: 1px solid #ffc404; border-radius: 14px; padding: 15px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(255,196,4,0.2); }
     .alert-card i { color: #c89b00; font-size: 22px; margin-top: 2px; }
     .alert-text { font-size: 13px; color: #744210; line-height: 1.5; font-weight: 600; }
     .alert-time { font-size: 11px; color: #92400e; margin-top: 4px; display: flex; align-items: center; }
 
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
-      z-index: 10000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);
-    }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
     .modal-overlay.active { display: flex; }
-    .modal-content {
-      background: white; border-radius: 20px; width: 100%; max-width: 900px; max-height: 90vh;
-      overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    }
-    .modal-header {
-      padding: 20px 25px; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;
-      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-    }
+    .modal-content { background: white; border-radius: 20px; width: 100%; max-width: 900px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+    .modal-header { padding: 20px 25px; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%); }
     .modal-header h3 { font-size: 18px; color: #2d3748; font-weight: 700; }
-    .modal-close {
-      background: none; border: none; font-size: 28px; cursor: pointer; color: #718096; width: 40px; height: 40px;
-      border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-    }
+    .modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #718096; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .modal-close:hover { background: #e2e8f0; color: #2d3748; }
     .modal-body { padding: 25px; overflow-y: auto; }
-    .video-wrapper {
-      position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 12px;
-      overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-    .video-wrapper iframe,
-    .video-wrapper div { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+    .video-wrapper iframe, .video-wrapper div { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-    .padrino-header {
-      background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; padding: 25px;
-      border-radius: 16px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(32,105,135,0.3);
-    }
+    .padrino-header { background: linear-gradient(135deg, #206987 0%, #3cbcae 100%); color: white; padding: 25px; border-radius: 16px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(32,105,135,0.3); }
     .padrino-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
     .padrino-header p { font-size: 13px; opacity: 0.9; }
-
     .tag-skill { display: inline-block; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin: 3px; }
     .tag-tecnica { background: linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); color: #0f6e56; }
     .tag-blanda { background: linear-gradient(135deg, #fff8e1 0%, #feebc8 100%); color: #744210; }
-
-    .hito-progreso-wrap {
-      padding: 25px; border-radius: 16px; background: linear-gradient(165deg, #ffffff 0%, #f7fafc 100%);
-      border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(32,105,135,0.08); margin-bottom: 20px;
-    }
+    .hito-progreso-wrap { padding: 25px; border-radius: 16px; background: linear-gradient(165deg, #ffffff 0%, #f7fafc 100%); border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(32,105,135,0.08); margin-bottom: 20px; }
     .hito-fecha-contrato-row { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px dashed #e2e8f0; }
-    .hito-fecha-icon {
-      width: 45px; height: 45px; border-radius: 12px; background: linear-gradient(135deg, #e1f0f5 0%, #bee3f8 100%); 
-      color: #206987; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
+    .hito-fecha-icon { width: 45px; height: 45px; border-radius: 12px; background: linear-gradient(135deg, #e1f0f5 0%, #bee3f8 100%); color: #206987; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .hito-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
-    .hito-card {
-      background: white; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; border: 2px solid #e2e8f0;
-    }
+    .hito-card { background: white; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; border: 2px solid #e2e8f0; }
     .hito-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
     .hito-card-head { display: flex; align-items: center; gap: 10px; }
     .hito-card-icon { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
@@ -257,12 +143,58 @@
     .hito-card-score { font-size: 24px; font-weight: 800; }
     .hito-card-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; width: fit-content; }
     .hito-card-meta { font-size: 10px; color: #718096; line-height: 1.4; }
-
     .footer { text-align: center; padding: 30px 20px; margin-top: auto; background: white; border-top: 2px solid #e2e8f0; }
     .footer div { font-size: 12px; font-weight: 600; color: #718096; letter-spacing: 0.03em; }
     .footer .dev { font-size: 11px; font-weight: 700; color: #206987; letter-spacing: 0.05em; margin-top: 5px; text-transform: uppercase; }
-    
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 🎮 ESTILOS DE GAMIFICACIÓN - PISTA ESTILO VIDEOJUEGO */
+    .race-track { background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%); border-radius: 16px; padding: 25px; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 3px solid #3cbcae; }
+    .race-track::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(255,255,255,0.03) 50px, rgba(255,255,255,0.03) 100px); pointer-events: none; }
+    .race-track-title { color: #ffc404; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .race-track-title i { font-size: 24px; }
+    
+    .race-svg-container { position: relative; width: 100%; height: 180px; margin: 20px 0; }
+    .race-svg { width: 100%; height: 100%; }
+    .race-path { fill: none; stroke: #4a5568; stroke-width: 20; stroke-linecap: round; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+    .race-path-line { fill: none; stroke: #ffc404; stroke-width: 3; stroke-dasharray: 15, 10; stroke-linecap: round; opacity: 0.8; }
+    
+    .checkpoint { position: absolute; width: 32px; height: 32px; background: linear-gradient(135deg, #718096 0%, #4a5568 100%); border: 3px solid #2d3748; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 10; transition: all 0.3s; }
+    .checkpoint.completed { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); border-color: #2f855a; box-shadow: 0 0 20px rgba(72,187,120,0.6); transform: scale(1.1); }
+    .checkpoint.current { background: linear-gradient(135deg, #ffc404 0%, #fbbf24 100%); border-color: #d97706; box-shadow: 0 0 25px rgba(255,196,4,0.8); animation: pulse-glow 1.5s infinite; }
+    @keyframes pulse-glow { 0%, 100% { transform: scale(1.1); box-shadow: 0 0 25px rgba(255,196,4,0.8); } 50% { transform: scale(1.25); box-shadow: 0 0 35px rgba(255,196,4,1); } }
+    
+    .runner { position: absolute; width: 40px; height: 40px; font-size: 36px; z-index: 20; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5)); transition: all 1s cubic-bezier(0.4, 0, 0.2, 1); transform: scaleX(-1); }
+    .runner.running { animation: run-bounce 0.6s infinite alternate; }
+    @keyframes run-bounce { 0% { transform: translateY(0) scaleX(-1); } 100% { transform: translateY(-8px) scaleX(-1); } }
+    
+    .finish-flag { position: absolute; font-size: 36px; z-index: 5; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4)); animation: wave-flag 2s infinite ease-in-out; }
+    @keyframes wave-flag { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+    
+    .player-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 20px; }
+    .stat-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 15px; text-align: center; border: 2px solid rgba(255,255,255,0.15); transition: transform 0.2s; }
+    .stat-box:hover { transform: translateY(-3px); background: rgba(255,255,255,0.15); }
+    .stat-box .stat-value { font-size: 24px; font-weight: 800; color: #ffc404; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    .stat-box .stat-label { font-size: 11px; color: #a0aec0; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 5px; font-weight: 600; }
+    
+    .level-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 25px; font-size: 13px; font-weight: 800; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .level-1 { background: linear-gradient(135deg, #a0aec0, #718096); color: white; }
+    .level-2 { background: linear-gradient(135deg, #90cdf4, #4299e1); color: white; }
+    .level-3 { background: linear-gradient(135deg, #f6e05e, #d69e2e); color: #1a202c; }
+    .level-4 { background: linear-gradient(135deg, #f687b3, #d53f8c); color: white; }
+    .level-5 { background: linear-gradient(135deg, #b794f4, #805ad5); color: white; box-shadow: 0 0 25px rgba(128,90,213,0.6); }
+    
+    .confetti { position: fixed; width: 10px; height: 10px; pointer-events: none; z-index: 99999; }
+
+    @media (max-width: 768px) {
+      .race-track { padding: 15px; }
+      .race-svg-container { height: 150px; }
+      .checkpoint { width: 24px; height: 24px; font-size: 10px; }
+      .runner { width: 32px; height: 32px; font-size: 28px; }
+      .player-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat-box { padding: 10px; }
+      .stat-box .stat-value { font-size: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -278,9 +210,7 @@
     </div>
     <div style="display: flex; align-items: center; gap: 12px;">
       <div id="headerRegion" class="header-badge">CD ---</div>
-      <div class="notif-btn" onclick="showTab('notif')">
-        <i class="ti ti-bell" style="font-size:18px;color:white"></i>
-      </div>
+      <div class="notif-btn" onclick="showTab('notif')"><i class="ti ti-bell" style="font-size:18px;color:white"></i></div>
     </div>
   </div>
 
@@ -304,18 +234,33 @@
       <button class="btn-logout" onclick="logout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
     </div>
 
+    <!-- 🎮 PISTA DE CARRERA ESTILO VIDEOJUEGO -->
+    <div class="race-track">
+      <div class="race-track-title"><i class="ti ti-flag"></i> Tu Ruta de Capacitación</div>
+      
+      <div id="playerLevelBadge" class="level-badge level-1">🏃 Nivel 1: Novato</div>
+      
+      <div class="race-svg-container" id="raceSvgContainer">
+        <svg class="race-svg" id="raceSvg" viewBox="0 0 1000 150" preserveAspectRatio="xMidYMid meet"></svg>
+        <div id="runner" class="runner running">🏃</div>
+        <div id="finishFlag" class="finish-flag">🏁</div>
+        <div id="checkpointsContainer"></div>
+      </div>
+      
+      <div class="player-stats">
+        <div class="stat-box"><div class="stat-value" id="statXP">0</div><div class="stat-label">XP Total</div></div>
+        <div class="stat-box"><div class="stat-value" id="statCompletadas">0</div><div class="stat-label">Completadas</div></div>
+        <div class="stat-box"><div class="stat-value" id="statRacha">0</div><div class="stat-label">🔥 Racha</div></div>
+        <div class="stat-box"><div class="stat-value" id="statPosicion">-</div><div class="stat-label">Posición</div></div>
+      </div>
+    </div>
+
     <div class="section-title"><i class="ti ti-chart-bar"></i> Resumen de Capacitación</div>
     <div class="stats-grid">
       <div class="stat-card teal"><h3>Total Asignadas</h3><div class="value" id="statTotal">0</div></div>
-      <div class="stat-card green"><h3>Completadas</h3><div class="value" id="statCompletadas">0</div></div>
+      <div class="stat-card green"><h3>Completadas</h3><div class="value" id="statCompletadas2">0</div></div>
       <div class="stat-card orange"><h3>Pendientes</h3><div class="value" id="statPendientes">0</div></div>
       <div class="stat-card blue"><h3>% Progreso</h3><div class="value" id="statProgreso">0%</div></div>
-    </div>
-    <div class="avance-global">
-      <div class="avance-label">Avance del Cronograma Actual</div>
-      <div id="homeAvancePct" class="avance-pct">0%</div>
-      <div id="homeAvanceSub" class="avance-sub">Calculando tareas...</div>
-      <div class="avance-bar"><div id="homeAvanceBar" class="avance-fill"></div></div>
     </div>
   </div>
 
@@ -426,10 +371,8 @@
       <button class="modal-close" onclick="cerrarVideoModal()">&times;</button>
     </div>
     <div class="modal-body">
-      <!-- ✅ CAMBIO 1: Reemplazar iframe por div -->
       <div class="video-wrapper" id="videoWrapper"></div>
       <div style="margin-top: 20px; text-align: center;">
-        <!-- ✅ CAMBIO 2: Agregar id y disabled -->
         <button id="btnMarcarVisto" class="btn-watch primary" onclick="marcarComoVisto()" style="width: 100%; padding: 16px; font-size: 15px;" disabled>
           <i class="ti ti-lock"></i> <span>Mira el video completo para continuar</span>
         </button>
@@ -445,22 +388,202 @@
 <script>
   const app = firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-
   const cedulaLogueada = localStorage.getItem('usuario_cedula');
   if (!cedulaLogueada) { window.location.href = 'login.html'; }
 
   let capacitacionActual = null;
   let asignacionActualId = null;
-  
-  // Variables anti-adelanto
   let ytPlayer = null;
   let ytTimer = null;
   let maxPermitido = 0;
   let videoCompletado = false;
   let ytPendiente = null;
   let avisoTimer = null;
+  let videoProgress = 0;
 
-  // Carga la API de YouTube una sola vez
+  // 🎮 VARIABLES DE GAMIFICACIÓN
+  let jugadorData = { xp: 0, nivel: 1, logros: [], capacitaciones_completadas: 0, racha_actual: 0 };
+  let posicionRanking = 0;
+  let totalCapacitacionesAsignadas = 0;
+
+  const NIVELES = [
+    { nivel: 1, nombre: 'Novato', icono: '🏃', xpRequerido: 0, color: 'level-1' },
+    { nivel: 2, nombre: 'Aprendiz', icono: '🏃‍♂️', xpRequerido: 100, color: 'level-2' },
+    { nivel: 3, nombre: 'Experto', icono: '🏃‍♂️💨', xpRequerido: 300, color: 'level-3' },
+    { nivel: 4, nombre: 'Maestro', icono: '🦸', xpRequerido: 600, color: 'level-4' },
+    { nivel: 5, nombre: 'Leyenda', icono: '🏆', xpRequerido: 1000, color: 'level-5' }
+  ];
+
+  function getNivelActual(xp) {
+    let nivel = NIVELES[0];
+    for (const n of NIVELES) { if (xp >= n.xpRequerido) nivel = n; else break; }
+    return nivel;
+  }
+
+  function getXpParaSiguienteNivel(xp) {
+    const nivelActual = getNivelActual(xp);
+    const idx = NIVELES.findIndex(n => n.nivel === nivelActual.nivel);
+    return idx >= NIVELES.length - 1 ? nivelActual.xpRequerido : NIVELES[idx + 1].xpRequerido;
+  }
+
+  // 🎮 GENERAR PISTA DINÁMICA CON CURVAS
+  function generarPistaDinamica() {
+    const svg = document.getElementById('raceSvg');
+    const container = document.getElementById('raceSvgContainer');
+    const checkpointsContainer = document.getElementById('checkpointsContainer');
+    const runner = document.getElementById('runner');
+    const finishFlag = document.getElementById('finishFlag');
+    
+    if (!svg || !container) return;
+    
+    const numEtapas = Math.max(totalCapacitacionesAsignadas, 1);
+    const completadas = jugadorData.capacitaciones_completadas;
+    
+    svg.innerHTML = '';
+    checkpointsContainer.innerHTML = '';
+    
+    const pathData = crearPathConCurvas(numEtapas);
+    
+    const pathBg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pathBg.setAttribute('d', pathData);
+    pathBg.setAttribute('class', 'race-path');
+    svg.appendChild(pathBg);
+    
+    const pathLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pathLine.setAttribute('d', pathData);
+    pathLine.setAttribute('class', 'race-path-line');
+    svg.appendChild(pathLine);
+    
+    const checkpoints = calcularPosicionesCheckpoints(numEtapas);
+    
+    checkpoints.forEach((pos, index) => {
+      const checkpoint = document.createElement('div');
+      checkpoint.className = 'checkpoint';
+      if (index < completadas) checkpoint.classList.add('completed');
+      else if (index === completadas) checkpoint.classList.add('current');
+      checkpoint.textContent = index + 1;
+      checkpoint.style.left = `${pos.x}%`;
+      checkpoint.style.top = `${pos.y}%`;
+      checkpoint.title = `Etapa ${index + 1}`;
+      checkpointsContainer.appendChild(checkpoint);
+    });
+    
+    // Posicionar personaje en el checkpoint actual
+    const runnerPos = completadas > 0 ? checkpoints[completadas - 1] : { x: 5, y: 50 };
+    runner.style.left = `calc(${runnerPos.x}% - 20px)`;
+    runner.style.top = `calc(${runnerPos.y}% - 20px)`;
+    
+    // Posicionar bandera de meta al final
+    const finishPos = checkpoints[checkpoints.length - 1] || { x: 95, y: 50 };
+    finishFlag.style.left = `calc(${finishPos.x}% - 18px)`;
+    finishFlag.style.top = `calc(${finishPos.y}% - 45px)`;
+    finishFlag.style.display = 'block';
+  }
+
+  function crearPathConCurvas(numEtapas) {
+    const width = 1000;
+    const height = 150;
+    const segmentWidth = width / (numEtapas + 1);
+    
+    let path = `M 50 ${height/2}`;
+    
+    for (let i = 1; i <= numEtapas; i++) {
+      const x = i * segmentWidth;
+      const y = height/2 + (i % 2 === 0 ? -30 : 30) * Math.sin(i * 0.5);
+      const cp1x = x - segmentWidth/2;
+      const cp1y = height/2;
+      const cp2x = x - segmentWidth/3;
+      const cp2y = y;
+      path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x} ${y}`;
+    }
+    
+    return path;
+  }
+
+  function calcularPosicionesCheckpoints(numEtapas) {
+    const positions = [];
+    const segmentWidth = 100 / (numEtapas + 1);
+    
+    for (let i = 1; i <= numEtapas; i++) {
+      const x = i * segmentWidth;
+      const y = 50 + (i % 2 === 0 ? -20 : 20) * Math.sin(i * 0.5);
+      positions.push({ x, y });
+    }
+    
+    return positions;
+  }
+
+  function actualizarPistaVisual() {
+    const nivel = getNivelActual(jugadorData.xp);
+    
+    const badge = document.getElementById('playerLevelBadge');
+    if(badge) {
+      badge.className = `level-badge ${nivel.color}`;
+      badge.innerHTML = `${nivel.icono} Nivel ${nivel.nivel}: ${nivel.nombre}`;
+    }
+    
+    const elXP = document.getElementById('statXP'); if(elXP) elXP.textContent = jugadorData.xp;
+    const elComp = document.getElementById('statCompletadas'); if(elComp) elComp.textContent = jugadorData.capacitaciones_completadas;
+    const elRacha = document.getElementById('statRacha'); if(elRacha) elRacha.textContent = jugadorData.racha_actual;
+    const elPos = document.getElementById('statPosicion'); if(elPos) elPos.textContent = posicionRanking > 0 ? `#${posicionRanking}` : '-';
+    
+    generarPistaDinamica();
+  }
+
+  async function ganarXP(cantidad, motivo) {
+    jugadorData.xp += cantidad;
+    const nivelAnterior = jugadorData.nivel;
+    const nuevoNivel = getNivelActual(jugadorData.xp);
+    jugadorData.nivel = nuevoNivel.nivel;
+    
+    try {
+      const empSnap = await db.collection('empleados').where('cedula', '==', String(cedulaLogueada)).limit(1).get();
+      if (!empSnap.empty) {
+        await db.collection('empleados').doc(empSnap.docs[0].id).update({
+          xp: jugadorData.xp, nivel: jugadorData.nivel,
+          capacitaciones_completadas: jugadorData.capacitaciones_completadas,
+          ultima_actualizacion_xp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+    } catch (e) { console.error('Error actualizando XP:', e); }
+    
+    if (nuevoNivel.nivel > nivelAnterior) mostrarCelebracionNivel(nuevoNivel);
+    actualizarPistaVisual();
+  }
+
+  function mostrarCelebracionNivel(nivel) {
+    const emojis = ['🎉', '⭐', '🏆', '✨', '🎊'];
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '-20px';
+        confetti.style.fontSize = (Math.random() * 20 + 15) + 'px';
+        confetti.style.transition = 'all 2s ease-out';
+        document.body.appendChild(confetti);
+        setTimeout(() => { confetti.style.top = '100vh'; confetti.style.transform = `rotate(${Math.random() * 360}deg)`; }, 50);
+        setTimeout(() => confetti.remove(), 2500);
+      }, i * 100);
+    }
+    setTimeout(() => { alert(`🎉 ¡FELICIDADES! 🎉\n\nHas subido al Nivel ${nivel.nivel}: ${nivel.nombre} ${nivel.icono}\n\n¡Sigue así, campeón!`); }, 500);
+  }
+
+  async function cargarDatosJugador() {
+    try {
+      const empSnap = await db.collection('empleados').where('cedula', '==', String(cedulaLogueada)).limit(1).get();
+      if (!empSnap.empty) {
+        const empData = empSnap.docs[0].data();
+        jugadorData = { xp: empData.xp || 0, nivel: empData.nivel || 1, logros: empData.logros || [], capacitaciones_completadas: empData.capacitaciones_completadas || 0, racha_actual: empData.racha_actual || 0 };
+      }
+      const todosEmpleados = await db.collection('empleados').get();
+      const ranking = todosEmpleados.docs.map(d => ({ id: d.id, xp: d.data().xp || 0, cedula: d.data().cedula })).sort((a, b) => b.xp - a.xp);
+      posicionRanking = ranking.findIndex(e => e.cedula === cedulaLogueada) + 1;
+      actualizarPistaVisual();
+    } catch (e) { console.error('Error cargando datos del jugador:', e); }
+  }
+
   (function cargarYouTubeAPI() {
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
@@ -475,6 +598,7 @@
     inicializarEscuchadorEmpleadoRealtime();
     cargarCapacitacionesAsignadas();
     cargarMensajesAlertaAutomaticas();
+    cargarDatosJugador();
   });
 
   function inicializarEscuchadorEmpleadoRealtime() {
@@ -492,9 +616,15 @@
 
       if (fechaIngreso) {
         const fechaObj = new Date(fechaIngreso);
-        document.getElementById('userFechaIngreso').textContent = `Fecha de ingreso: ${fechaObj.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}`;
-        const hoy = new Date(); fechaObj.setHours(0,0,0,0); hoy.setHours(0,0,0,0);
-        document.getElementById('userDiasActivos').textContent = `⏱️ ${Math.ceil(Math.abs(hoy - fechaObj) / (1000 * 60 * 60 * 24))} días activos en la compañía`;
+        if (!isNaN(fechaObj.getTime())) {
+          document.getElementById('userFechaIngreso').textContent = `Fecha de ingreso: ${fechaObj.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+          const hoy = new Date(); fechaObj.setHours(0,0,0,0); hoy.setHours(0,0,0,0);
+          const diasActivos = Math.ceil(Math.abs(hoy - fechaObj) / (1000 * 60 * 60 * 24));
+          document.getElementById('userDiasActivos').textContent = `⏱️ ${diasActivos} días activos en la compañía`;
+        } else {
+          document.getElementById('userFechaIngreso').textContent = 'Fecha de ingreso: No definida';
+          document.getElementById('userDiasActivos').textContent = '⏱️ 0 días activos en la compañía';
+        }
       }
 
       const beneficioSnapshot = await db.collection('beneficios').where('cargo', '==', cargoEmpleado).where('region', '==', regionEmpleado).get();
@@ -506,29 +636,8 @@
             const bReal = doc.data();
             const valorNumerico = typeof bReal.valor === 'number' ? bReal.valor : parseFloat(String(bReal.valor).replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
             const valorFormateado = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(valorNumerico);
-            
-            const indicadorHTML = bReal.indicador ? `
-              <div class="benefit-row">
-                <span class="benefit-label"><i class="ti ti-target" style="margin-right:5px;"></i>Requisito:</span>
-                <span style="font-size:13px; color:#4a5568; font-weight:600;">${bReal.indicador}</span>
-              </div>
-            ` : '';
-            
-            listaContainer.innerHTML += `
-              <div class="card">
-                <div class="card-header">
-                  <div class="card-icon yellow"><i class="ti ti-coin"></i></div>
-                  <div>
-                    <div class="card-title">${bReal.concepto || "Compensación"}</div>
-                    <div class="card-sub">Cargo: ${cargoEmpleado} · CD: ${regionEmpleado}</div>
-                  </div>
-                </div>
-                <div class="benefit-row">
-                  <span class="benefit-label">Monto asignado:</span>
-                  <span class="benefit-amount">${valorFormateado}</span>
-                </div>
-                ${indicadorHTML}
-              </div>`;
+            const indicadorHTML = bReal.indicador ? `<div class="benefit-row"><span class="benefit-label"><i class="ti ti-target" style="margin-right:5px;"></i>Requisito:</span><span style="font-size:13px; color:#4a5568; font-weight:600;">${bReal.indicador}</span></div>` : '';
+            listaContainer.innerHTML += `<div class="card"><div class="card-header"><div class="card-icon yellow"><i class="ti ti-coin"></i></div><div><div class="card-title">${bReal.concepto || "Compensación"}</div><div class="card-sub">Cargo: ${cargoEmpleado} · CD: ${regionEmpleado}</div></div></div><div class="benefit-row"><span class="benefit-label">Monto asignado:</span><span class="benefit-amount">${valorFormateado}</span></div>${indicadorHTML}</div>`;
           });
         } else {
           listaContainer.innerHTML = `<div class="card" style="text-align:center; padding:40px;"><i class="ti ti-gift" style="font-size:48px; color:#e2e8f0; margin-bottom:15px;"></i><p style="color:#718096;">No registras beneficios configurados.</p></div>`;
@@ -540,110 +649,128 @@
   async function cargarCapacitacionesAsignadas() {
     const container = document.getElementById('capacitaciones-list');
     try {
-      const snapshot = await db.collection('asignaciones_valle').where('empleado_documento', '==', cedulaLogueada).get();
-      if (snapshot.empty) {
+      let asignaciones = [];
+      
+      try {
+        const snapshot = await db.collection('asignaciones_valle')
+          .where('empleado_documento', '==', String(cedulaLogueada))
+          .get();
+        snapshot.forEach(doc => asignaciones.push({ id: doc.id, ...doc.data() }));
+      } catch (queryError) {
+        console.warn('⚠️ Error en consulta con índice, usando método alternativo:', queryError.message);
+        const allSnapshot = await db.collection('asignaciones_valle').get();
+        allSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (String(data.empleado_documento) === String(cedulaLogueada)) {
+            asignaciones.push({ id: doc.id, ...data });
+          }
+        });
+      }
+
+      if (asignaciones.length === 0) {
         container.innerHTML = `<div class="card" style="text-align:center; padding:40px;"><i class="ti ti-video" style="font-size:48px; color:#e2e8f0; margin-bottom:15px;"></i><p style="color:#718096;">No tienes capacitaciones asignadas aún.</p></div>`;
         actualizarDashboardCapacitaciones(0, 0, 0, 0);
+        totalCapacitacionesAsignadas = 0;
+        generarPistaDinamica();
         return;
       }
 
-      let asignaciones = [];
-      snapshot.forEach(doc => asignaciones.push({ id: doc.id, ...doc.data() }));
-      asignaciones.sort((a, b) => (b.creado_en?.toDate() || new Date(0)) - (a.creado_en?.toDate() || new Date(0)));
+      asignaciones.sort((a, b) => (b.creado_en?.toDate?.() || new Date(0)) - (a.creado_en?.toDate?.() || new Date(0)));
 
       let html = '', total = asignaciones.length, completadas = 0, pendientes = 0, progresoTotal = 0;
 
       asignaciones.forEach(asig => {
         if (asig.estado === 'Cumplió') completadas++; else pendientes++;
-
         const videoVisto = asig.video_visto === true;
         const evaluacionCompletada = asig.estado === 'Cumplió';
         const iconClass = getPilarIconClass(asig.pilar || 'Safety');
         const estadoClass = getEstadoClass(asig.estado);
-        
         const progresoReal = evaluacionCompletada ? 100 : (asig.video_progreso || (videoVisto ? 100 : 0));
         const progresoTexto = evaluacionCompletada ? '100% - Completado' : `${progresoReal}% - En progreso`;
         progresoTotal += progresoReal;
 
-        // ✅ LÓGICA CORREGIDA: Un solo bloque HTML limpio
         let accionesHTML = '';
         if (!evaluacionCompletada) {
-          accionesHTML = `
-            <div class="cap-actions">
-              <button class="btn-watch primary" onclick="abrirVideo('${asig.id}', '${asig.video_url || ''}', '${asig.youtube_video_id || ''}', '${asig.capacitacion_nombre || 'Capacitación'}')" style="flex:1;">
-                <i class="ti ti-player-play"></i> ${videoVisto ? 'Continuar video' : 'Ver video'}
+          accionesHTML = `<div class="cap-actions">
+            <button class="btn-watch primary" onclick="abrirVideo('${asig.id}', '${asig.video_url || ''}', '${asig.youtube_video_id || ''}', '${asig.capacitacion_nombre || 'Capacitación'}')" style="flex:1;">
+              <i class="ti ti-player-play"></i> ${videoVisto ? 'Continuar video' : 'Ver video'}
+            </button>
+            <button class="btn-watch secondary" ${!videoVisto ? 'disabled' : ''} onclick="irAEvaluacion('${asig.id}', '${asig.link_evaluacion || ''}')" style="flex:1; ${!videoVisto ? 'opacity: 0.4; cursor: not-allowed;' : ''}">
+              <i class="ti ti-clipboard-text"></i> ${videoVisto ? 'Evaluación (+100 XP)' : 'Bloqueado'}
+            </button>
+          </div>
+          ${asig.form_abierto && asig.estado === 'Pendiente evaluación' ? `
+            <div style="margin-top: 12px; padding: 12px; background: #fff3cd; border: 1px solid #ffc404; border-radius: 8px; text-align: center;">
+              <div style="color: #856404; font-size: 13px; margin-bottom: 8px;"><i class="ti ti-info-circle"></i> ¿Ya completaste la evaluación?</div>
+              <button class="btn-watch primary" onclick="confirmarEvaluacionCompletada('${asig.id}')" style="width: 100%; max-width: 300px; font-size: 13px; margin: 0 auto;">
+                <i class="ti ti-check"></i> Sí, ya la completé (+100 XP)
               </button>
-              <button class="btn-watch secondary" ${!videoVisto ? 'disabled' : ''} onclick="irAEvaluacion('${asig.id}', '${asig.link_evaluacion || ''}')" style="flex:1; ${!videoVisto ? 'opacity: 0.4; cursor: not-allowed;' : ''}">
-                <i class="ti ti-clipboard-text"></i> ${videoVisto ? 'Evaluación' : 'Bloqueado'}
-              </button>
-            </div>
-            ${asig.form_abierto && asig.estado === 'Pendiente evaluación' ? `
-              <div style="margin-top: 12px; padding: 12px; background: #fff3cd; border: 1px solid #ffc404; border-radius: 8px; text-align: center;">
-                <div style="color: #856404; font-size: 13px; margin-bottom: 8px;">
-                  <i class="ti ti-info-circle"></i> ¿Ya completaste la evaluación?
-                </div>
-                <button class="btn-watch primary" onclick="confirmarEvaluacionCompletada('${asig.id}')" style="width: 100%; max-width: 300px; font-size: 13px; margin: 0 auto;">
-                  <i class="ti ti-check"></i> Sí, ya la completé
-                </button>
-              </div>
-            ` : ''}
-          `;
+            </div>` : ''}`;
         } else {
-          accionesHTML = `
-            <div style="text-align:center; padding:15px; background:linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); border-radius:12px; color:#0f6e56; font-weight:700;">
-              <i class="ti ti-check-circle" style="font-size:24px; margin-bottom:5px;"></i>
-              <div>Capacitación completada ✅</div>
-              <button class="btn-watch primary" onclick="generarCertificado('${asig.id}', '${asig.capacitacion_nombre || 'Capacitación'}')" style="margin-top: 12px; width: 100%; max-width: 300px; font-size: 14px;">
-                <i class="ti ti-download"></i> Descargar Certificado PDF
-              </button>
-            </div>
-          `;
+          accionesHTML = `<div style="text-align:center; padding:15px; background:linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); border-radius:12px; color:#0f6e56; font-weight:700;">
+            <i class="ti ti-check-circle" style="font-size:24px; margin-bottom:5px;"></i>
+            <div>¡Capacitación completada! 🏆</div>
+            <button class="btn-watch primary" onclick="generarCertificado('${asig.id}', '${asig.capacitacion_nombre || 'Capacitación'}')" style="margin-top: 12px; width: 100%; max-width: 300px; font-size: 14px;">
+              <i class="ti ti-download"></i> Descargar Certificado PDF
+            </button>
+          </div>`;
         }
 
-        html += `
-          <div class="capacitacion-card">
-            <div class="cap-header">
-              <div class="cap-icon ${iconClass}"><i class="ti ti-video"></i></div>
-              <div class="cap-info" style="flex:1;">
-                <h3>${asig.capacitacion_nombre || 'Capacitación sin nombre'}</h3>
-                <div class="cap-meta">
-                  <span class="tag ${estadoClass}">${asig.estado || 'Programado'}</span>
-                  <span><i class="ti ti-calendar"></i> ${asig.fecha_limite ? new Date(asig.fecha_limite).toLocaleDateString('es-CO') : 'Sin fecha'}</span>
-                </div>
+        html += `<div class="capacitacion-card">
+          <div class="cap-header">
+            <div class="cap-icon ${iconClass}"><i class="ti ti-video"></i></div>
+            <div class="cap-info" style="flex:1;">
+              <h3>${asig.capacitacion_nombre || 'Capacitación sin nombre'}</h3>
+              <div class="cap-meta">
+                <span class="tag ${estadoClass}">${asig.estado || 'Programado'}</span>
+                <span><i class="ti ti-calendar"></i> ${asig.fecha_limite ? new Date(asig.fecha_limite).toLocaleDateString('es-CO') : 'Sin fecha'}</span>
               </div>
             </div>
-            
-            <div class="cap-progress"><div class="cap-progress-bar" style="width: ${progresoReal}%"></div></div>
-            <div style="text-align: right; font-size: 11px; color: #718096; margin-top: -10px; margin-bottom: 15px; font-weight: 600;">
-              Progreso: ${progresoTexto}
-            </div>
-            
-            ${accionesHTML}
           </div>
-        `;
+          <div class="cap-progress"><div class="cap-progress-bar" style="width: ${progresoReal}%"></div></div>
+          <div style="text-align: right; font-size: 11px; color: #718096; margin-top: -10px; margin-bottom: 15px; font-weight: 600;">Progreso: ${progresoTexto}</div>
+          ${accionesHTML}
+        </div>`;
       });
 
       container.innerHTML = html;
+      jugadorData.capacitaciones_completadas = completadas;
+      totalCapacitacionesAsignadas = total;
       const promedioProgreso = total > 0 ? Math.round(progresoTotal / total) : 0;
       actualizarDashboardCapacitaciones(total, completadas, pendientes, promedioProgreso);
-      actualizarBarraProgreso(completadas, total);
+      actualizarPistaVisual();
 
     } catch (error) {
-      console.error("Error cargando capacitaciones:", error);
-      container.innerHTML = `<div class="card" style="text-align:center; padding:40px; border:2px solid #fee2e2;"><p style="color:#dc2626;">Error al cargar capacitaciones</p></div>`;
+      console.error("❌ Error detallado cargando capacitaciones:", error);
+      container.innerHTML = `
+        <div class="card" style="text-align:center; padding:40px; border:2px solid #fee2e2;">
+          <i class="ti ti-alert-circle" style="font-size:48px; color:#dc2626; margin-bottom:15px;"></i>
+          <p style="color:#dc2626; font-size:14px; font-weight:600;">Error al cargar capacitaciones</p>
+          <p style="color:#718096; font-size:12px; margin-top:8px;">${error.message || 'Error desconocido'}</p>
+          <button onclick="cargarCapacitacionesAsignadas()" class="btn btn-primary" style="margin-top:15px;">
+            <i class="ti ti-refresh"></i> Reintentar
+          </button>
+        </div>`;
     }
   }
 
-  // ✅ NUEVA FUNCIÓN: Para que el empleado confirme que terminó la evaluación
   async function confirmarEvaluacionCompletada(asigId) {
     if (!confirm('¿Confirmas que ya completaste la evaluación y obtuviste la nota aprobatoria?')) return;
-    
     try {
+      const asigDoc = await db.collection('asignaciones_valle').doc(asigId).get();
+      const yaCumplio = asigDoc.data()?.estado === 'Cumplió';
+      
       await db.collection('asignaciones_valle').doc(asigId).update({
         estado: 'Cumplió',
         evaluacion_completada_fecha: firebase.firestore.FieldValue.serverTimestamp()
       });
-      alert('✅ ¡Felicitaciones! Evaluación marcada como completada.');
+      
+      if (!yaCumplio) {
+        await ganarXP(100, 'Evaluación aprobada');
+        alert('✅ ¡Felicitaciones! Evaluación marcada como completada. +100 XP 🏆');
+      } else {
+        alert('✅ ¡Felicitaciones! Evaluación marcada como completada.');
+      }
       cargarCapacitacionesAsignadas();
       cargarMensajesAlertaAutomaticas();
     } catch (error) {
@@ -657,51 +784,35 @@
       const empSnap = await db.collection('empleados').where('cedula', '==', cedulaLogueada).limit(1).get();
       if (empSnap.empty) return alert('No se pudieron obtener los datos del empleado.');
       const empData = empSnap.docs[0].data();
-      
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-      const primaryColor = [32, 105, 135];
-      const secondaryColor = [60, 188, 174];
-      const textColor = [45, 55, 72];
+      const primaryColor = [32, 105, 135], secondaryColor = [60, 188, 174], textColor = [45, 55, 72];
 
       doc.setLineWidth(3); doc.setDrawColor(...primaryColor); doc.rect(10, 10, 277, 190);
       doc.setLineWidth(1); doc.setDrawColor(...secondaryColor); doc.rect(15, 15, 267, 180);
-
       doc.setFillColor(...primaryColor); doc.rect(0, 0, 297, 45, 'F');
       doc.setTextColor(255, 255, 255); doc.setFontSize(26); doc.setFont('helvetica', 'bold');
       doc.text('CERTIFICADO DE CAPACITACIÓN', 148.5, 28, { align: 'center' });
-
       doc.setTextColor(...textColor); doc.setFontSize(14); doc.setFont('helvetica', 'normal');
       doc.text('Se otorga el presente certificado a:', 148.5, 75, { align: 'center' });
-
       doc.setFontSize(24); doc.setFont('helvetica', 'bold'); doc.setTextColor(...primaryColor);
       doc.text(empData.nombre.toUpperCase(), 148.5, 92, { align: 'center' });
-
       doc.setFontSize(14); doc.setFont('helvetica', 'normal'); doc.setTextColor(...textColor);
       doc.text(`Identificado con C.C. ${empData.cedula}`, 148.5, 105, { align: 'center' });
       doc.text(`Cargo: ${empData.cargo || 'No especificado'}`, 148.5, 115, { align: 'center' });
-
       doc.setFontSize(16); doc.setFont('helvetica', 'bold');
       doc.text('Por haber completado satisfactoriamente la capacitación:', 148.5, 135, { align: 'center' });
-
       doc.setFontSize(20); doc.setTextColor(...secondaryColor);
       const splitTitle = doc.splitTextToSize(nombreCapacitacion, 250);
       doc.text(splitTitle, 148.5, 150, { align: 'center' });
-
       const fecha = new Date();
-      const fechaStr = fecha.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
-      const horaStr = fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-
       doc.setFontSize(12); doc.setFont('helvetica', 'italic'); doc.setTextColor(100, 100, 100);
-      doc.text(`Expedido el ${fechaStr} a las ${horaStr}`, 148.5, 175, { align: 'center' });
-
+      doc.text(`Expedido el ${fecha.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })} a las ${fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}`, 148.5, 175, { align: 'center' });
       doc.setDrawColor(...primaryColor); doc.setLineWidth(1); doc.line(60, 182, 237, 182);
       doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(...primaryColor);
       doc.text('Plan de Entrenamiento Valle', 148.5, 188, { align: 'center' });
       doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(100, 100, 100);
       doc.text('Logística Conectamos Más', 148.5, 193, { align: 'center' });
-
       doc.save(`Certificado_${nombreCapacitacion.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
     } catch (error) {
       console.error('Error generando certificado:', error);
@@ -711,7 +822,7 @@
 
   function actualizarDashboardCapacitaciones(total, completadas, pendientes, progreso) {
     document.getElementById('statTotal').textContent = total;
-    document.getElementById('statCompletadas').textContent = completadas;
+    document.getElementById('statCompletadas2').textContent = completadas;
     document.getElementById('statPendientes').textContent = pendientes;
     document.getElementById('statProgreso').textContent = progreso + '%';
   }
@@ -730,27 +841,22 @@
     asignacionActualId = asigId;
     document.getElementById('modalVideoTitle').textContent = titulo;
     document.getElementById('videoModal').classList.add('active');
-
     const videoId = youtubeVideoId || extraerIdYouTube(videoUrl);
     if (!videoId) { alert('Video no disponible'); return; }
-
     clearInterval(ytTimer);
     maxPermitido = 0;
     videoCompletado = false;
+    videoProgress = 0;
     bloquearBoton();
     document.getElementById('videoWrapper').innerHTML = '<div id="ytContainer"></div>';
-
     const crear = () => {
       ytPlayer = new YT.Player('ytContainer', {
-        videoId,
-        width: '100%',
-        height: '100%',
+        videoId, width: '100%', height: '100%',
         playerVars: { rel: 0, modestbranding: 1, playsinline: 1, disablekb: 1 },
         events: { onStateChange: onEstadoVideo }
       });
       ytTimer = setInterval(vigilarVideo, 500);
     };
-
     if (window.YT && YT.Player) crear();
     else ytPendiente = crear;
   }
@@ -758,15 +864,12 @@
   function vigilarVideo() {
     if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
     const t = ytPlayer.getCurrentTime();
-
     if (ytPlayer.getPlaybackRate() !== 1) ytPlayer.setPlaybackRate(1);
-
     if (t > maxPermitido + 2) {
       ytPlayer.seekTo(maxPermitido, true);
       mostrarAviso('🚫 No puedes adelantar el video.');
       return;
     }
-
     if (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING && t > maxPermitido) {
       maxPermitido = t;
     }
@@ -787,18 +890,14 @@
 
   function bloquearBoton() {
     const btn = document.getElementById('btnMarcarVisto');
-    btn.disabled = true;
-    btn.style.opacity = '0.5';
-    btn.style.cursor = 'not-allowed';
+    btn.disabled = true; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed';
     btn.innerHTML = '<i class="ti ti-lock"></i> <span>Mira el video completo para continuar</span>';
   }
 
   function desbloquearBoton() {
     const btn = document.getElementById('btnMarcarVisto');
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.style.cursor = 'pointer';
-    btn.innerHTML = '<i class="ti ti-check"></i> <span>Marcar como visto y continuar</span>';
+    btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+    btn.innerHTML = '<i class="ti ti-check"></i> <span>Marcar como visto y continuar (+50 XP)</span>';
   }
 
   function mostrarAviso(msg) {
@@ -818,19 +917,28 @@
   }
 
   async function marcarComoVisto() {
-    if (!asignacionActualId || !videoCompletado) return;
+    if (!asignacionActualId) return;
     try {
+      const asigDoc = await db.collection('asignaciones_valle').doc(asignacionActualId).get();
+      const yaVisto = asigDoc.data()?.video_visto === true;
+      
       await db.collection('asignaciones_valle').doc(asignacionActualId).update({
         video_visto: true,
         video_visto_fecha: firebase.firestore.FieldValue.serverTimestamp(),
         video_progreso: 100,
         estado: 'Pendiente evaluación'
       });
-      alert('✅ Video marcado como visto. Ahora realiza la evaluación y confirma que la terminaste.');
+      
+      if (!yaVisto) {
+        await ganarXP(50, 'Video completado');
+        alert('✅ ¡Video completado! +50 XP 🎉\nAhora puedes realizar la evaluación.');
+      } else {
+        alert('✅ Video marcado como visto. Ahora puedes realizar la evaluación.');
+      }
       cerrarVideoModal();
       cargarCapacitacionesAsignadas();
     } catch (error) {
-      console.error('Error marcando video:', error);
+      console.error('Error:', error);
       alert('Error al guardar progreso');
     }
   }
@@ -846,61 +954,25 @@
     db.collection('asignaciones_valle').doc(asigId).update({
       form_abierto: true, 
       form_abierto_fecha: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-      cargarCapacitacionesAsignadas(); // Refresca para mostrar el botón amarillo de confirmación
-    });
-  }
-
-  function actualizarBarraProgreso(hechas, totales) {
-    const pct = totales > 0 ? Math.round((hechas / totales) * 100) : 0;
-    document.getElementById('homeAvancePct').textContent = pct + "%";
-    document.getElementById('homeAvanceSub').textContent = `${hechas} de ${totales} capacitaciones completadas`;
-    document.getElementById('homeAvanceBar').style.width = pct + "%";
+    }).then(() => { cargarCapacitacionesAsignadas(); });
   }
 
   function cargarMensajesAlertaAutomaticas() {
-    db.collection('asignaciones_valle')
-      .where('empleado_documento', '==', cedulaLogueada)
-      .where('estado', 'in', ['Programado', 'Pendiente evaluación'])
-      .onSnapshot((snapshot) => {
-        const container = document.getElementById('alert-list');
-        if(!container) return;
-        
-        let alertasHtml = '';
-        let hayAlertas = false;
-        
-        snapshot.forEach(doc => {
-          const item = doc.data();
-          if (item.estado !== 'Cumplió' && item.estado !== 'No cumplió') {
-            hayAlertas = true;
-            const fechaLimite = item.fecha_limite ? new Date(item.fecha_limite).toLocaleDateString('es-CO') : 'Sin fecha límite';
-            alertasHtml += `
-              <div class="alert-card">
-                <i class="ti ti-alert-circle"></i>
-                <div>
-                  <div class="alert-text">
-                    Tienes pendiente: <strong>"${item.capacitacion_nombre || 'Capacitación'}"</strong>
-                  </div>
-                  <div class="alert-time">
-                    <i class="ti ti-calendar" style="margin-right:5px;"></i>
-                    Fecha límite: ${fechaLimite}
-                  </div>
-                </div>
-              </div>`;
-          }
-        });
-        
-        if (hayAlertas) {
-          container.innerHTML = alertasHtml;
-        } else {
-          container.innerHTML = `
-            <div class="card" style="text-align:center; padding:40px; background: linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); border: 2px solid #3cbcae;">
-              <i class="ti ti-check-circle" style="font-size:48px; color:#0f6e56; margin-bottom:15px;"></i>
-              <p style="color:#065f46; font-size:16px; font-weight:700;">¡Felicitaciones!</p>
-              <p style="color:#0f6e56; font-size:14px; margin-top:5px;">✓ Al día. No tienes capacitaciones pendientes.</p>
-            </div>`;
+    db.collection('asignaciones_valle').where('empleado_documento', '==', cedulaLogueada).where('estado', 'in', ['Programado', 'Pendiente evaluación']).onSnapshot((snapshot) => {
+      const container = document.getElementById('alert-list');
+      if(!container) return;
+      let alertasHtml = '', hayAlertas = false;
+      snapshot.forEach(doc => {
+        const item = doc.data();
+        if (item.estado !== 'Cumplió' && item.estado !== 'No cumplió') {
+          hayAlertas = true;
+          const fechaLimite = item.fecha_limite ? new Date(item.fecha_limite).toLocaleDateString('es-CO') : 'Sin fecha límite';
+          alertasHtml += `<div class="alert-card"><i class="ti ti-alert-circle"></i><div><div class="alert-text">Tienes pendiente: <strong>"${item.capacitacion_nombre || 'Capacitación'}"</strong></div><div class="alert-time"><i class="ti ti-calendar" style="margin-right:5px;"></i>Fecha límite: ${fechaLimite}</div></div></div>`;
         }
       });
+      if (hayAlertas) container.innerHTML = alertasHtml;
+      else container.innerHTML = `<div class="card" style="text-align:center; padding:40px; background: linear-gradient(135deg, #e1f5ee 0%, #c6f6d5 100%); border: 2px solid #3cbcae;"><i class="ti ti-check-circle" style="font-size:48px; color:#0f6e56; margin-bottom:15px;"></i><p style="color:#065f46; font-size:16px; font-weight:700;">¡Felicitaciones!</p><p style="color:#0f6e56; font-size:14px; margin-top:5px;">✓ Al día. No tienes capacitaciones pendientes.</p></div>`;
+    });
   }
 
   function showTab(name) {

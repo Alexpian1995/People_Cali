@@ -32,6 +32,8 @@
     .btn-login:hover { background: #164f67; border-bottom: 2px solid #ffc404; padding-bottom: 12px; }
     
     .error-msg { color: #a32d2d; font-size: 13px; margin-top: 14px; display: none; font-weight: 600; background: #fdf2f2; padding: 8px; border-radius: 8px; border: 0.5px solid #f5c6c6; }
+    .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #ffffff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -50,18 +52,17 @@
         <label for="password">Contraseña</label>
         <input type="password" id="password" placeholder="Tu cédula es tu contraseña" required autocomplete="current-password">
       </div>
-      <button type="submit" class="btn-login">Ingresar al Portal</button>
+      <button type="submit" class="btn-login" id="btnSubmit">Ingresar al Portal</button>
       <div id="errorMsg" class="error-msg"></div>
     </form>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
   <script src="config.js"></script>
 
   <script>
-   const app = firebase.initializeApp(firebaseConfig);
+    const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -70,6 +71,7 @@
       const cedulaInput = document.getElementById('cedula').value.trim();
       const passwordInput = document.getElementById('password').value.trim();
       const errorMsg = document.getElementById('errorMsg');
+      const btnSubmit = document.getElementById('btnSubmit');
       
       errorMsg.style.display = 'none';
 
@@ -79,6 +81,10 @@
         return;
       }
 
+      // Efecto de carga
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<span class="loading-spinner"></span> Verificando...';
+
       try {
         // 🔍 PASO 1: Intento de búsqueda tratando la cédula como Texto
         let snapshot = await db.collection('empleados')
@@ -86,7 +92,7 @@
           .limit(1)
           .get();
 
-        // 🔍 PASO 2: Búsqueda como Tipo Numérico
+        // 🔍 PASO 2: Búsqueda como Tipo Numérico (por si se guardó como número en Firestore)
         if (snapshot.empty && !isNaN(cedulaInput)) {
           snapshot = await db.collection('empleados')
             .where('cedula', '==', Number(cedulaInput))
@@ -97,48 +103,45 @@
         if (!snapshot.empty) {
           const docSnap = snapshot.docs[0];
           const datosUsuario = docSnap.data();
-          const rolUsuario = datosUsuario.rol ? String(datosUsuario.rol).toLowerCase().trim() : 'empleado';
           
-          // 🛡️ IDENTIFICACIÓN INTELIGENTE DE PADRINOS
-          // Evaluamos si tiene la bandera de es_padrino activa (ya sea en booleano o string)
-          const esPadrinoReal = (datosUsuario.es_padrino === true || datosUsuario.es_padrino === "true");
+          // ✅ CORRECCIÓN DE ROLES: Acepta 'administrador', 'admin', 'supervisor', etc.
+          const rolUsuario = datosUsuario.rol ? String(datosUsuario.rol).toLowerCase().trim() : 'empleado';
+          const esPadrinoReal = (datosUsuario.es_padrino === true || datosUsuario.es_padrino === "true" || rolUsuario === 'padrino');
 
           // 💾 ALMACENAMIENTO DE CONTROL MAESTRO LOCAL
           localStorage.setItem('usuario_cedula', cedulaInput);
           localStorage.setItem('usuario_rol', rolUsuario);
-          localStorage.setItem('es_padrino', esPadrinoReal ? 'true' : 'false'); // Guardamos bandera explícita
-          
+          localStorage.setItem('es_padrino', esPadrinoReal ? 'true' : 'false');
           localStorage.setItem('usuario_region', datosUsuario.region || 'General');
           localStorage.setItem('usuario_cargo', datosUsuario.cargo || 'Operativo');
+          localStorage.setItem('usuario_nombre', datosUsuario.nombre || 'Usuario');
           
-          alert('¡Bienvenido al Portal, ' + datosUsuario.nombre + '!');
-
           // =========================================================================
-          // 🎯 ENRUTAMIENTO CONTROLADO Y SEGMENTACIÓN DE ACCESOS
+          // 🎯 ENRUTAMIENTO CONTROLADO Y SEGMENTACIÓN DE ACCESOS (CORREGIDO)
           // =========================================================================
-          // =========================================================================
-          // 🎯 ENRUTAMIENTO CONTROLADO Y SEGMENTACIÓN DE ACCESOS (SINCRO CORREGIDA)
-          // =========================================================================
-          if (rolUsuario === 'admin' || rolUsuario === 'people' || rolUsuario === 'lider' || rolUsuario === 'jefe') {
-            // ✅ Todos los roles con facultades de gestión entran por admin.html
-            // (El script de admin.html se encargará de esconder las pestañas si es líder)
+          if (rolUsuario === 'administrador' || rolUsuario === 'admin' || rolUsuario === 'supervisor' || rolUsuario === 'lider' || rolUsuario === 'jefe') {
+            // ✅ Roles de gestión entran al panel administrativo
             window.location.href = 'admin.html';
-          } else if (esPadrinoReal || rolUsuario === 'padrino') {
-            // ✅ El padrino va directo a su portal operativo de campo sin tocar administración
+          } else if (esPadrinoReal) {
+            // ✅ El padrino va directo a su portal operativo de campo
             window.location.href = 'portal_padrino.html'; 
           } else {
-            // Colaboradores de base ingresan a su pantalla móvil estándar
+            // ✅ Colaboradores de base ingresan a su pantalla móvil estándar
             window.location.href = 'index.html'; 
           }
 
         } else {
           errorMsg.textContent = "Usuario no registrado en la base de datos.";
           errorMsg.style.display = 'block';
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = 'Ingresar al Portal';
         }
       } catch (error) {
         console.error("Error en el login:", error);
-        errorMsg.textContent = "Error de conexión con el servidor de People.";
+        errorMsg.textContent = "Error de conexión con el servidor.";
         errorMsg.style.display = 'block';
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Ingresar al Portal';
       }
     });
   </script>
